@@ -1,5 +1,5 @@
 import {GraphQLSchema} from 'graphql';
-import {GraphQLServer} from '../src/GraphQLServer';
+import {GraphQLServer} from '../../src';
 
 const initialSchema = new GraphQLSchema({description:'initial'});
 

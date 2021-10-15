@@ -16,6 +16,8 @@ jobs:
         run: npm run lint
       - name: Run tests
         run: npm test
+      - name: Check types
+        run: npm run check
       - name: Check security vulnerabilites
         run: npm audit
         continue-on-error: true

@@ -2,11 +2,14 @@
   "compilerOptions": {
     "module": "commonjs",
     "esModuleInterop": true,
-    "target": "es2019",
+    "target": "es5",
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "build",
-    "lib": ["es2019"]
+    "lib": ["es2017", "es7", "es6", "dom"],
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "declaration": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.test.ts"]
