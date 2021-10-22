@@ -1,0 +1,26 @@
+name: Install and test graphql-server
+on: [push, pull_request]
+
+jobs:
+  graphqlserver:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16.x'
+      - name: Install dependencies
+        run: npm install
+      - name: Check for linting issues
+        run: npm run lint
+      - name: Run tests
+        run: npm test
+      - name: Check types
+        run: npm run check
+      - name: Check security vulnerabilites
+        run: npm audit
+        continue-on-error: true
+      - name: Check for outdated dependencies
+        run: npm outdated
+        continue-on-error: true

@@ -1,0 +1,41 @@
+{
+    "env": {
+        "node": true,
+        "commonjs": true,
+        "es6": true,
+        "jest": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 2017,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "@typescript-eslint/eslint-plugin",
+        "modules-newline"
+    ],
+    "rules": {
+        "quotes": [ 2, "single", { "avoidEscape": true }],
+        "indent": ["error", 4, { "MemberExpression" :  0}],
+        "arrow-spacing": [ 2, { "before": true, "after": true }],
+        "no-await-in-loop": "error",
+        "no-unexpected-multiline": "error",
+        "array-bracket-newline": ["error", "consistent"],
+        "array-element-newline": ["error", "consistent"],
+        "function-call-argument-newline": ["error", "consistent"],
+        "function-paren-newline": ["error", "consistent"],
+        "newline-per-chained-call": "error",
+        "object-curly-newline": ["error", { "consistent": true }],
+        "modules-newline/import-declaration-newline": "error",
+        "modules-newline/export-declaration-newline": "error",
+        "space-before-blocks": "error"
+    }
+}
