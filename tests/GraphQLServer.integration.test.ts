@@ -3,6 +3,7 @@ import express, {Express} from 'express'
 import {Server} from 'http'
 import {GraphQLServer} from '../src/'
 import fetch from 'cross-fetch'
+import {JsonLogger} from '../src/logger/JsonLogger';
 
 const initialSchema = new GraphQLSchema({description:'initial'})
 const graphQLServerPort = 3000
@@ -27,7 +28,8 @@ test('Should get simple default response from GraphQL server', async () => {
 
 function setupGraphQLServer(): Express {
     const graphQLServerExpress = express()
-    const customGraphQLServer = new GraphQLServer(initialSchema)
+    const logger = new JsonLogger('test-logger', 'myTestService')
+    const customGraphQLServer = new GraphQLServer({schema: initialSchema, logger: logger, debug: true})
     graphQLServerExpress.post('/graphql', (req, res) => {
         return customGraphQLServer.handleRequest(req, res)
     })
