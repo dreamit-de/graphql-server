@@ -38,26 +38,13 @@ export class TextLogger implements Logger {
     logMessage(logMessage: string, loglevel: LogLevel, error?: Error): void {
         const logEntry: LogEntry = LogHelper.createLogEntry(logMessage, loglevel, this.loggerName, this.serviceName, error)
         const logOutput = this.prepareLogOutput(logEntry)
-        switch (loglevel) {
-        case LogLevel.Debug:
-            console.debug(logOutput)
-            break
-        case LogLevel.Error:
-            console.error(logOutput)
-            break
-        case LogLevel.Info:
-            console.info(logOutput)
-            break
-        case LogLevel.Warn:
-            console.warn(logOutput)
-            break
-        }
+        console.log(`${loglevel.toUpperCase()} - ${logOutput}`)
     }
 
     /** Prepares the text used in the log output. Can be overwritten if it does not match expected output format.
      * @param {LogEntry} logEntry - The extracted log information.
      */
     prepareLogOutput(logEntry: LogEntry): string {
-        return `${logEntry.timestamp} [${logEntry.level.toUpperCase()}] ${this.loggerName || ''}-${this.serviceName || ''} : ${logEntry.message} ${logEntry.stacktrace || ''}`
+        return `${logEntry.timestamp} [${logEntry.level.toUpperCase()}] ${this.loggerName}-${this.serviceName} : ${logEntry.message} ${logEntry.stacktrace || ''}`
     }
 }
