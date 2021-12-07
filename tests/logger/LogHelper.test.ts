@@ -2,7 +2,6 @@ import {GraphQLError} from 'graphql';
 import {LogHelper} from '../../src/logger/LogHelper';
 import {LogLevel} from '../../src/logger/LogLevel';
 
-
 //Created based upon implementation in node-fetch to avoid importing whole package for this class
 class FetchError extends Error {
     name = 'FetchError'

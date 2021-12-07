@@ -9,9 +9,17 @@ import {IncomingMessage,
 import {Logger} from '../logger/Logger';
 import {GraphQLServerOptions} from './GraphQLServerOptions';
 import {TextLogger} from '../logger/TextLogger';
+import {URLSearchParams} from 'url';
 
-type Request = IncomingMessage & { url: string }
-type Response = ServerResponse & { json?: (data: unknown) => void }
+export type Request = IncomingMessage & { url: string }
+export type Response = ServerResponse & { json?: (data: unknown) => void }
+
+export interface GraphQLRequestInfo {
+    query: string
+    variables?: { readonly [name: string]: unknown }
+    operationName?: string
+}
+
 const fallbackTextLogger = new TextLogger('fallback-logger', 'fallback-service');
 
 export class GraphQLServer {
@@ -84,7 +92,10 @@ export class GraphQLServer {
             return this.sendInvalidSchemaResponse(request, response)
         }
 
-        // Extract graphql parameters (query, variables, operationName, raw) from request
+        // Extract graphql request information (query, variables, operationName) from request
+        const requestInformation = this.extractInformationFromRequest(request)
+        this.logger.info(`Request information is ${JSON.stringify(requestInformation)}`)
+
 
         // Reject request if no query parameter is provided
 
@@ -138,4 +149,25 @@ export class GraphQLServer {
             {errors: [new GraphQLError('Request cannot be processed. Schema in GraphQL server is invalid.')]},
             500)
     }
+
+    extractInformationFromRequest(request: Request): GraphQLRequestInfo {
+        //TODO: Implement extraction from body and prefer usage of url params before body
+        return this.extractInformationFromUrlParameters(request.url)
+    }
+
+    extractInformationFromUrlParameters(url: string): GraphQLRequestInfo {
+        const urlParameters = new URLSearchParams(url.substring(url.indexOf('?')))
+        this.logger.info(`Extracted URL params for request url ${url} and query param ${urlParameters.get('query')}`)
+        const extractedQuery= urlParameters.get('query') ?? ''
+        const extractedVariables= (urlParameters.get('variables')) as {
+            readonly [name: string]: unknown;
+        } | null || undefined
+        const extractedOperationName= urlParameters.get('operationName') ?? undefined
+        return {
+            query: extractedQuery,
+            variables: extractedVariables,
+            operationName: extractedOperationName,
+        }
+    }
+
 }
