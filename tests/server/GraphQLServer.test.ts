@@ -1,12 +1,8 @@
 import {GraphQLSchema} from 'graphql'
 import {GraphQLServer} from '../../src'
 import {
-    initialSchemaWithOnlyDescription,
-    userRequest,
-    userRequestWithoutOperationName,
-    userRequestWithoutVariables
+    initialSchemaWithOnlyDescription
 } from '../ExampleSchemas';
-import {generateGetParamsFromGraphQLRequestInfo} from '../TestHelpers';
 
 test('Should create schema on GraphQLServer class creation', () => {
     const graphqlServer = new GraphQLServer({schema: initialSchemaWithOnlyDescription})
@@ -35,21 +31,6 @@ test('Should not update schema when given schema is undefined', () => {
     expectRootQueryNotDefined(graphqlServer)
 })
 
-describe('Test that request information is extracted correctly from url parameters', () => {
-    test.each`
-    request                             | expectedQuery                             | expectedVariables                                             | expectedOperationName
-    ${userRequest}                      | ${userRequest.query}                      | ${JSON.stringify(userRequest.variables)}                      | ${userRequest.operationName}  
-    ${userRequestWithoutOperationName}  | ${userRequestWithoutOperationName.query}  | ${JSON.stringify(userRequestWithoutOperationName.variables)}  | ${userRequestWithoutOperationName.operationName} 
-    ${userRequestWithoutVariables}      | ${userRequestWithoutVariables.query}      | ${userRequestWithoutVariables.variables}                      | ${userRequestWithoutVariables.operationName}  
-    `('expects for request $request to extract values correctly', async ({request, expectedQuery, expectedVariables, expectedOperationName}) => {
-        const graphqlServer = new GraphQLServer({schema: initialSchemaWithOnlyDescription, debug: true})
-        const requestUrl = `http://doesnotmatter.com/graphql?${generateGetParamsFromGraphQLRequestInfo(request)}`
-        const result = graphqlServer.extractInformationFromUrlParameters(requestUrl)
-        expect(result.query).toBe(expectedQuery)
-        expect(result.variables).toBe(expectedVariables)
-        expect(result.operationName).toBe(expectedOperationName)
-    });
-});
 function expectRootQueryNotDefined(graphqlServer: GraphQLServer): void {
     const schemaValidationErrors = graphqlServer.getSchemaValidationErrors()
     expect(schemaValidationErrors?.length).toBe(1)

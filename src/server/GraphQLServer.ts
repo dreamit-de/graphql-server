@@ -9,22 +9,26 @@ import {IncomingMessage,
 import {Logger} from '../logger/Logger';
 import {GraphQLServerOptions} from './GraphQLServerOptions';
 import {TextLogger} from '../logger/TextLogger';
-import {URLSearchParams} from 'url';
+import {GraphQLErrorWithStatusCode} from './GraphQLErrorWithStatusCode';
+import {GraphQLRequestInformationExtractor} from './GraphQLRequestInformationExtractor';
 
-export type Request = IncomingMessage & { url: string }
+export type Request = IncomingMessage & { url: string,  body?: unknown }
 export type Response = ServerResponse & { json?: (data: unknown) => void }
 
 export interface GraphQLRequestInfo {
-    query: string
+    query?: string
     variables?: { readonly [name: string]: unknown }
     operationName?: string
+    error?: GraphQLErrorWithStatusCode
 }
 
-const fallbackTextLogger = new TextLogger('fallback-logger', 'fallback-service');
+const fallbackTextLogger = new TextLogger('fallback-logger', 'fallback-service')
+const defaultRequestInformationExtractor = new GraphQLRequestInformationExtractor()
 
 export class GraphQLServer {
     private logger: Logger = fallbackTextLogger
     private debug = false
+    private requestInformationExtractor = defaultRequestInformationExtractor
     private schema?: GraphQLSchema
     private schemaValidationFunction: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError> = validateSchema
     private schemaValidationErrors: ReadonlyArray<GraphQLError> = []
@@ -37,6 +41,7 @@ export class GraphQLServer {
         if (options) {
             this.logger = options.logger || fallbackTextLogger
             this.debug = options.debug || false
+            this.requestInformationExtractor = options.requestInformationExtractor || defaultRequestInformationExtractor
             this.schemaValidationFunction = options.schemaValidationFunction || validateSchema
             this.setSchema(options.schema)
         }
@@ -93,9 +98,13 @@ export class GraphQLServer {
         }
 
         // Extract graphql request information (query, variables, operationName) from request
-        const requestInformation = this.extractInformationFromRequest(request)
+        const requestInformation = await this.requestInformationExtractor.extractInformationFromRequest(request)
         this.logger.info(`Request information is ${JSON.stringify(requestInformation)}`)
-
+        if (!requestInformation.query && requestInformation.error) {
+            return this.sendGraphQLErrorWithStatusCodeResponse(request, response, requestInformation.error)
+        } else if (!requestInformation.query) {
+            return this.sendMissingQueryResponse(request, response)
+        }
 
         // Reject request if no query parameter is provided
 
@@ -116,7 +125,7 @@ export class GraphQLServer {
 
         //Prepare example response
         const exampleResponseData = {response:'hello world'}
-        this.logDebugIfEnabled(`Create response from data ${exampleResponseData}`)
+        this.logDebugIfEnabled(`Create response from data ${JSON.stringify(exampleResponseData)}`)
         return this.sendResponse(response, {data: exampleResponseData})
     }
 
@@ -150,24 +159,23 @@ export class GraphQLServer {
             500)
     }
 
-    extractInformationFromRequest(request: Request): GraphQLRequestInfo {
-        //TODO: Implement extraction from body and prefer usage of url params before body
-        return this.extractInformationFromUrlParameters(request.url)
+    /** Sends a fitting response if there is no query available in the request */
+    sendMissingQueryResponse(request: Request, response: Response): void {
+        return this.sendResponse(response,
+            {errors: [new GraphQLError('Request cannot be processed. No query was found in parameters or body.')]},
+            400)
     }
 
-    extractInformationFromUrlParameters(url: string): GraphQLRequestInfo {
-        const urlParameters = new URLSearchParams(url.substring(url.indexOf('?')))
-        this.logger.info(`Extracted URL params for request url ${url} and query param ${urlParameters.get('query')}`)
-        const extractedQuery= urlParameters.get('query') ?? ''
-        const extractedVariables= (urlParameters.get('variables')) as {
-            readonly [name: string]: unknown;
-        } | null || undefined
-        const extractedOperationName= urlParameters.get('operationName') ?? undefined
-        return {
-            query: extractedQuery,
-            variables: extractedVariables,
-            operationName: extractedOperationName,
-        }
+    /** Sends an error response using information from an GraphQLErrorWithStatusCode error
+     * @param {Request} request - The initial request
+     * @param {Response} response - The response to send
+     * @param {GraphQLErrorWithStatusCode} error - An error that occurred while executing a function
+     */
+    sendGraphQLErrorWithStatusCodeResponse(request: Request, response: Response, error: GraphQLErrorWithStatusCode): void {
+        return this.sendResponse(response,
+            {errors: [error.graphQLError]},
+            error.statusCode)
     }
+
 
 }
