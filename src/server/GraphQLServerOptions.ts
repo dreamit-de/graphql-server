@@ -1,6 +1,11 @@
 import {Logger} from '../logger/Logger';
-import {GraphQLError,
-    GraphQLSchema} from 'graphql';
+import {
+    DocumentNode,
+    GraphQLError,
+    GraphQLSchema,
+    ParseOptions,
+    Source
+} from 'graphql';
 import {GraphQLRequestInformationExtractor} from './GraphQLRequestInformationExtractor';
 
 export interface GraphQLServerOptions {
@@ -9,4 +14,5 @@ export interface GraphQLServerOptions {
     requestInformationExtractor?: GraphQLRequestInformationExtractor
     schema?: GraphQLSchema | undefined
     schemaValidationFunction?: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError>
+    parseFunction?: (source: string | Source, options?: ParseOptions) => DocumentNode
 }

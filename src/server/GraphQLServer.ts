@@ -1,16 +1,20 @@
 import {
+    DocumentNode,
     ExecutionResult,
     GraphQLError,
     GraphQLSchema,
+    parse,
+    ParseOptions,
+    Source,
     validateSchema
 } from 'graphql'
 import {IncomingMessage,
     ServerResponse} from 'http'
-import {Logger} from '../logger/Logger';
-import {GraphQLServerOptions} from './GraphQLServerOptions';
-import {TextLogger} from '../logger/TextLogger';
-import {GraphQLErrorWithStatusCode} from './GraphQLErrorWithStatusCode';
-import {GraphQLRequestInformationExtractor} from './GraphQLRequestInformationExtractor';
+import {Logger} from '../logger/Logger'
+import {GraphQLServerOptions} from './GraphQLServerOptions'
+import {TextLogger} from '../logger/TextLogger'
+import {GraphQLErrorWithStatusCode} from './GraphQLErrorWithStatusCode'
+import {GraphQLRequestInformationExtractor} from './GraphQLRequestInformationExtractor'
 
 export type Request = IncomingMessage & { url: string,  body?: unknown }
 export type Response = ServerResponse & { json?: (data: unknown) => void }
@@ -32,6 +36,7 @@ export class GraphQLServer {
     private schema?: GraphQLSchema
     private schemaValidationFunction: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError> = validateSchema
     private schemaValidationErrors: ReadonlyArray<GraphQLError> = []
+    private parseFunction: (source: string | Source, options?: ParseOptions) => DocumentNode = parse
 
     constructor(options?: GraphQLServerOptions) {
         this.setOptions(options)
@@ -43,6 +48,7 @@ export class GraphQLServer {
             this.debug = options.debug || false
             this.requestInformationExtractor = options.requestInformationExtractor || defaultRequestInformationExtractor
             this.schemaValidationFunction = options.schemaValidationFunction || validateSchema
+            this.parseFunction = options.parseFunction || parse
             this.setSchema(options.schema)
         }
     }
@@ -76,7 +82,7 @@ export class GraphQLServer {
      * @returns {boolean} True if schema should be updated, false if not
      */
     shouldUpdateSchema(schema?: GraphQLSchema): boolean {
-        return !!schema;
+        return !!schema
     }
 
     getSchemaValidationErrors():  ReadonlyArray<GraphQLError> | undefined {
@@ -102,13 +108,18 @@ export class GraphQLServer {
         this.logger.info(`Request information is ${JSON.stringify(requestInformation)}`)
         if (!requestInformation.query && requestInformation.error) {
             return this.sendGraphQLErrorWithStatusCodeResponse(request, response, requestInformation.error)
-        } else if (!requestInformation.query) {
+        } else if (!requestInformation.query) {  // Reject request if no query parameter is provided
             return this.sendMissingQueryResponse(request, response)
         }
 
-        // Reject request if no query parameter is provided
-
         // Parse given GraphQL source into a document (parse(query) function)
+        let documentAST: DocumentNode
+        try {
+            documentAST = this.parseFunction(new Source(requestInformation.query, 'GraphQL request'))
+        } catch (syntaxError: unknown) {
+            return this.sendSyntaxErrorResponse(request, response, syntaxError as GraphQLError)
+        }
+        this.logDebugIfEnabled(`Parsing query into document succeeded with document: ${JSON.stringify(documentAST)}`)
 
         // Validate document against schema (validate(schema, document, rules) function). Return 400 for errors
 
@@ -140,7 +151,7 @@ export class GraphQLServer {
         if (customHeaders != null) {
             for (const [key, value] of Object.entries(customHeaders)) {
                 this.logDebugIfEnabled(`Set custom header ${key} to ${value}`)
-                response.setHeader(key, String(value));
+                response.setHeader(key, String(value))
             }
         }
         response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))
@@ -163,6 +174,13 @@ export class GraphQLServer {
     sendMissingQueryResponse(request: Request, response: Response): void {
         return this.sendResponse(response,
             {errors: [new GraphQLError('Request cannot be processed. No query was found in parameters or body.')]},
+            400)
+    }
+
+    /** Sends a fitting response if a syntax error occurred during document parsing */
+    sendSyntaxErrorResponse(request: Request, response: Response, syntaxError: GraphQLError): void {
+        return this.sendResponse(response,
+            {errors: [syntaxError]},
             400)
     }
 

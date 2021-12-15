@@ -5,13 +5,9 @@ import {GraphQLRequestInfo} from '../src/server/GraphQLServer';
 //Contains example schemas that can be used across tests
 
 export const initialSchemaWithOnlyDescription = new GraphQLSchema({description:'initial'})
-
+export const userQuery = 'query users{ users { userId userName } }'
 export const userRequest: GraphQLRequestInfo = {
-    query: `query user {
-    user {
-        userId
-        userName
-    }`,
+    query: userQuery,
     operationName: 'user',
     variables: {userId: '1'}
 }
@@ -25,7 +21,6 @@ export const userRequestWithoutVariables: GraphQLRequestInfo = {
     query: userRequest.query,
     operationName: userRequest.operationName
 }
-
 
 export const userSchema = buildSchema(`
   schema {
@@ -42,3 +37,4 @@ export const userSchema = buildSchema(`
     userName: String
   }
 `)
+

@@ -4,6 +4,7 @@ import {GraphQLServer} from '../src/'
 import fetch from 'cross-fetch'
 import {JsonLogger} from '../src/logger/JsonLogger'
 import {userRequest,
+    userQuery,
     userSchema} from './ExampleSchemas'
 import {GraphQLError} from 'graphql'
 import {generateGetParamsFromGraphQLRequestInfo} from './TestHelpers'
@@ -24,11 +25,19 @@ afterAll(async () => {
 })
 
 test('Should get default response from GraphQL server', async () => {
-    const response = await fetch(`http://localhost:${graphQLServerPort}/graphql`, {method: 'POST', body: '{"query":"unknown"}', headers: {
+    const response = await fetch(`http://localhost:${graphQLServerPort}/graphql`, {method: 'POST', body: `{"query":"${userQuery}"}`, headers: {
         'Content-Type': 'application/json'
     }})
     const responseObject = await response.json()
     expect(responseObject.data.response).toBe('hello world')
+})
+
+test('Should get error response from GraphQL server if query does not match expected query format', async () => {
+    const response = await fetch(`http://localhost:${graphQLServerPort}/graphql`, {method: 'POST', body: '{"query":"unknown"}', headers: {
+        'Content-Type': 'application/json'
+    }})
+    const responseObject = await response.json()
+    expect(responseObject.errors[0].message).toBe('Syntax Error: Unexpected Name "unknown".')
 })
 
 test('Should get error response from GraphQL server if body does not contain query information', async () => {
@@ -127,7 +136,7 @@ test('Should get error response from GraphQL server when using urlencoded reques
 })
 
 test('Should get simple default response from GraphQL server for application graphql request', async () => {
-    const response = await fetch(`http://localhost:${graphQLServerPort}/graphql`, {method: 'POST', body: 'unknown', headers: {
+    const response = await fetch(`http://localhost:${graphQLServerPort}/graphql`, {method: 'POST', body: userQuery, headers: {
         'Content-Type': 'application/graphql'
     }})
     const responseObject = await response.json()
