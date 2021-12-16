@@ -64,6 +64,14 @@ test('Should get error response from GraphQL server if content type cannot be pr
     expect(responseObject.errors[0].message).toBe( 'POST body contains invalid content type: application/specialapp.')
 })
 
+test('Should get error response from GraphQL server if a validation error occurrs ', async () => {
+    const response = await fetch(`http://localhost:${graphQLServerPort}/graphql`, {method: 'POST', body: '{"query":"query users{ users { userIdABC userName } }"}', headers: {
+        'Content-Type': 'application/json'
+    }})
+    const responseObject = await response.json()
+    expect(responseObject.errors[0].message).toBe( 'Cannot query field "userIdABC" on type "User". Did you mean "userId" or "userName"?')
+})
+
 test('Should get error response from GraphQL server if charset could not be processed', async () => {
     const response = await fetch(`http://localhost:${graphQLServerPort}/graphql`, {method: 'POST', body: '{"query":"unknown"}', headers: {
         'Content-Type': 'application/json; charset=utf-4711'

@@ -6,6 +6,7 @@ import {
     parse,
     ParseOptions,
     Source,
+    validate,
     validateSchema
 } from 'graphql'
 import {IncomingMessage,
@@ -15,6 +16,8 @@ import {GraphQLServerOptions} from './GraphQLServerOptions'
 import {TextLogger} from '../logger/TextLogger'
 import {GraphQLErrorWithStatusCode} from './GraphQLErrorWithStatusCode'
 import {GraphQLRequestInformationExtractor} from './GraphQLRequestInformationExtractor'
+import {ValidationRule} from 'graphql/validation/ValidationContext';
+import {TypeInfo} from 'graphql/utilities/TypeInfo';
 
 export type Request = IncomingMessage & { url: string,  body?: unknown }
 export type Response = ServerResponse & { json?: (data: unknown) => void }
@@ -37,6 +40,9 @@ export class GraphQLServer {
     private schemaValidationFunction: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError> = validateSchema
     private schemaValidationErrors: ReadonlyArray<GraphQLError> = []
     private parseFunction: (source: string | Source, options?: ParseOptions) => DocumentNode = parse
+    private validateSchemaFunction:
+        (schema: GraphQLSchema, documentAST: DocumentNode, rules?: ReadonlyArray<ValidationRule>, typeInfo?: TypeInfo, options?: { maxErrors?: number },)
+            => ReadonlyArray<GraphQLError>  = validate
 
     constructor(options?: GraphQLServerOptions) {
         this.setOptions(options)
@@ -49,6 +55,7 @@ export class GraphQLServer {
             this.requestInformationExtractor = options.requestInformationExtractor || defaultRequestInformationExtractor
             this.schemaValidationFunction = options.schemaValidationFunction || validateSchema
             this.parseFunction = options.parseFunction || parse
+            this.validateSchemaFunction = options.validateFunction || validate
             this.setSchema(options.schema)
         }
     }
@@ -122,6 +129,12 @@ export class GraphQLServer {
         this.logDebugIfEnabled(`Parsing query into document succeeded with document: ${JSON.stringify(documentAST)}`)
 
         // Validate document against schema (validate(schema, document, rules) function). Return 400 for errors
+        //TODO: Add typeInfo, rules option as parameters if they exists
+        const validationErrors = this.validateSchemaFunction(this.schema, documentAST)
+        if (validationErrors.length > 0) {
+            //TODO: Remove "Did you mean" logic from validation error responses
+            return this.sendValidationErrorResponse(request, response, validationErrors)
+        }
 
         // Reject request if get method is used for non-query(mutation) requests. Check with getOperationAST(document, operationName) function. Return 405 if thats the case
 
@@ -181,6 +194,13 @@ export class GraphQLServer {
     sendSyntaxErrorResponse(request: Request, response: Response, syntaxError: GraphQLError): void {
         return this.sendResponse(response,
             {errors: [syntaxError]},
+            400)
+    }
+
+    /** Sends a fitting response if a validation error response occurred during schema validation */
+    sendValidationErrorResponse(request: Request, response: Response, errors: readonly GraphQLError[]): void {
+        return this.sendResponse(response,
+            {errors: errors},
             400)
     }
 
