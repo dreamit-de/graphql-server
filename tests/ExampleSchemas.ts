@@ -1,40 +1,89 @@
-import {buildSchema,
-    GraphQLSchema} from 'graphql';
+import {
+    buildSchema,
+    GraphQLError,
+    GraphQLSchema
+} from 'graphql';
 import {GraphQLRequestInfo} from '../src/server/GraphQLServer';
 
-//Contains example schemas that can be used across tests
+//Contains example schemas and data that can be used across tests
+
+export interface User {
+    userId: string
+    userName: string
+}
+
+export interface LogoutResult {
+    result: string
+}
 
 export const initialSchemaWithOnlyDescription = new GraphQLSchema({description:'initial'})
-export const userQuery = 'query users{ users { userId userName } }'
-export const userRequest: GraphQLRequestInfo = {
-    query: userQuery,
+
+export const userOne: User = {userId: '1', userName:'UserOne'}
+export const userTwo: User = {userId: '2', userName:'UserTwo'}
+
+export const usersQuery = 'query users{ users { userId userName } }'
+export const returnErrorQuery = 'query returnError{ returnError { userId } }'
+export const loginMutation = 'mutation login{ login(userName:"magic_man", password:"123456") { jwt } }'
+export const logoutMutation = 'mutation logout{ logout { result } }'
+
+export const usersRequest: GraphQLRequestInfo = {
+    query: usersQuery,
     operationName: 'user',
     variables: {userId: '1'}
 }
-
-export const userRequestWithoutOperationName: GraphQLRequestInfo = {
-    query: userRequest.query,
-    variables: userRequest.variables
+export const loginRequest: GraphQLRequestInfo = {
+    query: loginMutation,
+    operationName: 'login'
 }
-
-export const userRequestWithoutVariables: GraphQLRequestInfo = {
-    query: userRequest.query,
-    operationName: userRequest.operationName
+export const usersRequestWithoutOperationName: GraphQLRequestInfo = {
+    query: usersRequest.query,
+    variables: usersRequest.variables
+}
+export const usersRequestWithoutVariables: GraphQLRequestInfo = {
+    query: usersRequest.query,
+    operationName: usersRequest.operationName
 }
 
 export const userSchema = buildSchema(`
   schema {
     query: Query
+    mutation: Mutation
   }
   
   type Query {
+    returnError: User 
     users: [User]
     user(id: String!): User
+  }
+  
+  type Mutation {
+    login(userName: String, password: String): LoginData
+    logout: LogoutResult
   }
   
   type User {
     userId: String
     userName: String
   }
+  
+  type LoginData {
+    jwt: String
+  }
+  
+  type LogoutResult {
+    result: String
+  }
 `)
+
+export const userSchemaResolvers= {
+    returnError(): User {
+        throw new GraphQLError('Something went wrong!')
+    },
+    users(): User[] {
+        return [userOne, userTwo]
+    },
+    logout(): LogoutResult {
+        return {result: 'Goodbye!'}
+    }
+};
 

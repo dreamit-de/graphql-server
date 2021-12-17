@@ -1,6 +1,8 @@
 import {
     DocumentNode,
+    execute,
     ExecutionResult,
+    getOperationAST,
     GraphQLError,
     GraphQLSchema,
     parse,
@@ -18,6 +20,11 @@ import {GraphQLErrorWithStatusCode} from './GraphQLErrorWithStatusCode'
 import {GraphQLRequestInformationExtractor} from './GraphQLRequestInformationExtractor'
 import {ValidationRule} from 'graphql/validation/ValidationContext';
 import {TypeInfo} from 'graphql/utilities/TypeInfo';
+import {OperationTypeNode} from 'graphql/language/ast';
+import {Maybe} from 'graphql/jsutils/Maybe';
+import {GraphQLFieldResolver,
+    GraphQLTypeResolver} from 'graphql/type/definition';
+import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue';
 
 export type Request = IncomingMessage & { url: string,  body?: unknown }
 export type Response = ServerResponse & { json?: (data: unknown) => void }
@@ -37,12 +44,24 @@ export class GraphQLServer {
     private debug = false
     private requestInformationExtractor = defaultRequestInformationExtractor
     private schema?: GraphQLSchema
+    private rootValue?: unknown
     private schemaValidationFunction: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError> = validateSchema
     private schemaValidationErrors: ReadonlyArray<GraphQLError> = []
     private parseFunction: (source: string | Source, options?: ParseOptions) => DocumentNode = parse
     private validateSchemaFunction:
-        (schema: GraphQLSchema, documentAST: DocumentNode, rules?: ReadonlyArray<ValidationRule>, typeInfo?: TypeInfo, options?: { maxErrors?: number },)
-            => ReadonlyArray<GraphQLError>  = validate
+        (schema: GraphQLSchema,
+         documentAST: DocumentNode,
+         rules?: ReadonlyArray<ValidationRule>,
+         typeInfo?: TypeInfo,
+         options?: { maxErrors?: number },) => ReadonlyArray<GraphQLError>  = validate
+    private executeFunction: (schema: GraphQLSchema,
+                              document: DocumentNode,
+                              rootValue?: unknown,
+                              contextValue?: unknown,
+                              variableValues?: Maybe<{ [key: string]: unknown }>,
+                              operationName?: Maybe<string>,
+                              fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>,
+                              typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>) => PromiseOrValue<ExecutionResult> = execute
 
     constructor(options?: GraphQLServerOptions) {
         this.setOptions(options)
@@ -56,6 +75,8 @@ export class GraphQLServer {
             this.schemaValidationFunction = options.schemaValidationFunction || validateSchema
             this.parseFunction = options.parseFunction || parse
             this.validateSchemaFunction = options.validateFunction || validate
+            this.executeFunction = options.executeFunction || execute
+            this.rootValue = options.rootValue
             this.setSchema(options.schema)
         }
     }
@@ -137,20 +158,27 @@ export class GraphQLServer {
         }
 
         // Reject request if get method is used for non-query(mutation) requests. Check with getOperationAST(document, operationName) function. Return 405 if thats the case
+        const operationAST = getOperationAST(documentAST, requestInformation.operationName)
+        if (request.method === 'GET' && operationAST && operationAST.operation !== 'query') {
+            return this.sendMutationNotAllowedForGetResponse(request, response, operationAST.operation)
+        }
 
         // Perform execution (execute(schema, document, variables, operationName, resolvers) function). Return 400 if errors are available
+        try {
+            const executionResult = await this.executeFunction(this.schema, documentAST, this.rootValue)
 
-        // Handle extensionFunction if one is provided
+            //TODO: Handle extensionFunction if one is provided
 
-        // Set status code to 500 if status is 200 and data is empty
+            //TODO: Set status code to 500 if status is 200 and data is empty
 
-        // Format errors if custom formatError functions is provided.
+            //TODO: Format errors if custom formatError functions is provided.
 
-
-        //Prepare example response
-        const exampleResponseData = {response:'hello world'}
-        this.logDebugIfEnabled(`Create response from data ${JSON.stringify(exampleResponseData)}`)
-        return this.sendResponse(response, {data: exampleResponseData})
+            //Return execution result
+            this.logDebugIfEnabled(`Create response from data ${JSON.stringify(executionResult)}`)
+            return this.sendResponse(response, executionResult)
+        } catch (e) {
+            return this.sendGraphQLExecutionErrorResponse(request, response, e as GraphQLError)
+        }
     }
 
     sendResponse(response: Response,
@@ -204,6 +232,21 @@ export class GraphQLServer {
             400)
     }
 
+    /** Sends a fitting response if a mutation is requested in a GET request */
+    sendMutationNotAllowedForGetResponse(request: Request, response: Response, operation: OperationTypeNode): void {
+        return this.sendResponse(response,
+            {errors: [new GraphQLError(`Operation ${operation} is only allowed in POST requests`)]},
+            405,
+            {Allow: 'POST'})
+    }
+
+    /** Sends a fitting response if a syntax error occurred during document parsing */
+    sendGraphQLExecutionErrorResponse(request: Request, response: Response, error: GraphQLError): void {
+        return this.sendResponse(response,
+            {errors: [error]},
+            400)
+    }
+
     /** Sends an error response using information from an GraphQLErrorWithStatusCode error
      * @param {Request} request - The initial request
      * @param {Response} response - The response to send
@@ -214,6 +257,4 @@ export class GraphQLServer {
             {errors: [error.graphQLError]},
             error.statusCode)
     }
-
-
 }

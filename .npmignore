@@ -5,3 +5,6 @@
 /.github/
 jest.config.js
 tsconfig.json
+/src/
+/tests/
+/build/tests/
