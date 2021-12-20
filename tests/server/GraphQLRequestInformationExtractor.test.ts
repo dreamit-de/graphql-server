@@ -4,7 +4,7 @@ import {
     usersRequestWithoutVariables
 } from '../ExampleSchemas';
 import {generateGetParamsFromGraphQLRequestInfo} from '../TestHelpers';
-import {GraphQLRequestInformationExtractor} from '../../src/server/GraphQLRequestInformationExtractor';
+import {GraphQLRequestInformationExtractor} from '../../src';
 
 const requestInformationExtractor = new GraphQLRequestInformationExtractor()
 

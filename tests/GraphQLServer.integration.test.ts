@@ -2,7 +2,7 @@ import express, {Express} from 'express'
 import {Server} from 'http'
 import {GraphQLServer} from '../src/'
 import fetch from 'cross-fetch'
-import {JsonLogger} from '../src/logger/JsonLogger'
+import {JsonLogger} from '../src'
 import {
     usersRequest,
     usersQuery,
@@ -12,11 +12,13 @@ import {
     returnErrorQuery,
     userSchemaResolvers,
     userOne,
-    userTwo
+    userTwo,
+    userQuery,
+    userVariables
 } from './ExampleSchemas'
 import {GraphQLError} from 'graphql'
 import {generateGetParamsFromGraphQLRequestInfo} from './TestHelpers'
-import {GraphQLServerOptions} from '../src/server/GraphQLServerOptions';
+import {GraphQLServerOptions} from '../src';
 
 const graphQLServerPort = 3000
 const logger = new JsonLogger('test-logger', 'myTestService')
@@ -40,6 +42,14 @@ test('Should get data response', async () => {
     }})
     const responseObject = await response.json()
     expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
+})
+
+test('Should get data response for query with variables', async () => {
+    const response = await fetch(`http://localhost:${graphQLServerPort}/graphql`, {method: 'POST', body: `{"query":"${userQuery}", "variables":${userVariables}}`, headers: {
+        'Content-Type': 'application/json'
+    }})
+    const responseObject = await response.json()
+    expect(responseObject.data.user).toStrictEqual(userOne)
 })
 
 test('Should get data response when using a mutation', async () => {
@@ -176,6 +186,7 @@ test('Should get data response when using urlencoded request', async () => {
     }})
     const responseObject = await response.json()
     expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
+    //expect(responseObject.errors).toBe('Error')
 })
 
 test('Should get error response when using urlencoded request with no query provided', async () => {

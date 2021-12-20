@@ -20,14 +20,21 @@ export interface GraphQLServerOptions {
     readonly debug?: boolean
     requestInformationExtractor?: GraphQLRequestInformationExtractor
     schema?: GraphQLSchema | undefined
-    rootValue?: unknown | undefined
+
     schemaValidationFunction?: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError>
     parseFunction?: (source: string | Source, options?: ParseOptions) => DocumentNode
+    validationRules?: ReadonlyArray<ValidationRule>
+    validationTypeInfo?: TypeInfo
+    validationOptions?: { maxErrors?: number }
     validateFunction?: (schema: GraphQLSchema,
                         documentAST: DocumentNode,
                         rules?: ReadonlyArray<ValidationRule>,
                         typeInfo?: TypeInfo,
                         options?: { maxErrors?: number },) => ReadonlyArray<GraphQLError>
+    rootValue?: unknown | undefined
+    contextValue?: unknown
+    fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
+    typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
     executeFunction?: (schema: GraphQLSchema,
                        document: DocumentNode,
                        rootValue?: unknown,

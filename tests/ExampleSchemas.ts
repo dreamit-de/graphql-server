@@ -3,7 +3,7 @@ import {
     GraphQLError,
     GraphQLSchema
 } from 'graphql';
-import {GraphQLRequestInfo} from '../src/server/GraphQLServer';
+import {GraphQLRequestInfo} from '../src';
 
 //Contains example schemas and data that can be used across tests
 
@@ -21,6 +21,8 @@ export const initialSchemaWithOnlyDescription = new GraphQLSchema({description:'
 export const userOne: User = {userId: '1', userName:'UserOne'}
 export const userTwo: User = {userId: '2', userName:'UserTwo'}
 
+export const userQuery = 'query user($id201: String!){ user(id: $id201) { userId userName } }'
+export const userVariables = '{"id201":"1"}'
 export const usersQuery = 'query users{ users { userId userName } }'
 export const returnErrorQuery = 'query returnError{ returnError { userId } }'
 export const loginMutation = 'mutation login{ login(userName:"magic_man", password:"123456") { jwt } }'
@@ -28,8 +30,7 @@ export const logoutMutation = 'mutation logout{ logout { result } }'
 
 export const usersRequest: GraphQLRequestInfo = {
     query: usersQuery,
-    operationName: 'user',
-    variables: {userId: '1'}
+    operationName: 'users',
 }
 export const loginRequest: GraphQLRequestInfo = {
     query: loginMutation,
@@ -37,7 +38,6 @@ export const loginRequest: GraphQLRequestInfo = {
 }
 export const usersRequestWithoutOperationName: GraphQLRequestInfo = {
     query: usersRequest.query,
-    variables: usersRequest.variables
 }
 export const usersRequestWithoutVariables: GraphQLRequestInfo = {
     query: usersRequest.query,
@@ -81,6 +81,16 @@ export const userSchemaResolvers= {
     },
     users(): User[] {
         return [userOne, userTwo]
+    },
+    user(input: { id: string }): User {
+        switch (input.id) {
+        case '1':
+            return userOne
+        case '2':
+            return userTwo
+        default:
+            throw new GraphQLError(`User for userid=${input.id} was not found`)
+        }
     },
     logout(): LogoutResult {
         return {result: 'Goodbye!'}

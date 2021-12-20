@@ -1,4 +1,4 @@
-import {GraphQLRequestInfo} from '../src/server/GraphQLServer';
+import {GraphQLRequestInfo} from '../src';
 
 export function generateGetParamsFromGraphQLRequestInfo(requestInfo: GraphQLRequestInfo): string {
     let result=''
@@ -11,6 +11,5 @@ export function generateGetParamsFromGraphQLRequestInfo(requestInfo: GraphQLRequ
     if (requestInfo.variables) {
         result += `variables=${JSON.stringify(requestInfo.variables)}`
     }
-    console.log('result is ' , encodeURI(result))
     return encodeURI(result)
 }

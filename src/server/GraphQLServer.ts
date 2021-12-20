@@ -44,16 +44,22 @@ export class GraphQLServer {
     private debug = false
     private requestInformationExtractor = defaultRequestInformationExtractor
     private schema?: GraphQLSchema
-    private rootValue?: unknown
     private schemaValidationFunction: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError> = validateSchema
     private schemaValidationErrors: ReadonlyArray<GraphQLError> = []
     private parseFunction: (source: string | Source, options?: ParseOptions) => DocumentNode = parse
+    private validationRules?: ReadonlyArray<ValidationRule>
+    private validationTypeInfo?: TypeInfo
+    private validationOptions?: { maxErrors?: number }
     private validateSchemaFunction:
         (schema: GraphQLSchema,
          documentAST: DocumentNode,
          rules?: ReadonlyArray<ValidationRule>,
          typeInfo?: TypeInfo,
          options?: { maxErrors?: number },) => ReadonlyArray<GraphQLError>  = validate
+    private rootValue?: unknown
+    private contextValue?: unknown
+    private fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
+    private typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
     private executeFunction: (schema: GraphQLSchema,
                               document: DocumentNode,
                               rootValue?: unknown,
@@ -74,9 +80,15 @@ export class GraphQLServer {
             this.requestInformationExtractor = options.requestInformationExtractor || defaultRequestInformationExtractor
             this.schemaValidationFunction = options.schemaValidationFunction || validateSchema
             this.parseFunction = options.parseFunction || parse
+            this.validationRules = options.validationRules
+            this.validationTypeInfo = options.validationTypeInfo
+            this.validationOptions = options.validationOptions
             this.validateSchemaFunction = options.validateFunction || validate
-            this.executeFunction = options.executeFunction || execute
             this.rootValue = options.rootValue
+            this.contextValue = options.contextValue
+            this.fieldResolver = options.fieldResolver
+            this.typeResolver = options.typeResolver
+            this.executeFunction = options.executeFunction || execute
             this.setSchema(options.schema)
         }
     }
@@ -150,9 +162,9 @@ export class GraphQLServer {
         this.logDebugIfEnabled(`Parsing query into document succeeded with document: ${JSON.stringify(documentAST)}`)
 
         // Validate document against schema (validate(schema, document, rules) function). Return 400 for errors
-        //TODO: Add typeInfo, rules option as parameters if they exists
-        const validationErrors = this.validateSchemaFunction(this.schema, documentAST)
+        const validationErrors = this.validateSchemaFunction(this.schema, documentAST, this.validationRules, this.validationTypeInfo, this.validationOptions)
         if (validationErrors.length > 0) {
+            this.logDebugIfEnabled(`One or more validation errors occurred: ${JSON.stringify(validationErrors)}`)
             //TODO: Remove "Did you mean" logic from validation error responses
             return this.sendValidationErrorResponse(request, response, validationErrors)
         }
@@ -165,7 +177,7 @@ export class GraphQLServer {
 
         // Perform execution (execute(schema, document, variables, operationName, resolvers) function). Return 400 if errors are available
         try {
-            const executionResult = await this.executeFunction(this.schema, documentAST, this.rootValue)
+            const executionResult = await this.executeFunction(this.schema, documentAST, this.rootValue, this.contextValue || request, requestInformation.variables, requestInformation.operationName, this.fieldResolver, this.typeResolver)
 
             //TODO: Handle extensionFunction if one is provided
 
@@ -177,6 +189,7 @@ export class GraphQLServer {
             this.logDebugIfEnabled(`Create response from data ${JSON.stringify(executionResult)}`)
             return this.sendResponse(response, executionResult)
         } catch (e) {
+            this.logDebugIfEnabled(`A GraphQL execution error occurred: ${JSON.stringify(e)}`)
             return this.sendGraphQLExecutionErrorResponse(request, response, e as GraphQLError)
         }
     }
