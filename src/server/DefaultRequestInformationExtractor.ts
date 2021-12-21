@@ -10,12 +10,12 @@ import getStream,
 import zlib,
 {Gunzip,
     Inflate} from 'zlib';
+import {RequestInformationExtractor} from './RequestInformationExtractor';
 
 /**
- * Extracts information for handling GraphQL requests (query, operationName and/or variables)
- * from request url parameters or body
+ * Default implementation of RequestInformationExtractor interface
  */
-export class GraphQLRequestInformationExtractor {
+export class DefaultRequestInformationExtractor implements RequestInformationExtractor {
 
     async extractInformationFromRequest(request: Request): Promise<GraphQLRequestInfo> {
         const extractedURLParameters = this.extractInformationFromUrlParameters(request.url)

@@ -17,7 +17,7 @@ import {Logger} from '../logger/Logger'
 import {GraphQLServerOptions} from './GraphQLServerOptions'
 import {TextLogger} from '../logger/TextLogger'
 import {GraphQLErrorWithStatusCode} from './GraphQLErrorWithStatusCode'
-import {GraphQLRequestInformationExtractor} from './GraphQLRequestInformationExtractor'
+import {DefaultRequestInformationExtractor} from './DefaultRequestInformationExtractor'
 import {ValidationRule} from 'graphql/validation/ValidationContext';
 import {TypeInfo} from 'graphql/utilities/TypeInfo';
 import {OperationTypeNode} from 'graphql/language/ast';
@@ -25,6 +25,7 @@ import {Maybe} from 'graphql/jsutils/Maybe';
 import {GraphQLFieldResolver,
     GraphQLTypeResolver} from 'graphql/type/definition';
 import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue';
+import {RequestInformationExtractor} from './RequestInformationExtractor';
 
 export type Request = IncomingMessage & { url: string,  body?: unknown }
 export type Response = ServerResponse & { json?: (data: unknown) => void }
@@ -37,12 +38,14 @@ export interface GraphQLRequestInfo {
 }
 
 const fallbackTextLogger = new TextLogger('fallback-logger', 'fallback-service')
-const defaultRequestInformationExtractor = new GraphQLRequestInformationExtractor()
+const defaultRequestInformationExtractor = new DefaultRequestInformationExtractor()
+const recommendationText = 'Did you mean'
 
 export class GraphQLServer {
     private logger: Logger = fallbackTextLogger
-    private debug = false
-    private requestInformationExtractor = defaultRequestInformationExtractor
+    private requestInformationExtractor: RequestInformationExtractor = defaultRequestInformationExtractor
+    //Enables additional debug output if set to true. Recommendation: Set to false for production environments
+    private debug?: boolean
     private schema?: GraphQLSchema
     private schemaValidationFunction: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError> = validateSchema
     private schemaValidationErrors: ReadonlyArray<GraphQLError> = []
@@ -50,6 +53,13 @@ export class GraphQLServer {
     private validationRules?: ReadonlyArray<ValidationRule>
     private validationTypeInfo?: TypeInfo
     private validationOptions?: { maxErrors?: number }
+    /*
+    * Removes validation recommendations like "users not found. Did you mean user?". For non-production environments
+    * it is usually safe to allow recommendations. For production environments when not providing access to third-party
+    * users it is considered good practice to remove these recommendations so users can not circumvent disabled
+    * introspection request by using recommendations to explore the schema.
+     */
+    private removeValidationRecommendations?: boolean
     private validateSchemaFunction:
         (schema: GraphQLSchema,
          documentAST: DocumentNode,
@@ -76,13 +86,15 @@ export class GraphQLServer {
     setOptions(options?: GraphQLServerOptions): void {
         if (options) {
             this.logger = options.logger || fallbackTextLogger
-            this.debug = options.debug || false
+            this.debug = options.debug  === undefined ? false : options.debug
             this.requestInformationExtractor = options.requestInformationExtractor || defaultRequestInformationExtractor
             this.schemaValidationFunction = options.schemaValidationFunction || validateSchema
             this.parseFunction = options.parseFunction || parse
             this.validationRules = options.validationRules
             this.validationTypeInfo = options.validationTypeInfo
             this.validationOptions = options.validationOptions
+            this.removeValidationRecommendations = options.removeValidationRecommendations === undefined ? true : options.removeValidationRecommendations
+            this.logger.info(`options.removeValidationRecommendations is ${options.removeValidationRecommendations === undefined ? 'undefined' : options.removeValidationRecommendations}`)
             this.validateSchemaFunction = options.validateFunction || validate
             this.rootValue = options.rootValue
             this.contextValue = options.contextValue
@@ -165,8 +177,7 @@ export class GraphQLServer {
         const validationErrors = this.validateSchemaFunction(this.schema, documentAST, this.validationRules, this.validationTypeInfo, this.validationOptions)
         if (validationErrors.length > 0) {
             this.logDebugIfEnabled(`One or more validation errors occurred: ${JSON.stringify(validationErrors)}`)
-            //TODO: Remove "Did you mean" logic from validation error responses
-            return this.sendValidationErrorResponse(request, response, validationErrors)
+            return this.sendValidationErrorResponse(request, response, this.removeValidationRecommendationsFromErrors(validationErrors))
         }
 
         // Reject request if get method is used for non-query(mutation) requests. Check with getOperationAST(document, operationName) function. Return 405 if thats the case
@@ -269,5 +280,20 @@ export class GraphQLServer {
         return this.sendResponse(response,
             {errors: [error.graphQLError]},
             error.statusCode)
+    }
+
+    // Removes validation recommendations matching the defined recommendation text
+    removeValidationRecommendationsFromErrors(validationErrors: ReadonlyArray<GraphQLError>): ReadonlyArray<GraphQLError> {
+        if (!this.removeValidationRecommendations) {
+            return validationErrors
+        } else {
+            for (const validationError of validationErrors) {
+                if (validationError.message.includes(recommendationText)) {
+                    validationError.message = validationError.message.substring(0,
+                        validationError.message.indexOf(recommendationText))
+                }
+            }
+            return validationErrors
+        }
     }
 }

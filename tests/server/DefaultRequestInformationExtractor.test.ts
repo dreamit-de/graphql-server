@@ -4,9 +4,9 @@ import {
     usersRequestWithoutVariables
 } from '../ExampleSchemas';
 import {generateGetParamsFromGraphQLRequestInfo} from '../TestHelpers';
-import {GraphQLRequestInformationExtractor} from '../../src';
+import {DefaultRequestInformationExtractor} from '../../src';
 
-const requestInformationExtractor = new GraphQLRequestInformationExtractor()
+const requestInformationExtractor = new DefaultRequestInformationExtractor()
 
 describe('Test that request information is extracted correctly from url parameters', () => {
     test.each`

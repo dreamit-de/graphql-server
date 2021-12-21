@@ -7,7 +7,7 @@ import {
     ParseOptions,
     Source
 } from 'graphql';
-import {GraphQLRequestInformationExtractor} from './GraphQLRequestInformationExtractor';
+import {RequestInformationExtractor} from './RequestInformationExtractor';
 import {ValidationRule} from 'graphql/validation/ValidationContext';
 import {TypeInfo} from 'graphql/utilities/TypeInfo';
 import {Maybe} from 'graphql/jsutils/Maybe';
@@ -18,24 +18,24 @@ import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue';
 export interface GraphQLServerOptions {
     readonly logger?: Logger
     readonly debug?: boolean
-    requestInformationExtractor?: GraphQLRequestInformationExtractor
-    schema?: GraphQLSchema | undefined
-
-    schemaValidationFunction?: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError>
-    parseFunction?: (source: string | Source, options?: ParseOptions) => DocumentNode
-    validationRules?: ReadonlyArray<ValidationRule>
-    validationTypeInfo?: TypeInfo
-    validationOptions?: { maxErrors?: number }
-    validateFunction?: (schema: GraphQLSchema,
+    readonly requestInformationExtractor?: RequestInformationExtractor
+    readonly schema?: GraphQLSchema | undefined
+    readonly schemaValidationFunction?: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError>
+    readonly  parseFunction?: (source: string | Source, options?: ParseOptions) => DocumentNode
+    readonly validationRules?: ReadonlyArray<ValidationRule>
+    readonly validationTypeInfo?: TypeInfo
+    readonly validationOptions?: { maxErrors?: number }
+    readonly removeValidationRecommendations?: boolean
+    readonly validateFunction?: (schema: GraphQLSchema,
                         documentAST: DocumentNode,
                         rules?: ReadonlyArray<ValidationRule>,
                         typeInfo?: TypeInfo,
                         options?: { maxErrors?: number },) => ReadonlyArray<GraphQLError>
-    rootValue?: unknown | undefined
-    contextValue?: unknown
-    fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
-    typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
-    executeFunction?: (schema: GraphQLSchema,
+    readonly rootValue?: unknown | undefined
+    readonly contextValue?: unknown
+    readonly fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
+    readonly typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
+    readonly executeFunction?: (schema: GraphQLSchema,
                        document: DocumentNode,
                        rootValue?: unknown,
                        contextValue?: unknown,

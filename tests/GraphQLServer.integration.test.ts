@@ -92,12 +92,22 @@ test('Should get error response if content type cannot be processed', async () =
     expect(responseObject.errors[0].message).toBe( 'POST body contains invalid content type: application/specialapp.')
 })
 
-test('Should get error response if a validation error occurrs ', async () => {
+test('Should get filtered error response if a validation error occurs ', async () => {
+    const response = await fetch(`http://localhost:${graphQLServerPort}/graphql`, {method: 'POST', body: '{"query":"query users{ users { userIdABC userName } }"}', headers: {
+        'Content-Type': 'application/json'
+    }})
+    const responseObject = await response.json()
+    expect(responseObject.errors[0].message).toBe( 'Cannot query field "userIdABC" on type "User". ')
+})
+
+test('Should get unfiltered error response if a validation error occurs and removeValidationRecommendations is enabled', async () => {
+    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: logger, debug: true, removeValidationRecommendations: false  })
     const response = await fetch(`http://localhost:${graphQLServerPort}/graphql`, {method: 'POST', body: '{"query":"query users{ users { userIdABC userName } }"}', headers: {
         'Content-Type': 'application/json'
     }})
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe( 'Cannot query field "userIdABC" on type "User". Did you mean "userId" or "userName"?')
+    customGraphQLServer.setOptions(initialGraphQLServerOptions)
 })
 
 test('Should get error response if charset could not be processed', async () => {
