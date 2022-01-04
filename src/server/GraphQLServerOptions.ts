@@ -14,12 +14,17 @@ import {Maybe} from 'graphql/jsutils/Maybe';
 import {GraphQLFieldResolver,
     GraphQLTypeResolver} from 'graphql/type/definition';
 import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue';
+import {GraphQLRequestInfo,
+    MaybePromise,
+    Request} from './GraphQLServer';
+import {GraphQLFormattedError} from 'graphql/error/formatError';
 
 export interface GraphQLServerOptions {
     readonly logger?: Logger
     readonly debug?: boolean
     readonly requestInformationExtractor?: RequestInformationExtractor
     readonly schema?: GraphQLSchema | undefined
+    readonly formatErrorFunction?: (error: GraphQLError) => GraphQLFormattedError
     readonly schemaValidationFunction?: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError>
     readonly  parseFunction?: (source: string | Source, options?: ParseOptions) => DocumentNode
     readonly validationRules?: ReadonlyArray<ValidationRule>
@@ -43,4 +48,5 @@ export interface GraphQLServerOptions {
                        operationName?: Maybe<string>,
                        fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>,
                        typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>) => PromiseOrValue<ExecutionResult>
+    readonly extensionFunction?: (request: Request, requestInformation: GraphQLRequestInfo, executionResult: ExecutionResult) => MaybePromise<undefined | { [key: string]: unknown }>
 }

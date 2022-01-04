@@ -25,7 +25,15 @@ const logger = new JsonLogger('test-logger', 'myTestService')
 const initialGraphQLServerOptions: GraphQLServerOptions = {schema: userSchema, rootValue: userSchemaResolvers, logger: logger, debug: true}
 let customGraphQLServer: GraphQLServer
 let graphQLServer: Server
+const extensionTestData : Record<string, string> = {
+    'hello': 'world'
+}
 
+function testFormatErrorFunction(error: GraphQLError) {
+    console.log('testFormatErrorFunction', error)
+    error.message = 'Formatted: ' + error.message
+    return error
+}
 
 beforeAll(async () => {
     graphQLServer = setupGraphQLServer().listen({port: graphQLServerPort})
@@ -42,6 +50,7 @@ test('Should get data response', async () => {
     }})
     const responseObject = await response.json()
     expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
+    expect(responseObject.extensions).toBe(undefined)
 })
 
 test('Should get data response for query with variables', async () => {
@@ -172,6 +181,17 @@ test('Should get error response if resolver returns GraphQL error', async () => 
     expect(responseObject.errors[0].message).toBe('Something went wrong!')
 })
 
+
+test('Should get error response with formatted error results if resolver returns GraphQL error and formatError function is defined', async () => {
+    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: logger, debug: true, formatErrorFunction: testFormatErrorFunction})
+    const response = await fetch(`http://localhost:${graphQLServerPort}/graphql`, {method: 'POST', body: `{"query":"${returnErrorQuery}"}`, headers: {
+        'Content-Type': 'application/json'
+    }})
+    const responseObject = await response.json()
+    expect(responseObject.errors[0].message).toBe('Formatted: Something went wrong!')
+    customGraphQLServer.setOptions(initialGraphQLServerOptions)
+})
+
 test('Should get data response when using GET request', async () => {
     const response = await fetch(`http://localhost:${graphQLServerPort}/graphql?${generateGetParamsFromGraphQLRequestInfo(usersRequest)}`)
     const responseObject = await response.json()
@@ -196,7 +216,6 @@ test('Should get data response when using urlencoded request', async () => {
     }})
     const responseObject = await response.json()
     expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
-    //expect(responseObject.errors).toBe('Error')
 })
 
 test('Should get error response when using urlencoded request with no query provided', async () => {
@@ -217,7 +236,7 @@ test('Should get data response for application graphql request', async () => {
 
 test('Should get error response if invalid schema is used', async () => {
     //Change options to use schema validation function that always returns a validation error
-    customGraphQLServer.setOptions({schema: userSchema, logger: logger, debug: true, schemaValidationFunction: () => [new GraphQLError('Schema is not valid!')] })
+    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: logger, debug: true, schemaValidationFunction: () => [new GraphQLError('Schema is not valid!')] })
     const response = await fetch(`http://localhost:${graphQLServerPort}/graphql`, {method: 'POST', body: 'doesnotmatter'})
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe('Request cannot be processed. Schema in GraphQL server is invalid.')
@@ -230,6 +249,17 @@ test('Should get error response if invalid method is used', async () => {
     expect(responseObject.errors[0].message).toBe('GraphQL server only supports GET and POST requests.')
     const allowResponseHeader = response.headers.get('Allow')
     expect(allowResponseHeader).toBe('GET, POST')
+})
+
+test('Should get extensions in GraphQL response if extension function is defined ', async () => {
+    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: logger, debug: true, removeValidationRecommendations: true, extensionFunction: () => extensionTestData  })
+    const response = await fetch(`http://localhost:${graphQLServerPort}/graphql`, {method: 'POST', body: `{"query":"${usersQuery}"}`, headers: {
+        'Content-Type': 'application/json'
+    }})
+    const responseObject = await response.json()
+    expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
+    expect(responseObject.extensions).toStrictEqual(extensionTestData)
+    customGraphQLServer.setOptions(initialGraphQLServerOptions)
 })
 
 function setupGraphQLServer(): Express {

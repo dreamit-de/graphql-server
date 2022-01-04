@@ -2,6 +2,7 @@ import {
     DocumentNode,
     execute,
     ExecutionResult,
+    formatError,
     getOperationAST,
     GraphQLError,
     GraphQLSchema,
@@ -26,9 +27,11 @@ import {GraphQLFieldResolver,
     GraphQLTypeResolver} from 'graphql/type/definition';
 import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue';
 import {RequestInformationExtractor} from './RequestInformationExtractor';
+import {GraphQLFormattedError} from 'graphql/error/formatError';
 
 export type Request = IncomingMessage & { url: string,  body?: unknown }
 export type Response = ServerResponse & { json?: (data: unknown) => void }
+export type MaybePromise<T> = Promise<T> | T;
 
 export interface GraphQLRequestInfo {
     query?: string
@@ -47,6 +50,7 @@ export class GraphQLServer {
     //Enables additional debug output if set to true. Recommendation: Set to false for production environments
     private debug?: boolean
     private schema?: GraphQLSchema
+    private formatErrorFunction: (error: GraphQLError) => GraphQLFormattedError = formatError
     private schemaValidationFunction: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError> = validateSchema
     private schemaValidationErrors: ReadonlyArray<GraphQLError> = []
     private parseFunction: (source: string | Source, options?: ParseOptions) => DocumentNode = parse
@@ -78,6 +82,7 @@ export class GraphQLServer {
                               operationName?: Maybe<string>,
                               fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>,
                               typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>) => PromiseOrValue<ExecutionResult> = execute
+    private extensionFunction: (request: Request, requestInformation: GraphQLRequestInfo, executionResult: ExecutionResult) => MaybePromise<undefined | { [key: string]: unknown }> = this.defaultExtensions
 
     constructor(options?: GraphQLServerOptions) {
         this.setOptions(options)
@@ -88,6 +93,7 @@ export class GraphQLServer {
             this.logger = options.logger || fallbackTextLogger
             this.debug = options.debug  === undefined ? false : options.debug
             this.requestInformationExtractor = options.requestInformationExtractor || defaultRequestInformationExtractor
+            this.formatErrorFunction = options.formatErrorFunction || formatError
             this.schemaValidationFunction = options.schemaValidationFunction || validateSchema
             this.parseFunction = options.parseFunction || parse
             this.validationRules = options.validationRules
@@ -101,6 +107,7 @@ export class GraphQLServer {
             this.fieldResolver = options.fieldResolver
             this.typeResolver = options.typeResolver
             this.executeFunction = options.executeFunction || execute
+            this.extensionFunction = options.extensionFunction || this.defaultExtensions
             this.setSchema(options.schema)
         }
     }
@@ -190,9 +197,10 @@ export class GraphQLServer {
         try {
             const executionResult = await this.executeFunction(this.schema, documentAST, this.rootValue, this.contextValue || request, requestInformation.variables, requestInformation.operationName, this.fieldResolver, this.typeResolver)
 
-            //TODO: Handle extensionFunction if one is provided
-
-            //TODO: Set status code to 500 if status is 200 and data is empty
+            const extensionsResult = this.extensionFunction(request, requestInformation, executionResult)
+            if (extensionsResult) {
+                executionResult.extensions = extensionsResult
+            }
 
             //TODO: Format errors if custom formatError functions is provided.
 
@@ -219,6 +227,11 @@ export class GraphQLServer {
                 response.setHeader(key, String(value))
             }
         }
+        //Format errors if error function is provided
+        if (executionResult.errors) {
+            executionResult.errors.map(this.formatErrorFunction)
+        }
+
         response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))
     }
 
@@ -295,5 +308,10 @@ export class GraphQLServer {
             }
             return validationErrors
         }
+    }
+
+    private defaultExtensions(request: Request, requestInfo: GraphQLRequestInfo, executionResult: ExecutionResult) {
+        this.logger.info(`Calling defaultExtensions for request ${request}, requestInfo ${JSON.stringify(requestInfo)} and executionResult ${JSON.stringify(executionResult)}`)
+        return undefined;
     }
 }
