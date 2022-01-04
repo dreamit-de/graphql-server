@@ -26,7 +26,7 @@ export interface GraphQLServerOptions {
     readonly schema?: GraphQLSchema | undefined
     readonly formatErrorFunction?: (error: GraphQLError) => GraphQLFormattedError
     readonly schemaValidationFunction?: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError>
-    readonly  parseFunction?: (source: string | Source, options?: ParseOptions) => DocumentNode
+    readonly parseFunction?: (source: string | Source, options?: ParseOptions) => DocumentNode
     readonly validationRules?: ReadonlyArray<ValidationRule>
     readonly validationTypeInfo?: TypeInfo
     readonly validationOptions?: { maxErrors?: number }

@@ -19,19 +19,19 @@ import {GraphQLServerOptions} from './GraphQLServerOptions'
 import {TextLogger} from '../logger/TextLogger'
 import {GraphQLErrorWithStatusCode} from './GraphQLErrorWithStatusCode'
 import {DefaultRequestInformationExtractor} from './DefaultRequestInformationExtractor'
-import {ValidationRule} from 'graphql/validation/ValidationContext';
-import {TypeInfo} from 'graphql/utilities/TypeInfo';
-import {OperationTypeNode} from 'graphql/language/ast';
-import {Maybe} from 'graphql/jsutils/Maybe';
+import {ValidationRule} from 'graphql/validation/ValidationContext'
+import {TypeInfo} from 'graphql/utilities/TypeInfo'
+import {OperationTypeNode} from 'graphql/language/ast'
+import {Maybe} from 'graphql/jsutils/Maybe'
 import {GraphQLFieldResolver,
-    GraphQLTypeResolver} from 'graphql/type/definition';
-import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue';
-import {RequestInformationExtractor} from './RequestInformationExtractor';
-import {GraphQLFormattedError} from 'graphql/error/formatError';
+    GraphQLTypeResolver} from 'graphql/type/definition'
+import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue'
+import {RequestInformationExtractor} from './RequestInformationExtractor'
+import {GraphQLFormattedError} from 'graphql/error/formatError'
 
 export type Request = IncomingMessage & { url: string,  body?: unknown }
 export type Response = ServerResponse & { json?: (data: unknown) => void }
-export type MaybePromise<T> = Promise<T> | T;
+export type MaybePromise<T> = Promise<T> | T
 
 export interface GraphQLRequestInfo {
     query?: string
@@ -100,7 +100,6 @@ export class GraphQLServer {
             this.validationTypeInfo = options.validationTypeInfo
             this.validationOptions = options.validationOptions
             this.removeValidationRecommendations = options.removeValidationRecommendations === undefined ? true : options.removeValidationRecommendations
-            this.logger.info(`options.removeValidationRecommendations is ${options.removeValidationRecommendations === undefined ? 'undefined' : options.removeValidationRecommendations}`)
             this.validateSchemaFunction = options.validateFunction || validate
             this.rootValue = options.rootValue
             this.contextValue = options.contextValue
@@ -117,7 +116,7 @@ export class GraphQLServer {
     }
 
     setSchema(schema?: GraphQLSchema): void {
-        this.logger.info('Trying to update graphql schema')
+        this.logger.info('Trying to set graphql schema')
         this.logDebugIfEnabled(`Schema is  ${JSON.stringify(schema)}`)
         if (this.shouldUpdateSchema(schema)) {
             this.schema = schema
@@ -164,7 +163,7 @@ export class GraphQLServer {
 
         // Extract graphql request information (query, variables, operationName) from request
         const requestInformation = await this.requestInformationExtractor.extractInformationFromRequest(request)
-        this.logger.info(`Request information is ${JSON.stringify(requestInformation)}`)
+        this.logDebugIfEnabled(`Extracted request information is ${JSON.stringify(requestInformation)}`)
         if (!requestInformation.query && requestInformation.error) {
             return this.sendGraphQLErrorWithStatusCodeResponse(request, response, requestInformation.error)
         } else if (!requestInformation.query) {  // Reject request if no query parameter is provided
@@ -201,9 +200,6 @@ export class GraphQLServer {
             if (extensionsResult) {
                 executionResult.extensions = extensionsResult
             }
-
-            //TODO: Format errors if custom formatError functions is provided.
-
             //Return execution result
             this.logDebugIfEnabled(`Create response from data ${JSON.stringify(executionResult)}`)
             return this.sendResponse(response, executionResult)
@@ -227,7 +223,7 @@ export class GraphQLServer {
                 response.setHeader(key, String(value))
             }
         }
-        //Format errors if error function is provided
+        //Format errors if errors exist in execution results
         if (executionResult.errors) {
             executionResult.errors.map(this.formatErrorFunction)
         }
@@ -310,8 +306,14 @@ export class GraphQLServer {
         }
     }
 
-    private defaultExtensions(request: Request, requestInfo: GraphQLRequestInfo, executionResult: ExecutionResult) {
-        this.logger.info(`Calling defaultExtensions for request ${request}, requestInfo ${JSON.stringify(requestInfo)} and executionResult ${JSON.stringify(executionResult)}`)
-        return undefined;
+    /** Default extension function that can be used to . Can be set in options.
+     * @param {Request} request - The initial request
+     * @param {GraphQLRequestInfo} requestInfo - The extracted requestInfo
+     * @param {ExecutionResult} executionResult - The executionResult created by execute function
+     * @returns {MaybePromise<undefined | { [key: string]: unknown }>} A key-value map to be added as extensions in response
+     */
+    private defaultExtensions(request: Request, requestInfo: GraphQLRequestInfo, executionResult: ExecutionResult): MaybePromise<undefined | { [key: string]: unknown }> {
+        this.logDebugIfEnabled(`Calling defaultExtensions for request ${request}, requestInfo ${JSON.stringify(requestInfo)} and executionResult ${JSON.stringify(executionResult)}`)
+        return undefined
     }
 }

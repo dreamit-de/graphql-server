@@ -30,7 +30,6 @@ const extensionTestData : Record<string, string> = {
 }
 
 function testFormatErrorFunction(error: GraphQLError) {
-    console.log('testFormatErrorFunction', error)
     error.message = 'Formatted: ' + error.message
     return error
 }
