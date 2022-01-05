@@ -27,6 +27,7 @@ export const usersQuery = 'query users{ users { userId userName } }'
 export const returnErrorQuery = 'query returnError{ returnError { userId } }'
 export const loginMutation = 'mutation login{ login(userName:"magic_man", password:"123456") { jwt } }'
 export const logoutMutation = 'mutation logout{ logout { result } }'
+export const introspectionQuery = 'query introspection{ __schema { queryType { name } } }'
 
 export const usersRequest: GraphQLRequestInfo = {
     query: usersQuery,

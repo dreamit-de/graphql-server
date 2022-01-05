@@ -11,11 +11,19 @@ npm install --save @dreamit/graphql-server
 
 TypeScript declarations are provided within the project.
 
+## Features
+
+- Creates GraphQL responses for GraphQL requests
+- Can be use with many fitting webservers that provide a matching `Request` and `Response` object
+  (e.g. ExpressJS).
+- Uses out-of-the-box default options to ease use and keep code short
+- Provides hot reloading for schema and options
+- Uses and is compatible to `graphql` core library version 14 and 15.
+
 ## Usage
 
 You can create a new instance of `GraphQLServer` with the options necessary for your tasks. The `handleRequest` function of 
-the `GraphQLServer` can be integrated with many fitting webservers that provide a matching `Request` and `Response` object
-(e.g. ExpressJS).
+the `GraphQLServer` can be integrated with many fitting webservers.
 
 ```typescript
 const graphQLServerPort = 3592
@@ -33,7 +41,31 @@ so the request won't be rejected because of a missing/invalid schema. When using
 recommended to provide a `rootValue` to return a fitting value. Examples for these requests can be found in the 
 integration test in the `GraphQLServer.integration.test.ts` class in the `tests` folder. 
 
-## Options
+## Disable introspection
+
+Introspection can be used to get information about the available schema. While this may be useful in development 
+environments and public APIs you should consider disabling it for production if e.g. your API is only used with a 
+specific matching frontend.
+
+Introspection can be disabled by adding the `NoSchemaIntrospectionCustomRule` from the `graphql` core library to the
+`validationRules` option.
+
+
+```typescript
+import {NoSchemaIntrospectionCustomRule} from 'graphql'
+
+const graphQLServerPort = 3592
+const graphQLServerExpress = express()
+const customGraphQLServer = new GraphQLServer({schema: someExampleSchema, validationRules: [NoSchemaIntrospectionCustomRule]})
+graphQLServerExpress.all('/graphql', (req, res) => {
+    return customGraphQLServer.handleRequest(req, res)
+})
+graphQLServerExpress.listen({port: graphQLServerPort})
+console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
+```
+
+
+## Available Options
 
 The `GraphQLServer` accepts the following options. Note that all options are optional and can be overwritten by 
 calling the `setOptions` function of the `GraphQLServer` instance.
