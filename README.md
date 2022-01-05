@@ -13,12 +13,13 @@ TypeScript declarations are provided within the project.
 
 ## Features
 
-- Creates GraphQL responses for GraphQL requests
-- Can be use with many fitting webservers that provide a matching `Request` and `Response` object
+- Creates GraphQL responses for (GraphQL) requests
+- Can be use with fitting webservers that provide a matching `Request` and `Response` object
   (e.g. ExpressJS).
 - Uses out-of-the-box default options to ease use and keep code short
 - Provides hot reloading for schema and options
-- Uses and is compatible to `graphql` core library version 14 and 15.
+- Provides out-of-the-box metrics for GraphQLServer
+- Uses and is compatible to `graphql-js` library version 14 and 15.
 
 ## Usage
 
@@ -47,9 +48,8 @@ Introspection can be used to get information about the available schema. While t
 environments and public APIs you should consider disabling it for production if e.g. your API is only used with a 
 specific matching frontend.
 
-Introspection can be disabled by adding the `NoSchemaIntrospectionCustomRule` from the `graphql` core library to the
+Introspection can be disabled by adding the `NoSchemaIntrospectionCustomRule` from the `graphql-js` library to the
 `validationRules` option.
-
 
 ```typescript
 import {NoSchemaIntrospectionCustomRule} from 'graphql'
@@ -64,6 +64,58 @@ graphQLServerExpress.listen({port: graphQLServerPort})
 console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 ```
 
+## Schema hot reload
+
+Hot reload of the GraphQL schema can be used to update the existing schema to a new version without restarting the 
+GraphQL server, webserver or whole application. When setting a new schema it will be used for the next incoming request
+while the old schema will be used for requests that are being processed at the moment. Hot reloading is especially 
+useful for remote schemas that are processed in another application like a webservice.
+
+The schema can be changed simply by calling `setSchema` in the `GraphQLServer` instance. In the example below a second 
+route is used to trigger a schema update.
+
+```typescript
+const graphQLServerPort = 3592
+const graphQLServerExpress = express()
+const customGraphQLServer = new GraphQLServer({schema: someExampleSchema})
+graphQLServerExpress.all('/graphql', (req, res) => {
+    return customGraphQLServer.handleRequest(req, res)
+})
+graphQLServerExpress.all('/updateme', (req, res) => {
+  const updatedSchema = someMagicHappened()
+  customGraphQLServer.setSchema(updatedSchema)
+  return res.status(200).send()
+})
+graphQLServerExpress.listen({port: graphQLServerPort})
+console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
+```
+
+## Metrics
+
+The implementation uses `prom-client` library to provide default NodeJS metrics as well as three custom metrics for the
+GraphQL server:
+- **graphql_server_availability**: Availability gauge with status 0 (unavailable) and 1 (available)
+- **graphql_server_request_throughput**: The number of incoming requests
+- **graphql_server_errors**: The number of errors that are encountered while running the GraphQLServer. The counter uses
+the *errorName* field as label so errors could be differentiated. Default label for schema validation errors is 
+"SchemaValidationError", "GraphQLError" for graphql errors and the error name if another type of error occurs.
+
+A simple metrics endpoint can be created by using `getMetricsContentType` and `getMetrics` functions from 
+the `GraphQLServer` instance. In the example below a second route is used to return metrics data.
+
+```typescript
+const graphQLServerPort = 3592
+const graphQLServerExpress = express()
+const customGraphQLServer = new GraphQLServer({schema: someExampleSchema})
+graphQLServerExpress.all('/graphql', (req, res) => {
+    return customGraphQLServer.handleRequest(req, res)
+})
+graphQLServerExpress.get('/metrics', async (req, res) => {
+  return res.contentType(customGraphQLServer.getMetricsContentType()).send(await customGraphQLServer.getMetrics());
+})
+graphQLServerExpress.listen({port: graphQLServerPort})
+console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
+```
 
 ## Available Options
 
@@ -79,13 +131,13 @@ calling the `setOptions` function of the `GraphQLServer` instance.
 - **`schema`**: The schema that is used to handle the request and send a response. If undefined the `GraphQLServer` will
 reject responses with a GraphQL error response with status code 500.
 - **`formatErrorFunction`**: Function that can be used to format occurring GraphQL errors. Given a `GraphQLError` it
-should return a `GraphQLFormattedError`. By default `formatError` from `graphql` core library is called.
+should return a `GraphQLFormattedError`. By default `formatError` from `graphql-js` library is called.
 - **`schemaValidationFunction`**: Function that is called when a schema is set or updated. Given a `GraphQLSchema` it
   can return a `ReadonlyArray<GraphQLError>` or an empty array if no errors occurred/should be returned. 
-By default `validateSchema` from `graphql` core library is called.
+By default `validateSchema` from `graphql-js` library is called.
 - **`parseFunction`**: Function that is called to create a `DocumentNode` with the extracted query in the 
 request information. Given a `source` and `ParseOptions` it should return a `DocumentNode`.
-    By default `parse` from `graphql` core library is called.
+    By default `parse` from `graphql-js` library is called.
 - **`validationRules`**: Validation rules that are used when `validateSchemaFunction` is called. Can be used e.g. to 
 check whether the request contains an introspection query that should be rejected.
 - **`validationTypeInfo`**: Validation type info that is used when `validateSchemaFunction` is called.
@@ -97,7 +149,7 @@ For production environments when not providing access to third-party users it is
 these recommendations so users can not circumvent disabled introspection request by using recommendations to explore 
 the schema.
 - **`validateFunction`**: Validation function that validates the extracted request against the available schema. 
-By default `validate` from `graphql` core library is called. 
+By default `validate` from `graphql-js` library is called. 
 
 
 ### Technical components
@@ -107,14 +159,24 @@ By default `validate` from `graphql` core library is called.
   and return a `Promise<GraphQLRequestInfo>`. By default, the `DefaultRequestInformationExtractor` is used that tries to
   extract the information from the body and URL params of the request. Own Extractor can be used by
   implementing `RequestInformationExtractor` interface.
+- **`metricsClient`**: The `MetricsClient` used to collect metrics from the GraphQLServer. By default, 
+the `DefaultMetricsClient` is used that collects default NodeJS and three custom metrics using `prom-client` library.
+Own MetricsClient can be used by implementing `MetricsClient` interface.
 
+## To be added as Options descriptions
 
-## To be added to options descriptions
+readonly shouldUpdateSchemaFunction?: (schema?: GraphQLSchema) => boolean
+
+readonly collectErrorMetricsFunction?: (error: GraphQLError, request?: Request) => void
 
 readonly rootValue?: unknown | undefined
+
 readonly contextValue?: unknown
+
 readonly fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
+
 readonly typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
+
 readonly executeFunction?: (schema: GraphQLSchema,
 document: DocumentNode,
 rootValue?: unknown,
@@ -123,4 +185,6 @@ variableValues?: Maybe<{ [key: string]: unknown }>,
 operationName?: Maybe<string>,
 fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>,
 typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>) => PromiseOrValue<ExecutionResult>
+
+
 readonly extensionFunction?: (request: Request, requestInformation: GraphQLRequestInfo, executionResult: ExecutionResult) => MaybePromise<undefined | { [key: string]: unknown }>

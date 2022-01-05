@@ -18,13 +18,17 @@ import {GraphQLRequestInfo,
     MaybePromise,
     Request} from './GraphQLServer';
 import {GraphQLFormattedError} from 'graphql/error/formatError';
+import {MetricsClient} from '../metrics/MetricsClient';
 
 export interface GraphQLServerOptions {
     readonly logger?: Logger
     readonly debug?: boolean
     readonly requestInformationExtractor?: RequestInformationExtractor
+    readonly metricsClient?: MetricsClient
     readonly schema?: GraphQLSchema | undefined
+    readonly shouldUpdateSchemaFunction?: (schema?: GraphQLSchema) => boolean
     readonly formatErrorFunction?: (error: GraphQLError) => GraphQLFormattedError
+    readonly collectErrorMetricsFunction?: (error: GraphQLError, request?: Request) => void
     readonly schemaValidationFunction?: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError>
     readonly parseFunction?: (source: string | Source, options?: ParseOptions) => DocumentNode
     readonly validationRules?: ReadonlyArray<ValidationRule>

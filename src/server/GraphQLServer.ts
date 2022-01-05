@@ -28,6 +28,8 @@ import {GraphQLFieldResolver,
 import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue'
 import {RequestInformationExtractor} from './RequestInformationExtractor'
 import {GraphQLFormattedError} from 'graphql/error/formatError'
+import {MetricsClient} from '../metrics/MetricsClient'
+import {DefaultMetricsClient} from '../metrics/DefaultMetricsClient'
 
 export type Request = IncomingMessage & { url: string,  body?: unknown }
 export type Response = ServerResponse & { json?: (data: unknown) => void }
@@ -42,15 +44,19 @@ export interface GraphQLRequestInfo {
 
 const fallbackTextLogger = new TextLogger('fallback-logger', 'fallback-service')
 const defaultRequestInformationExtractor = new DefaultRequestInformationExtractor()
+const defaultMetricsClient = new DefaultMetricsClient()
 const recommendationText = 'Did you mean'
 
 export class GraphQLServer {
     private logger: Logger = fallbackTextLogger
     private requestInformationExtractor: RequestInformationExtractor = defaultRequestInformationExtractor
+    private metricsClient: MetricsClient = defaultMetricsClient
     //Enables additional debug output if set to true. Recommendation: Set to false for production environments
     private debug?: boolean
     private schema?: GraphQLSchema
+    private shouldUpdateSchemaFunction: (schema?: GraphQLSchema) => boolean = this.defaultShouldUpdateSchema
     private formatErrorFunction: (error: GraphQLError) => GraphQLFormattedError = formatError
+    private collectErrorMetricsFunction: (error: GraphQLError, request?: Request) => void = this.defaultCollectErrorMetrics
     private schemaValidationFunction: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError> = validateSchema
     private schemaValidationErrors: ReadonlyArray<GraphQLError> = []
     private parseFunction: (source: string | Source, options?: ParseOptions) => DocumentNode = parse
@@ -93,7 +99,9 @@ export class GraphQLServer {
             this.logger = options.logger || fallbackTextLogger
             this.debug = options.debug  === undefined ? false : options.debug
             this.requestInformationExtractor = options.requestInformationExtractor || defaultRequestInformationExtractor
+            this.metricsClient = options.metricsClient || defaultMetricsClient
             this.formatErrorFunction = options.formatErrorFunction || formatError
+            this.collectErrorMetricsFunction = options.collectErrorMetricsFunction || this.defaultCollectErrorMetrics
             this.schemaValidationFunction = options.schemaValidationFunction || validateSchema
             this.parseFunction = options.parseFunction || parse
             this.validationRules = options.validationRules
@@ -107,6 +115,7 @@ export class GraphQLServer {
             this.typeResolver = options.typeResolver
             this.executeFunction = options.executeFunction || execute
             this.extensionFunction = options.extensionFunction || this.defaultExtensions
+            this.shouldUpdateSchemaFunction = options.shouldUpdateSchemaFunction || this.defaultShouldUpdateSchema
             this.setSchema(options.schema)
         }
     }
@@ -115,10 +124,14 @@ export class GraphQLServer {
         return this.schema
     }
 
+    isValidSchema(schema?: GraphQLSchema): boolean {
+        return schema ? this.schemaValidationErrors.length === 0 : false
+    }
+
     setSchema(schema?: GraphQLSchema): void {
         this.logger.info('Trying to set graphql schema')
         this.logDebugIfEnabled(`Schema is  ${JSON.stringify(schema)}`)
-        if (this.shouldUpdateSchema(schema)) {
+        if (this.shouldUpdateSchemaFunction(schema)) {
             this.schema = schema
             // Validate schema
             if (this.schema) {
@@ -127,19 +140,22 @@ export class GraphQLServer {
                     this.logger.warn('Schema validation failed with errors. Please check the GraphQL schema and fix potential issues.')
                     for(const error of this.schemaValidationErrors) {
                         this.logger.error('A schema validation error occurred: ', error)
+                        this.metricsClient.increaseErrors('SchemaValidationError')
                     }
                 }
             }
         } else {
             this.logger.warn('Schema update was rejected because condition set in "shouldUpdateSchema" check was not fulfilled.')
         }
+
+        this.metricsClient.setAvailability(this.isValidSchema(this.schema) ? 1 : 0)
     }
 
     /** Defines whether a schema update should be executed. Default behaviour: If schema is undefined return false.
      * @param {GraphQLSchema} schema - The new schema to use as updated schema.
      * @returns {boolean} True if schema should be updated, false if not
      */
-    shouldUpdateSchema(schema?: GraphQLSchema): boolean {
+    defaultShouldUpdateSchema(schema?: GraphQLSchema): boolean {
         return !!schema
     }
 
@@ -147,7 +163,20 @@ export class GraphQLServer {
         return this.schemaValidationErrors
     }
 
+    // Gets the Content-Type of the metrics for use in the response headers
+    getMetricsContentType(): string {
+        return this.metricsClient.getMetricsContentType()
+    }
+
+    // Gets the metrics for use in the response body.
+    async getMetrics(): Promise<string> {
+        return this.metricsClient.getMetrics()
+    }
+
     async handleRequest(request: Request, response: Response): Promise<void> {
+        //Increase request throughput
+        this.metricsClient.increaseRequestThroughput(request)
+
         // Reject requests that do not use GET and POST methods.
         if (request.method !== 'GET' && request.method !== 'POST') {
             return this.sendResponse(response,
@@ -157,8 +186,11 @@ export class GraphQLServer {
         }
 
         // Reject requests if schema is invalid
-        if (!this.schema || this.schemaValidationErrors.length > 0) {
+        if (!this.schema || !this.isValidSchema(this.schema)) {
+            this.metricsClient.setAvailability(0)
             return this.sendInvalidSchemaResponse(request, response)
+        } else {
+            this.metricsClient.setAvailability(1)
         }
 
         // Extract graphql request information (query, variables, operationName) from request
@@ -215,6 +247,12 @@ export class GraphQLServer {
         customHeaders: { [key: string]: string } = {} ): void {
 
         this.logDebugIfEnabled(`Preparing response with executionResult ${JSON.stringify(executionResult)}, status code ${statusCode} and custom headers ${JSON.stringify(customHeaders)}`)
+        if (executionResult.errors) {
+            executionResult.errors.map(this.formatErrorFunction)
+            for (const error of executionResult.errors) {
+                this.collectErrorMetricsFunction(error)
+            }
+        }
         response.statusCode = statusCode
         response.setHeader('Content-Type', 'application/json; charset=utf-8')
         if (customHeaders != null) {
@@ -222,10 +260,6 @@ export class GraphQLServer {
                 this.logDebugIfEnabled(`Set custom header ${key} to ${value}`)
                 response.setHeader(key, String(value))
             }
-        }
-        //Format errors if errors exist in execution results
-        if (executionResult.errors) {
-            executionResult.errors.map(this.formatErrorFunction)
         }
 
         response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))
@@ -306,14 +340,25 @@ export class GraphQLServer {
         }
     }
 
-    /** Default extension function that can be used to . Can be set in options.
+    /** Default extension function that can be used to fill extensions field of GraphQL response. Can be set in options.
      * @param {Request} request - The initial request
      * @param {GraphQLRequestInfo} requestInfo - The extracted requestInfo
      * @param {ExecutionResult} executionResult - The executionResult created by execute function
      * @returns {MaybePromise<undefined | { [key: string]: unknown }>} A key-value map to be added as extensions in response
      */
-    private defaultExtensions(request: Request, requestInfo: GraphQLRequestInfo, executionResult: ExecutionResult): MaybePromise<undefined | { [key: string]: unknown }> {
+    defaultExtensions(request: Request, requestInfo: GraphQLRequestInfo, executionResult: ExecutionResult): MaybePromise<undefined | { [key: string]: unknown }> {
         this.logDebugIfEnabled(`Calling defaultExtensions for request ${request}, requestInfo ${JSON.stringify(requestInfo)} and executionResult ${JSON.stringify(executionResult)}`)
         return undefined
     }
+
+    /** Default collect error metrics function. Can be set in options.
+     * @param {GraphQLFormattedError} error - The extracted requestInfo
+     * @param {Request} request - The initial request
+     */
+    defaultCollectErrorMetrics(error: GraphQLError, request?: Request): void {
+        this.logDebugIfEnabled(`Calling defaultCollectErrorMetrics with request ${request} and error ${error}`)
+        this.metricsClient.increaseErrors(error.name, request)
+    }
+
+
 }

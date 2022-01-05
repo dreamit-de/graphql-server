@@ -2,7 +2,6 @@ import express, {Express} from 'express'
 import {Server} from 'http'
 import {GraphQLServer} from '../src/'
 import fetch from 'cross-fetch'
-import {JsonLogger} from '../src'
 import {
     usersRequest,
     usersQuery,
@@ -19,12 +18,14 @@ import {
 } from './ExampleSchemas'
 import {GraphQLError,
     NoSchemaIntrospectionCustomRule} from 'graphql'
-import {generateGetParamsFromGraphQLRequestInfo} from './TestHelpers'
-import {GraphQLServerOptions} from '../src'
+import {
+    fetchResponse,
+    generateGetParamsFromGraphQLRequestInfo,
+    graphQLServerPort,
+    initialGraphQLServerOptions,
+    logger
+} from './TestHelpers'
 
-const graphQLServerPort = 3000
-const logger = new JsonLogger('test-logger', 'myTestService')
-const initialGraphQLServerOptions: GraphQLServerOptions = {schema: userSchema, rootValue: userSchemaResolvers, logger: logger, debug: true}
 let customGraphQLServer: GraphQLServer
 let graphQLServer: Server
 const extensionTestData : Record<string, string> = {
@@ -261,12 +262,3 @@ function setupGraphQLServer(): Express {
     })
     return graphQLServerExpress
 }
-
-function fetchResponse(body: BodyInit,
-    method = 'POST',
-    headers: HeadersInit = {
-        'Content-Type': 'application/json'
-    }): Promise<Response> {
-    return fetch(`http://localhost:${graphQLServerPort}/graphql`, {method: method, body: body, headers: headers})
-}
-

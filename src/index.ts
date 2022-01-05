@@ -9,6 +9,9 @@ export * from './logger/LogHelper'
 export * from './logger/LogLevel'
 export * from './logger/TextLogger'
 
+export * from './metrics/DefaultMetricsClient'
+export * from './metrics/MetricsClient'
+
 export * from './server/DefaultRequestInformationExtractor'
 export * from './server/GraphQLErrorWithStatusCode'
 export * from './server/RequestInformationExtractor'
