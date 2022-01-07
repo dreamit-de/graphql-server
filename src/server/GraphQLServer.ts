@@ -77,7 +77,7 @@ export class GraphQLServer {
          typeInfo?: TypeInfo,
          options?: { maxErrors?: number },) => ReadonlyArray<GraphQLError>  = validate
     private rootValue?: unknown
-    private contextValue?: unknown
+    private contextFunction: (request: Request, response: Response) => unknown = this.defaultContextFuncion
     private fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
     private typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
     private executeFunction: (schema: GraphQLSchema,
@@ -110,7 +110,7 @@ export class GraphQLServer {
             this.removeValidationRecommendations = options.removeValidationRecommendations === undefined ? true : options.removeValidationRecommendations
             this.validateSchemaFunction = options.validateFunction || validate
             this.rootValue = options.rootValue
-            this.contextValue = options.contextValue
+            this.contextFunction = options.contextFunction || this.defaultContextFuncion
             this.fieldResolver = options.fieldResolver
             this.typeResolver = options.typeResolver
             this.executeFunction = options.executeFunction || execute
@@ -224,9 +224,10 @@ export class GraphQLServer {
             return this.sendMutationNotAllowedForGetResponse(request, response, operationAST.operation)
         }
 
+        const context = this.contextFunction(request, response)
         // Perform execution (execute(schema, document, variables, operationName, resolvers) function). Return 400 if errors are available
         try {
-            const executionResult = await this.executeFunction(this.schema, documentAST, this.rootValue, this.contextValue || request, requestInformation.variables, requestInformation.operationName, this.fieldResolver, this.typeResolver)
+            const executionResult = await this.executeFunction(this.schema, documentAST, this.rootValue, context, requestInformation.variables, requestInformation.operationName, this.fieldResolver, this.typeResolver)
 
             const extensionsResult = this.extensionFunction(request, requestInformation, executionResult)
             if (extensionsResult) {
@@ -340,6 +341,16 @@ export class GraphQLServer {
         }
     }
 
+    /** Default context error metrics function to store information in context for further use.
+     * Default behaviour: return request object. Can be set in options.
+     * @param {Request} request - The initial request
+     * @param {Response} response - The response to send back
+     */
+    defaultContextFuncion(request: Request, response: Response): unknown {
+        this.logDebugIfEnabled(`Calling defaultContextFuncion with request ${request} and response ${response}`)
+        return request
+    }
+
     /** Default extension function that can be used to fill extensions field of GraphQL response. Can be set in options.
      * @param {Request} request - The initial request
      * @param {GraphQLRequestInfo} requestInfo - The extracted requestInfo
@@ -359,6 +370,4 @@ export class GraphQLServer {
         this.logDebugIfEnabled(`Calling defaultCollectErrorMetrics with request ${request} and error ${error}`)
         this.metricsClient.increaseErrors(error.name, request)
     }
-
-
 }

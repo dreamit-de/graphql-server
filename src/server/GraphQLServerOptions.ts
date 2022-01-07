@@ -14,9 +14,12 @@ import {Maybe} from 'graphql/jsutils/Maybe';
 import {GraphQLFieldResolver,
     GraphQLTypeResolver} from 'graphql/type/definition';
 import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue';
-import {GraphQLRequestInfo,
+import {
+    GraphQLRequestInfo,
     MaybePromise,
-    Request} from './GraphQLServer';
+    Request,
+    Response
+} from './GraphQLServer';
 import {GraphQLFormattedError} from 'graphql/error/formatError';
 import {MetricsClient} from '../metrics/MetricsClient';
 
@@ -41,7 +44,7 @@ export interface GraphQLServerOptions {
                         typeInfo?: TypeInfo,
                         options?: { maxErrors?: number },) => ReadonlyArray<GraphQLError>
     readonly rootValue?: unknown | undefined
-    readonly contextValue?: unknown
+    readonly contextFunction?: (request: Request, response: Response) => unknown
     readonly fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
     readonly typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
     readonly executeFunction?: (schema: GraphQLSchema,

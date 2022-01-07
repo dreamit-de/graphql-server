@@ -7,13 +7,19 @@ import prom,
  * Default metrics client to collect metrics from application and GraphQL server.
  */
 export class DefaultMetricsClient implements MetricsClient {
-    readonly metricsIdentifier: string
+    readonly requestThroughputMetricName: string
+    readonly availabilityMetricName: string
+    readonly errorsMetricName: string
     graphQLServerAvailabilityGauge!: Gauge<string>
     requestThroughput!: Counter<string>
     graphQLServerErrorCounter!: Counter<string>
 
-    constructor(metricsIdentifier = 'graphql_server') {
-        this.metricsIdentifier = metricsIdentifier
+    constructor(requestThroughputMetricName = 'graphql_server_request_throughput',
+        availabilityMetricName = 'graphql_server_availability',
+        errorsMetricName = 'graphql_server_errors') {
+        this.requestThroughputMetricName = requestThroughputMetricName
+        this.availabilityMetricName = availabilityMetricName
+        this.errorsMetricName = errorsMetricName
         this.initMetrics()
     }
 
@@ -21,15 +27,15 @@ export class DefaultMetricsClient implements MetricsClient {
         prom.register.clear()
         prom.collectDefaultMetrics()
         this.requestThroughput = new prom.Counter({
-            name: `${this.metricsIdentifier}_request_throughput`,
+            name: this.requestThroughputMetricName,
             help: 'Number of incoming requests',
         })
         this.graphQLServerAvailabilityGauge = new prom.Gauge({
-            name: `${this.metricsIdentifier}_availability`,
+            name: this.availabilityMetricName,
             help: 'GraphQL server availability',
         })
         this.graphQLServerErrorCounter = new prom.Counter({
-            name: `${this.metricsIdentifier}_errors`,
+            name: this.errorsMetricName,
             help: 'Number of errors per Error class',
             labelNames: ['errorClass'],
         })
