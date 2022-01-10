@@ -4,7 +4,7 @@ import {URLSearchParams} from 'url';
 import {GraphQLError} from 'graphql';
 import contentType,
 {ParsedMediaType} from 'content-type';
-import {GraphQLErrorWithStatusCode} from './GraphQLErrorWithStatusCode';
+import {GraphQLErrorWithStatusCode} from '../error/GraphQLErrorWithStatusCode';
 import getStream,
 {MaxBufferError} from 'get-stream';
 import zlib,

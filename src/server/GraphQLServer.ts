@@ -17,11 +17,10 @@ import {IncomingMessage,
 import {Logger} from '../logger/Logger'
 import {GraphQLServerOptions} from './GraphQLServerOptions'
 import {TextLogger} from '../logger/TextLogger'
-import {GraphQLErrorWithStatusCode} from './GraphQLErrorWithStatusCode'
+import {GraphQLErrorWithStatusCode} from '../error/GraphQLErrorWithStatusCode'
 import {DefaultRequestInformationExtractor} from './DefaultRequestInformationExtractor'
 import {ValidationRule} from 'graphql/validation/ValidationContext'
 import {TypeInfo} from 'graphql/utilities/TypeInfo'
-import {OperationTypeNode} from 'graphql/language/ast'
 import {Maybe} from 'graphql/jsutils/Maybe'
 import {GraphQLFieldResolver,
     GraphQLTypeResolver} from 'graphql/type/definition'
@@ -30,6 +29,16 @@ import {RequestInformationExtractor} from './RequestInformationExtractor'
 import {GraphQLFormattedError} from 'graphql/error/formatError'
 import {MetricsClient} from '../metrics/MetricsClient'
 import {DefaultMetricsClient} from '../metrics/DefaultMetricsClient'
+import {
+    FETCH_ERROR,
+    GRAPHQL_ERROR,
+    INVALID_SCHEMA_ERROR,
+    METHOD_NOT_ALLOWED_ERROR,
+    MISSING_QUERY_PARAMETER_ERROR,
+    SCHEMA_VALIDATION_ERROR,
+    SYNTAX_ERROR,
+    VALIDATION_ERROR
+} from '../error/ErrorNameConstants'
 
 export type Request = IncomingMessage & { url: string,  body?: unknown }
 export type Response = ServerResponse & { json?: (data: unknown) => void }
@@ -47,6 +56,12 @@ const defaultRequestInformationExtractor = new DefaultRequestInformationExtracto
 const defaultMetricsClient = new DefaultMetricsClient()
 const recommendationText = 'Did you mean'
 
+//Error constants
+const methodNotAllowedError = new GraphQLError('GraphQL server only supports GET and POST requests.')
+const invalidSchemaError = new GraphQLError('Request cannot be processed. Schema in GraphQL server is invalid.')
+const missingQueryParameterError = new GraphQLError('Request cannot be processed. No query was found in parameters or body.')
+const onlyQueryInGetRequestsError = new GraphQLError('Only "query" operation is allowed in "GET" requests')
+
 export class GraphQLServer {
     private logger: Logger = fallbackTextLogger
     private requestInformationExtractor: RequestInformationExtractor = defaultRequestInformationExtractor
@@ -56,7 +71,7 @@ export class GraphQLServer {
     private schema?: GraphQLSchema
     private shouldUpdateSchemaFunction: (schema?: GraphQLSchema) => boolean = this.defaultShouldUpdateSchema
     private formatErrorFunction: (error: GraphQLError) => GraphQLFormattedError = formatError
-    private collectErrorMetricsFunction: (error: GraphQLError, request?: Request) => void = this.defaultCollectErrorMetrics
+    private collectErrorMetricsFunction: (errorName: string, error?: unknown, request?: Request) => void = this.defaultCollectErrorMetrics
     private schemaValidationFunction: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError> = validateSchema
     private schemaValidationErrors: ReadonlyArray<GraphQLError> = []
     private parseFunction: (source: string | Source, options?: ParseOptions) => DocumentNode = parse
@@ -140,7 +155,7 @@ export class GraphQLServer {
                     this.logger.warn('Schema validation failed with errors. Please check the GraphQL schema and fix potential issues.')
                     for(const error of this.schemaValidationErrors) {
                         this.logger.error('A schema validation error occurred: ', error)
-                        this.metricsClient.increaseErrors('SchemaValidationError')
+                        this.collectErrorMetricsFunction(SCHEMA_VALIDATION_ERROR, error, undefined)
                     }
                 }
             }
@@ -179,8 +194,9 @@ export class GraphQLServer {
 
         // Reject requests that do not use GET and POST methods.
         if (request.method !== 'GET' && request.method !== 'POST') {
+            this.collectErrorMetricsFunction(METHOD_NOT_ALLOWED_ERROR, methodNotAllowedError, request)
             return this.sendResponse(response,
-                {errors: [new GraphQLError('GraphQL server only supports GET and POST requests.')]},
+                {errors: [methodNotAllowedError]},
                 405,
                 { Allow: 'GET, POST' })
         }
@@ -188,6 +204,7 @@ export class GraphQLServer {
         // Reject requests if schema is invalid
         if (!this.schema || !this.isValidSchema(this.schema)) {
             this.metricsClient.setAvailability(0)
+            this.collectErrorMetricsFunction(INVALID_SCHEMA_ERROR, invalidSchemaError, request)
             return this.sendInvalidSchemaResponse(request, response)
         } else {
             this.metricsClient.setAvailability(1)
@@ -197,8 +214,10 @@ export class GraphQLServer {
         const requestInformation = await this.requestInformationExtractor.extractInformationFromRequest(request)
         this.logDebugIfEnabled(`Extracted request information is ${JSON.stringify(requestInformation)}`)
         if (!requestInformation.query && requestInformation.error) {
+            this.collectErrorMetricsFunction(GRAPHQL_ERROR, requestInformation.error, request)
             return this.sendGraphQLErrorWithStatusCodeResponse(request, response, requestInformation.error)
         } else if (!requestInformation.query) {  // Reject request if no query parameter is provided
+            this.collectErrorMetricsFunction(MISSING_QUERY_PARAMETER_ERROR, missingQueryParameterError, request)
             return this.sendMissingQueryResponse(request, response)
         }
 
@@ -207,6 +226,7 @@ export class GraphQLServer {
         try {
             documentAST = this.parseFunction(new Source(requestInformation.query, 'GraphQL request'))
         } catch (syntaxError: unknown) {
+            this.collectErrorMetricsFunction(SYNTAX_ERROR, syntaxError, request)
             return this.sendSyntaxErrorResponse(request, response, syntaxError as GraphQLError)
         }
         this.logDebugIfEnabled(`Parsing query into document succeeded with document: ${JSON.stringify(documentAST)}`)
@@ -215,13 +235,17 @@ export class GraphQLServer {
         const validationErrors = this.validateSchemaFunction(this.schema, documentAST, this.validationRules, this.validationTypeInfo, this.validationOptions)
         if (validationErrors.length > 0) {
             this.logDebugIfEnabled(`One or more validation errors occurred: ${JSON.stringify(validationErrors)}`)
+            for (const validationError of validationErrors) {
+                this.collectErrorMetricsFunction(VALIDATION_ERROR, validationError, request)
+            }
             return this.sendValidationErrorResponse(request, response, this.removeValidationRecommendationsFromErrors(validationErrors))
         }
 
         // Reject request if get method is used for non-query(mutation) requests. Check with getOperationAST(document, operationName) function. Return 405 if thats the case
         const operationAST = getOperationAST(documentAST, requestInformation.operationName)
         if (request.method === 'GET' && operationAST && operationAST.operation !== 'query') {
-            return this.sendMutationNotAllowedForGetResponse(request, response, operationAST.operation)
+            this.collectErrorMetricsFunction(METHOD_NOT_ALLOWED_ERROR, onlyQueryInGetRequestsError, request)
+            return this.sendMutationNotAllowedForGetResponse(request, response, onlyQueryInGetRequestsError)
         }
 
         const context = this.contextFunction(request, response)
@@ -233,11 +257,20 @@ export class GraphQLServer {
             if (extensionsResult) {
                 executionResult.extensions = extensionsResult
             }
+
+            //Collect error metrics for execution result
+            if (executionResult.errors && executionResult.errors.length > 0) {
+                for (const error of executionResult.errors) {
+                    this.increaseFetchOrGraphQLErrorMetric(error, request)
+                }
+            }
+
             //Return execution result
             this.logDebugIfEnabled(`Create response from data ${JSON.stringify(executionResult)}`)
             return this.sendResponse(response, executionResult)
-        } catch (e) {
+        } catch (e: unknown) {
             this.logDebugIfEnabled(`A GraphQL execution error occurred: ${JSON.stringify(e)}`)
+            this.increaseFetchOrGraphQLErrorMetric(e, request)
             return this.sendGraphQLExecutionErrorResponse(request, response, e as GraphQLError)
         }
     }
@@ -250,9 +283,6 @@ export class GraphQLServer {
         this.logDebugIfEnabled(`Preparing response with executionResult ${JSON.stringify(executionResult)}, status code ${statusCode} and custom headers ${JSON.stringify(customHeaders)}`)
         if (executionResult.errors) {
             executionResult.errors.map(this.formatErrorFunction)
-            for (const error of executionResult.errors) {
-                this.collectErrorMetricsFunction(error)
-            }
         }
         response.statusCode = statusCode
         response.setHeader('Content-Type', 'application/json; charset=utf-8')
@@ -275,14 +305,14 @@ export class GraphQLServer {
     /** Sends a fitting response if the schema used by the GraphQL server is invalid */
     sendInvalidSchemaResponse(request: Request, response: Response): void {
         return this.sendResponse(response,
-            {errors: [new GraphQLError('Request cannot be processed. Schema in GraphQL server is invalid.')]},
+            {errors: [invalidSchemaError]},
             500)
     }
 
     /** Sends a fitting response if there is no query available in the request */
     sendMissingQueryResponse(request: Request, response: Response): void {
         return this.sendResponse(response,
-            {errors: [new GraphQLError('Request cannot be processed. No query was found in parameters or body.')]},
+            {errors: [missingQueryParameterError]},
             400)
     }
 
@@ -301,9 +331,9 @@ export class GraphQLServer {
     }
 
     /** Sends a fitting response if a mutation is requested in a GET request */
-    sendMutationNotAllowedForGetResponse(request: Request, response: Response, operation: OperationTypeNode): void {
+    sendMutationNotAllowedForGetResponse(request: Request, response: Response, error: GraphQLError): void {
         return this.sendResponse(response,
-            {errors: [new GraphQLError(`Operation ${operation} is only allowed in POST requests`)]},
+            {errors: [error]},
             405,
             {Allow: 'POST'})
     }
@@ -363,11 +393,28 @@ export class GraphQLServer {
     }
 
     /** Default collect error metrics function. Can be set in options.
-     * @param {GraphQLFormattedError} error - The extracted requestInfo
+     * @param {string} errorName - The error name that is used as label in error metrics
+     * @param {GraphQLError} error - An optional GraphQL error
      * @param {Request} request - The initial request
      */
-    defaultCollectErrorMetrics(error: GraphQLError, request?: Request): void {
-        this.logDebugIfEnabled(`Calling defaultCollectErrorMetrics with request ${request} and error ${error}`)
-        this.metricsClient.increaseErrors(error.name, request)
+    defaultCollectErrorMetrics(errorName: string, error?: unknown, request?: Request): void {
+        this.logDebugIfEnabled(`Calling defaultCollectErrorMetrics with request ${request} and error ${error} and errorName ${errorName}`)
+        this.metricsClient.increaseErrors(errorName, request)
+    }
+
+    /** Increases the error metric with either a FetchError or GraphQLError label
+     * @param {unknown} error - An error
+     * @param {Request} request - The initial request
+     */
+    increaseFetchOrGraphQLErrorMetric(error: unknown, request: Request): void {
+        this.logDebugIfEnabled(`Calling increaseFetchOrGraphQLErrorMetric with request ${request} and error ${error} and errorIsFetch ${error instanceof Error }`)
+        if (error instanceof Error && error.message && (error.message.includes(FETCH_ERROR)
+            || error.message.includes('ECONNREFUSED')
+            || error.message.includes('ECONNRESET')
+            || error.message.includes('socket hang up'))) {
+            this.collectErrorMetricsFunction(FETCH_ERROR, error, request);
+        } else {
+            this.collectErrorMetricsFunction(GRAPHQL_ERROR, error, request);
+        }
     }
 }

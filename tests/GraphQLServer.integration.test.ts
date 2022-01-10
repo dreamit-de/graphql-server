@@ -181,7 +181,7 @@ test('Should get data response when using GET request', async () => {
 test('Should get error response when using mutation in a GET request', async () => {
     const response = await fetch(`http://localhost:${graphQLServerPort}/graphql?${generateGetParamsFromGraphQLRequestInfo(loginRequest)}`)
     const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('Operation mutation is only allowed in POST requests')
+    expect(responseObject.errors[0].message).toBe('Only "query" operation is allowed in "GET" requests')
 })
 
 test('Should get an error response when content type is not defined', async () => {

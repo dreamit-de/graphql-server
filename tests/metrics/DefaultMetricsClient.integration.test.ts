@@ -6,7 +6,8 @@ import {
     usersQuery,
     returnErrorQuery,
     userSchemaResolvers,
-    initialSchemaWithOnlyDescription
+    initialSchemaWithOnlyDescription,
+    userSchema
 } from '../ExampleSchemas'
 import {
     fetchResponse,
@@ -14,6 +15,18 @@ import {
     initialGraphQLServerOptions,
     logger
 } from '../TestHelpers'
+import {
+    FETCH_ERROR,
+    GRAPHQL_ERROR,
+    INVALID_SCHEMA_ERROR,
+    METHOD_NOT_ALLOWED_ERROR,
+    MISSING_QUERY_PARAMETER_ERROR,
+    SCHEMA_VALIDATION_ERROR,
+    SYNTAX_ERROR,
+    VALIDATION_ERROR
+} from '../../src';
+import {GraphQLError} from 'graphql';
+
 
 let customGraphQLServer: GraphQLServer
 let graphQLServer: Server
@@ -34,8 +47,14 @@ test('Should get correct metrics', async () => {
     let metricsResponseBody = await getMetricsResponse()
     expect(metricsResponseBody).toContain('graphql_server_availability 1')
     expect(metricsResponseBody).toContain('graphql_server_request_throughput 0')
-    expect(metricsResponseBody).toContain('graphql_server_errors{errorClass="GraphQLError"} 0')
-    expect(metricsResponseBody).toContain('graphql_server_errors{errorClass="SchemaValidationError"} 0')
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${GRAPHQL_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${SCHEMA_VALIDATION_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${FETCH_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${METHOD_NOT_ALLOWED_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${INVALID_SCHEMA_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${MISSING_QUERY_PARAMETER_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${VALIDATION_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${SYNTAX_ERROR}"} 0`)
 
     /** Test:
      * When schema is invalid, availability should be 0. As only metrics endpoint is being called, request_throughput
@@ -46,8 +65,14 @@ test('Should get correct metrics', async () => {
     metricsResponseBody = await getMetricsResponse()
     expect(metricsResponseBody).toContain('graphql_server_availability 0')
     expect(metricsResponseBody).toContain('graphql_server_request_throughput 0')
-    expect(metricsResponseBody).toContain('graphql_server_errors{errorClass="GraphQLError"} 0')
-    expect(metricsResponseBody).toContain('graphql_server_errors{errorClass="SchemaValidationError"} 1')
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${GRAPHQL_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${SCHEMA_VALIDATION_ERROR}"} 1`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${FETCH_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${METHOD_NOT_ALLOWED_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${INVALID_SCHEMA_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${MISSING_QUERY_PARAMETER_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${VALIDATION_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${SYNTAX_ERROR}"} 0`)
     customGraphQLServer.setOptions(initialGraphQLServerOptions)
 
     /** Test:
@@ -58,8 +83,14 @@ test('Should get correct metrics', async () => {
     metricsResponseBody = await getMetricsResponse()
     expect(metricsResponseBody).toContain('graphql_server_availability 1')
     expect(metricsResponseBody).toContain('graphql_server_request_throughput 1')
-    expect(metricsResponseBody).toContain('graphql_server_errors{errorClass="GraphQLError"} 0')
-    expect(metricsResponseBody).toContain('graphql_server_errors{errorClass="SchemaValidationError"} 1')
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${GRAPHQL_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${SCHEMA_VALIDATION_ERROR}"} 1`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${FETCH_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${METHOD_NOT_ALLOWED_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${INVALID_SCHEMA_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${MISSING_QUERY_PARAMETER_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${VALIDATION_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${SYNTAX_ERROR}"} 0`)
 
     /** Test:
      * When sending request that returns GraphQL error, GraphQLError counter and request throughput should increase by 1
@@ -68,8 +99,53 @@ test('Should get correct metrics', async () => {
     metricsResponseBody = await getMetricsResponse()
     expect(metricsResponseBody).toContain('graphql_server_availability 1')
     expect(metricsResponseBody).toContain('graphql_server_request_throughput 2')
-    expect(metricsResponseBody).toContain('graphql_server_errors{errorClass="GraphQLError"} 1')
-    expect(metricsResponseBody).toContain('graphql_server_errors{errorClass="SchemaValidationError"} 1')
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${GRAPHQL_ERROR}"} 1`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${SCHEMA_VALIDATION_ERROR}"} 1`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${FETCH_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${METHOD_NOT_ALLOWED_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${INVALID_SCHEMA_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${MISSING_QUERY_PARAMETER_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${VALIDATION_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${SYNTAX_ERROR}"} 0`)
+
+    /** Test:
+     * When sending request with empty content type GraphQL error, GraphQLError counter and request throughput should increase by 1
+     */
+    await fetchResponse('{"query":"unknown"}', 'POST', {
+        'Content-Type': ''
+    }  )
+    metricsResponseBody = await getMetricsResponse()
+    expect(metricsResponseBody).toContain('graphql_server_availability 1')
+    expect(metricsResponseBody).toContain('graphql_server_request_throughput 3')
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${GRAPHQL_ERROR}"} 2`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${SCHEMA_VALIDATION_ERROR}"} 1`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${FETCH_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${METHOD_NOT_ALLOWED_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${INVALID_SCHEMA_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${MISSING_QUERY_PARAMETER_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${VALIDATION_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${SYNTAX_ERROR}"} 0`)
+
+    /** Test:
+     * When forcing a FetchError in execute function, FetchError counter and request throughput should increase by 1
+     */
+    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: logger, debug: true, executeFunction: () => {
+        throw new GraphQLError('FetchError: An error occurred while connecting to following endpoint');
+    }})
+
+    await fetchResponse(`{"query":"${usersQuery}"}`)
+    metricsResponseBody = await getMetricsResponse()
+    expect(metricsResponseBody).toContain('graphql_server_availability 1')
+    expect(metricsResponseBody).toContain('graphql_server_request_throughput 4')
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${GRAPHQL_ERROR}"} 2`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${SCHEMA_VALIDATION_ERROR}"} 1`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${FETCH_ERROR}"} 1`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${METHOD_NOT_ALLOWED_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${INVALID_SCHEMA_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${MISSING_QUERY_PARAMETER_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${VALIDATION_ERROR}"} 0`)
+    expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${SYNTAX_ERROR}"} 0`)
+    customGraphQLServer.setOptions(initialGraphQLServerOptions)
 })
 
 function setupGraphQLServer(): Express {

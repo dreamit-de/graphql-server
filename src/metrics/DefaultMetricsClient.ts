@@ -2,6 +2,16 @@ import {MetricsClient} from './MetricsClient';
 import prom,
 {Counter,
     Gauge} from 'prom-client'
+import {
+    FETCH_ERROR,
+    GRAPHQL_ERROR,
+    INVALID_SCHEMA_ERROR,
+    METHOD_NOT_ALLOWED_ERROR,
+    MISSING_QUERY_PARAMETER_ERROR,
+    SCHEMA_VALIDATION_ERROR,
+    SYNTAX_ERROR,
+    VALIDATION_ERROR
+} from '../error/ErrorNameConstants';
 
 /**
  * Default metrics client to collect metrics from application and GraphQL server.
@@ -45,8 +55,14 @@ export class DefaultMetricsClient implements MetricsClient {
          * differences with functions like "increase" with an undefined time series might not work for the first
          * occurrence of an error.
          */
-        this.graphQLServerErrorCounter.labels('GraphQLError').inc(0)
-        this.graphQLServerErrorCounter.labels('SchemaValidationError').inc(0)
+        this.graphQLServerErrorCounter.labels(GRAPHQL_ERROR).inc(0)
+        this.graphQLServerErrorCounter.labels(SCHEMA_VALIDATION_ERROR).inc(0)
+        this.graphQLServerErrorCounter.labels(FETCH_ERROR).inc(0)
+        this.graphQLServerErrorCounter.labels(METHOD_NOT_ALLOWED_ERROR).inc(0)
+        this.graphQLServerErrorCounter.labels(INVALID_SCHEMA_ERROR).inc(0)
+        this.graphQLServerErrorCounter.labels(MISSING_QUERY_PARAMETER_ERROR).inc(0)
+        this.graphQLServerErrorCounter.labels(VALIDATION_ERROR).inc(0)
+        this.graphQLServerErrorCounter.labels(SYNTAX_ERROR).inc(0)
     }
 
     increaseErrors(label: string): void {
