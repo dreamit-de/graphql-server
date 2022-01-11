@@ -1,14 +1,14 @@
-import {Logger} from './Logger';
-import {LogLevel} from './LogLevel';
-import {LogEntry} from './LogEntry';
-import {LogHelper} from './LogHelper';
+import {Logger} from './Logger'
+import {LogLevel} from './LogLevel'
+import {LogEntry} from './LogEntry'
+import {LogHelper} from './LogHelper'
 
 /**
  * Logger implementation that outputs log entries as text to console.
  */
 export class TextLogger implements Logger {
-    loggerName: string;
-    serviceName: string;
+    loggerName: string
+    serviceName: string
 
     /** Creates a new instance of Logger.
      * @param {string} loggerName - The logger name of the logger. Will be used in output if not empty.

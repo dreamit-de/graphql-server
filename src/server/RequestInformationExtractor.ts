@@ -1,5 +1,5 @@
 import {GraphQLRequestInfo,
-    Request} from './GraphQLServer';
+    Request} from './GraphQLServer'
 
 /**
  * Interface for RequestInformationExtractor. Extracts information for handling GraphQL requests (query, operationName and/or variables)

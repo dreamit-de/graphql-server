@@ -1,16 +1,17 @@
 import {GraphQLRequestInfo,
-    Request} from './GraphQLServer';
-import {URLSearchParams} from 'url';
-import {GraphQLError} from 'graphql';
+    Request} from './GraphQLServer'
+import {URLSearchParams} from 'url'
+import {GraphQLError} from 'graphql'
 import contentType,
-{ParsedMediaType} from 'content-type';
-import {GraphQLErrorWithStatusCode} from '../error/GraphQLErrorWithStatusCode';
+{ParsedMediaType} from 'content-type'
+import {GraphQLErrorWithStatusCode} from '../error/GraphQLErrorWithStatusCode'
 import getStream,
-{MaxBufferError} from 'get-stream';
+{MaxBufferError} from 'get-stream'
 import zlib,
 {Gunzip,
-    Inflate} from 'zlib';
-import {RequestInformationExtractor} from './RequestInformationExtractor';
+    Inflate} from 'zlib'
+import {RequestInformationExtractor} from './RequestInformationExtractor'
+import {Buffer} from 'buffer'
 
 /**
  * Default implementation of RequestInformationExtractor interface
@@ -42,23 +43,23 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
 
     /** Extracts information from request body. Based on implementation from express-graphql */
     async extractInformationFromBody(request: Request):Promise<GraphQLRequestInfo> {
-        const { body } = request;
+        const { body } = request
 
         // If express has already parsed a body as a keyed object, use it.
         if (typeof body === 'object' && !(body instanceof Buffer)) {
-            const bodyAsMap = body as Record<string, unknown>;
+            const bodyAsMap = body as Record<string, unknown>
             return {
                 query: bodyAsMap.query as string,
                 variables: bodyAsMap.variables as Readonly<Record<string, unknown>> | null || undefined,
                 operationName: bodyAsMap.operationName as string
-            };
+            }
         }
 
         // Skip requests without content types.
         if (request.headers['content-type'] === undefined) {
             return {
                 error: { graphQLError: new GraphQLError('Invalid request. Request header content-type is undefined.'), statusCode: 400 }
-            };
+            }
         }
 
         try {
@@ -67,24 +68,24 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
             // If express has already parsed a body as a string, and the content-type
             // was application/graphql, parse the string body.
             if (typeof body === 'string' && typeInfo.type === 'application/graphql') {
-                return { query: body };
+                return { query: body }
             }
 
             // Already parsed body we didn't recognise? Parse nothing.
             if (body != null) {
-                return {};
+                return {}
             }
 
-            const rawBody = await this.readBody(request, typeInfo);
+            const rawBody = await this.readBody(request, typeInfo)
 
-            if (typeof rawBody ==='string') {
+            if (typeof rawBody === 'string') {
                 // Use the correct body parser based on Content-Type header.
                 switch (typeInfo.type) {
                 case 'application/graphql':
-                    return { query: rawBody };
+                    return { query: rawBody }
                 case 'application/json':
                     try {
-                        return JSON.parse(rawBody);
+                        return JSON.parse(rawBody)
                     } catch {
                         return {
                             error: { graphQLError: new GraphQLError('POST body contains invalid JSON.'), statusCode: 400 }
@@ -115,24 +116,18 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
         req: Request,
         typeInfo: ParsedMediaType,
     ): Promise<string | GraphQLErrorWithStatusCode> {
-        const charset = typeInfo.parameters.charset?.toLowerCase() ?? 'utf-8';
+        const charset = typeInfo.parameters.charset?.toLowerCase() ?? 'utf-8'
 
-        // Assert charset encoding per JSON RFC 7159 sec 8.1
-        if (charset !== 'utf8' && charset !== 'utf-8' && charset !== 'utf16le') {
+        if (!this.isCharsetSupported(charset)) {
             return {
                 graphQLError: new GraphQLError(`Unsupported charset "${charset.toUpperCase()}".`),
                 statusCode: 415
             }
         }
 
-        // Get content-encoding (e.g. gzip)
-        const contentEncoding = req.headers['content-encoding'];
-        const encoding =
-            typeof contentEncoding === 'string'
-                ? contentEncoding.toLowerCase()
-                : 'identity';
-        const maxBuffer = 100 * 1024; // 100kb
-        const stream = this.decompressed(req, encoding);
+        const encoding = this.determineContentEncoding(req)
+        const maxBuffer = 100 * 1024 // 100kb
+        const stream = this.decompressed(req, encoding)
         if ('graphQLError' in stream && 'statusCode' in stream) {
             return {
                 graphQLError: stream.graphQLError,
@@ -142,22 +137,10 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
 
         // Read body from stream.
         try {
-            const buffer = await getStream.buffer(stream, { maxBuffer });
-            return buffer.toString(charset);
+            const buffer = await getStream.buffer(stream, { maxBuffer })
+            return buffer.toString(this.charsetToBufferEncoding(charset))
         } catch (rawError: unknown) {
-            if (rawError instanceof MaxBufferError) {
-                return {
-                    graphQLError: new GraphQLError('Invalid request body: request entity too large.'),
-                    statusCode: 413
-                }
-            } else {
-                const message =
-                    rawError instanceof Error ? rawError.message : String(rawError);
-                return {
-                    graphQLError: new GraphQLError(`Invalid request body: ${message}.`),
-                    statusCode: 400
-                }
-            }
+            return this.handleBufferError(rawError)
         }
     }
 
@@ -168,15 +151,46 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
     ): Request | Inflate | Gunzip | GraphQLErrorWithStatusCode {
         switch (encoding) {
         case 'identity':
-            return req;
+            return req
         case 'deflate':
-            return req.pipe(zlib.createInflate());
+            return req.pipe(zlib.createInflate())
         case 'gzip':
-            return req.pipe(zlib.createGunzip());
+            return req.pipe(zlib.createGunzip())
         }
         return {
             graphQLError: new GraphQLError(`Unsupported content-encoding "${encoding}".`),
             statusCode: 415
+        }
+    }
+
+    // Assert charset encoding per JSON RFC 7159 sec 8.1
+    isCharsetSupported(charset: string): boolean {
+        return charset === 'utf8' || charset === 'utf-8' || charset === 'utf16le'
+    }
+
+    charsetToBufferEncoding(charset: string) : BufferEncoding | undefined {
+        return Buffer.isEncoding(charset) ? charset : undefined
+    }
+
+    //Determines the content encoding using the request information
+    determineContentEncoding(req: Request): string {
+        const contentEncoding = req.headers['content-encoding']
+        return typeof contentEncoding === 'string' ? contentEncoding.toLowerCase() : 'identity'
+    }
+
+    handleBufferError(rawError: unknown): GraphQLErrorWithStatusCode {
+        if (rawError instanceof MaxBufferError) {
+            return {
+                graphQLError: new GraphQLError('Invalid request body: request entity too large.'),
+                statusCode: 413
+            }
+        } else {
+            const message =
+                rawError instanceof Error ? rawError.message : String(rawError)
+            return {
+                graphQLError: new GraphQLError(`Invalid request body: ${message}.`),
+                statusCode: 400
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-import {Logger} from '../logger/Logger';
+import {Logger} from '../logger/Logger'
 import {
     DocumentNode,
     ExecutionResult,
@@ -6,22 +6,22 @@ import {
     GraphQLSchema,
     ParseOptions,
     Source
-} from 'graphql';
-import {RequestInformationExtractor} from './RequestInformationExtractor';
-import {ValidationRule} from 'graphql/validation/ValidationContext';
-import {TypeInfo} from 'graphql/utilities/TypeInfo';
-import {Maybe} from 'graphql/jsutils/Maybe';
+} from 'graphql'
+import {RequestInformationExtractor} from './RequestInformationExtractor'
+import {ValidationRule} from 'graphql/validation/ValidationContext'
+import {TypeInfo} from 'graphql/utilities/TypeInfo'
+import {Maybe} from 'graphql/jsutils/Maybe'
 import {GraphQLFieldResolver,
-    GraphQLTypeResolver} from 'graphql/type/definition';
-import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue';
+    GraphQLTypeResolver} from 'graphql/type/definition'
+import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue'
 import {
     GraphQLRequestInfo,
     MaybePromise,
     Request,
     Response
-} from './GraphQLServer';
-import {GraphQLFormattedError} from 'graphql/error/formatError';
-import {MetricsClient} from '../metrics/MetricsClient';
+} from './GraphQLServer'
+import {GraphQLFormattedError} from 'graphql/error/formatError'
+import {MetricsClient} from '../metrics/MetricsClient'
 
 export interface GraphQLServerOptions {
     readonly logger?: Logger

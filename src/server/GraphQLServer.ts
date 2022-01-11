@@ -153,7 +153,7 @@ export class GraphQLServer {
                 this.schemaValidationErrors = this.schemaValidationFunction(this.schema)
                 if (this.schemaValidationErrors.length > 0) {
                     this.logger.warn('Schema validation failed with errors. Please check the GraphQL schema and fix potential issues.')
-                    for(const error of this.schemaValidationErrors) {
+                    for (const error of this.schemaValidationErrors) {
                         this.logger.error('A schema validation error occurred: ', error)
                         this.collectErrorMetricsFunction(SCHEMA_VALIDATION_ERROR, error, undefined)
                     }
@@ -166,7 +166,7 @@ export class GraphQLServer {
         this.metricsClient.setAvailability(this.isValidSchema(this.schema) ? 1 : 0)
     }
 
-    /** Defines whether a schema update should be executed. Default behaviour: If schema is undefined return false.
+    /** Determines whether a schema update should be executed. Default behaviour: If schema is undefined return false.
      * @param {GraphQLSchema} schema - The new schema to use as updated schema.
      * @returns {boolean} True if schema should be updated, false if not
      */
@@ -278,7 +278,7 @@ export class GraphQLServer {
     sendResponse(response: Response,
         executionResult: ExecutionResult,
         statusCode = 200,
-        customHeaders: Record<string, string> = {} ): void {
+        customHeaders: Record<string, string> = {}): void {
 
         this.logDebugIfEnabled(`Preparing response with executionResult ${JSON.stringify(executionResult)}, status code ${statusCode} and custom headers ${JSON.stringify(customHeaders)}`)
         if (executionResult.errors) {
@@ -411,9 +411,9 @@ export class GraphQLServer {
             || error.message.includes('ECONNREFUSED')
             || error.message.includes('ECONNRESET')
             || error.message.includes('socket hang up'))) {
-            this.collectErrorMetricsFunction(FETCH_ERROR, error, request);
+            this.collectErrorMetricsFunction(FETCH_ERROR, error, request)
         } else {
-            this.collectErrorMetricsFunction(GRAPHQL_ERROR, error, request);
+            this.collectErrorMetricsFunction(GRAPHQL_ERROR, error, request)
         }
     }
 }

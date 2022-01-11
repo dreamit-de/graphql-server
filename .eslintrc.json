@@ -43,10 +43,14 @@
         "array-element-newline": ["error", "consistent"],
         "function-call-argument-newline": ["error", "consistent"],
         "function-paren-newline": ["error", "consistent"],
-        "newline-per-chained-call": "error",
-        "object-curly-newline": ["error", { "consistent": true }],
         "modules-newline/import-declaration-newline": "error",
         "modules-newline/export-declaration-newline": "error",
-        "space-before-blocks": "error"
+        "newline-per-chained-call": "error",
+        "object-curly-newline": ["error", { "consistent": true }],
+        "space-before-blocks": "error",
+        "space-before-function-paren": ["error", "never"],
+        "space-in-parens": ["error", "never"],
+        "keyword-spacing": "error",
+        "semi": ["error", "never"]
     }
 }

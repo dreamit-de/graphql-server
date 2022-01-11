@@ -1,4 +1,4 @@
-import {MetricsClient} from './MetricsClient';
+import {MetricsClient} from './MetricsClient'
 import prom,
 {Counter,
     Gauge} from 'prom-client'
@@ -11,7 +11,7 @@ import {
     SCHEMA_VALIDATION_ERROR,
     SYNTAX_ERROR,
     VALIDATION_ERROR
-} from '../error/ErrorNameConstants';
+} from '../error/ErrorNameConstants'
 
 /**
  * Default metrics client to collect metrics from application and GraphQL server.
@@ -78,10 +78,10 @@ export class DefaultMetricsClient implements MetricsClient {
     }
 
     getMetricsContentType(): string {
-        return prom.register.contentType;
+        return prom.register.contentType
     }
 
     async getMetrics(): Promise<string> {
-        return prom.register.metrics();
+        return prom.register.metrics()
     }
 }

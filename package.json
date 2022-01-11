@@ -1,13 +1,13 @@
 {
   "name": "@dreamit/graphql-server",
-  "version": "0.16.1",
+  "version": "0.17.0",
   "description": "A GraphQL server written in NodeJS/Typescript.",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
   "scripts": {
     "build": "tsc",
     "check": "tsc --noEmit --pretty",
-    "lint": "eslint src/**/*.ts",
+    "lint": "eslint src/**/*.ts tests/**/*.ts",
     "prepack": "npm run build",
     "test": "jest --runInBand"
   },

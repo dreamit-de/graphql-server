@@ -1,10 +1,10 @@
-import {Logger} from './Logger';
-import {Console} from 'console';
-import {LogLevel} from './LogLevel';
-import {LogEntry} from './LogEntry';
-import {LogHelper} from './LogHelper';
+import {Logger} from './Logger'
+import {Console} from 'console'
+import {LogLevel} from './LogLevel'
+import {LogEntry} from './LogEntry'
+import {LogHelper} from './LogHelper'
 
-const loggerConsole: Console = new Console(process.stdout, process.stderr, false);
+const loggerConsole: Console = new Console(process.stdout, process.stderr, false)
 /**
  * Logger implementation that outputs log entries as JSON text to console. Can be useful for log aggregation tools.
  */

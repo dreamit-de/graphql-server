@@ -1,16 +1,16 @@
 import {GraphQLRequestInfo,
     GraphQLServerOptions,
-    JsonLogger} from '../src';
+    JsonLogger} from '../src'
 import {userSchema,
-    userSchemaResolvers} from './ExampleSchemas';
-import fetch from 'cross-fetch';
+    userSchemaResolvers} from './ExampleSchemas'
+import fetch from 'cross-fetch'
 
 export const GRAPHQL_SERVER_PORT = 3000
 export const LOGGER = new JsonLogger('test-logger', 'myTestService')
 export const INITIAL_GRAPHQL_SERVER_OPTIONS: GraphQLServerOptions = {schema: userSchema, rootValue: userSchemaResolvers, logger: LOGGER, debug: true}
 
 export function generateGetParamsFromGraphQLRequestInfo(requestInfo: GraphQLRequestInfo): string {
-    let result=''
+    let result = ''
     if (requestInfo.query) {
         result += `query=${requestInfo.query}&`
     }
