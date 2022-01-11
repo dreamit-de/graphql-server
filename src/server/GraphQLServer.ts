@@ -46,7 +46,7 @@ export type MaybePromise<T> = Promise<T> | T
 
 export interface GraphQLRequestInfo {
     query?: string
-    variables?: { readonly [name: string]: unknown }
+    variables?: Readonly<Record<string, unknown>>
     operationName?: string
     error?: GraphQLErrorWithStatusCode
 }
@@ -99,11 +99,11 @@ export class GraphQLServer {
                               document: DocumentNode,
                               rootValue?: unknown,
                               contextValue?: unknown,
-                              variableValues?: Maybe<{ [key: string]: unknown }>,
+                              variableValues?: Maybe<Record<string, unknown>>,
                               operationName?: Maybe<string>,
                               fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>,
                               typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>) => PromiseOrValue<ExecutionResult> = execute
-    private extensionFunction: (request: Request, requestInformation: GraphQLRequestInfo, executionResult: ExecutionResult) => MaybePromise<undefined | { [key: string]: unknown }> = this.defaultExtensions
+    private extensionFunction: (request: Request, requestInformation: GraphQLRequestInfo, executionResult: ExecutionResult) => MaybePromise<undefined | Record<string, unknown>> = this.defaultExtensions
 
     constructor(options?: GraphQLServerOptions) {
         this.setOptions(options)
@@ -198,7 +198,7 @@ export class GraphQLServer {
             return this.sendResponse(response,
                 {errors: [methodNotAllowedError]},
                 405,
-                { Allow: 'GET, POST' })
+                { allow: 'GET, POST' })
         }
 
         // Reject requests if schema is invalid
@@ -278,7 +278,7 @@ export class GraphQLServer {
     sendResponse(response: Response,
         executionResult: ExecutionResult,
         statusCode = 200,
-        customHeaders: { [key: string]: string } = {} ): void {
+        customHeaders: Record<string, string> = {} ): void {
 
         this.logDebugIfEnabled(`Preparing response with executionResult ${JSON.stringify(executionResult)}, status code ${statusCode} and custom headers ${JSON.stringify(customHeaders)}`)
         if (executionResult.errors) {
@@ -286,12 +286,11 @@ export class GraphQLServer {
         }
         response.statusCode = statusCode
         response.setHeader('Content-Type', 'application/json; charset=utf-8')
-        if (customHeaders != null) {
-            for (const [key, value] of Object.entries(customHeaders)) {
-                this.logDebugIfEnabled(`Set custom header ${key} to ${value}`)
-                response.setHeader(key, String(value))
-            }
+        for (const [key, value] of Object.entries(customHeaders)) {
+            this.logDebugIfEnabled(`Set custom header ${key} to ${value}`)
+            response.setHeader(key, String(value))
         }
+
 
         response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))
     }
@@ -335,7 +334,7 @@ export class GraphQLServer {
         return this.sendResponse(response,
             {errors: [error]},
             405,
-            {Allow: 'POST'})
+            {allow: 'POST'})
     }
 
     /** Sends a fitting response if a syntax error occurred during document parsing */
@@ -387,7 +386,7 @@ export class GraphQLServer {
      * @param {ExecutionResult} executionResult - The executionResult created by execute function
      * @returns {MaybePromise<undefined | { [key: string]: unknown }>} A key-value map to be added as extensions in response
      */
-    defaultExtensions(request: Request, requestInfo: GraphQLRequestInfo, executionResult: ExecutionResult): MaybePromise<undefined | { [key: string]: unknown }> {
+    defaultExtensions(request: Request, requestInfo: GraphQLRequestInfo, executionResult: ExecutionResult): MaybePromise<undefined | Record<string, unknown>> {
         this.logDebugIfEnabled(`Calling defaultExtensions for request ${request}, requestInfo ${JSON.stringify(requestInfo)} and executionResult ${JSON.stringify(executionResult)}`)
         return undefined
     }

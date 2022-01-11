@@ -21,9 +21,9 @@ import {GraphQLError,
 import {
     fetchResponse,
     generateGetParamsFromGraphQLRequestInfo,
-    graphQLServerPort,
-    initialGraphQLServerOptions,
-    logger
+    GRAPHQL_SERVER_PORT,
+    INITIAL_GRAPHQL_SERVER_OPTIONS,
+    LOGGER
 } from './TestHelpers'
 
 let customGraphQLServer: GraphQLServer
@@ -38,8 +38,8 @@ function testFormatErrorFunction(error: GraphQLError) {
 }
 
 beforeAll(async () => {
-    graphQLServer = setupGraphQLServer().listen({port: graphQLServerPort})
-    console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
+    graphQLServer = setupGraphQLServer().listen({port: GRAPHQL_SERVER_PORT})
+    console.info(`Starting GraphQL server on port ${GRAPHQL_SERVER_PORT}`)
 })
 
 afterAll(async () => {
@@ -98,11 +98,11 @@ test('Should get filtered error response if a validation error occurs ', async (
 })
 
 test('Should get unfiltered error response if a validation error occurs and removeValidationRecommendations is enabled', async () => {
-    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: logger, debug: true, removeValidationRecommendations: false  })
+    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: LOGGER, debug: true, removeValidationRecommendations: false  })
     const response = await fetchResponse('{"query":"query users{ users { userIdABC userName } }"}')
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe( 'Cannot query field "userIdABC" on type "User". Did you mean "userId" or "userName"?')
-    customGraphQLServer.setOptions(initialGraphQLServerOptions)
+    customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
 test('Should get error response if charset could not be processed', async () => {
@@ -150,11 +150,11 @@ test('Should get error response if content type is not set', async () => {
 
 test('Should get error response when GraphQL context error occurs when calling execute function', async () => {
     //Change options to let executeFunction return an error
-    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: logger, debug: true, executeFunction: () => {throw new GraphQLError('A GraphQL context error occurred!')} })
+    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: LOGGER, debug: true, executeFunction: () => {throw new GraphQLError('A GraphQL context error occurred!')} })
     const response = await fetchResponse(`{"query":"${usersQuery}"}`)
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe('A GraphQL context error occurred!')
-    customGraphQLServer.setOptions(initialGraphQLServerOptions)
+    customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
 test('Should get error response if resolver returns GraphQL error', async () => {
@@ -165,27 +165,27 @@ test('Should get error response if resolver returns GraphQL error', async () => 
 
 
 test('Should get error response with formatted error results if resolver returns GraphQL error and formatError function is defined', async () => {
-    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: logger, debug: true, formatErrorFunction: testFormatErrorFunction})
+    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: LOGGER, debug: true, formatErrorFunction: testFormatErrorFunction})
     const response = await fetchResponse(`{"query":"${returnErrorQuery}"}`)
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe('Formatted: Something went wrong!')
-    customGraphQLServer.setOptions(initialGraphQLServerOptions)
+    customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
 test('Should get data response when using GET request', async () => {
-    const response = await fetch(`http://localhost:${graphQLServerPort}/graphql?${generateGetParamsFromGraphQLRequestInfo(usersRequest)}`)
+    const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql?${generateGetParamsFromGraphQLRequestInfo(usersRequest)}`)
     const responseObject = await response.json()
     expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
 })
 
 test('Should get error response when using mutation in a GET request', async () => {
-    const response = await fetch(`http://localhost:${graphQLServerPort}/graphql?${generateGetParamsFromGraphQLRequestInfo(loginRequest)}`)
+    const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql?${generateGetParamsFromGraphQLRequestInfo(loginRequest)}`)
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe('Only "query" operation is allowed in "GET" requests')
 })
 
 test('Should get an error response when content type is not defined', async () => {
-    const response = await fetch(`http://localhost:${graphQLServerPort}/graphql?aField=aValue` )
+    const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql?aField=aValue` )
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe('Invalid request. Request header content-type is undefined.')
 })
@@ -216,11 +216,11 @@ test('Should get data response for application graphql request', async () => {
 
 test('Should get error response if invalid schema is used', async () => {
     //Change options to use schema validation function that always returns a validation error
-    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: logger, debug: true, schemaValidationFunction: () => [new GraphQLError('Schema is not valid!')] })
+    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: LOGGER, debug: true, schemaValidationFunction: () => [new GraphQLError('Schema is not valid!')] })
     const response = await fetchResponse('doesnotmatter')
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe('Request cannot be processed. Schema in GraphQL server is invalid.')
-    customGraphQLServer.setOptions(initialGraphQLServerOptions)
+    customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
 test('Should get error response if invalid method is used', async () => {
@@ -232,12 +232,12 @@ test('Should get error response if invalid method is used', async () => {
 })
 
 test('Should get extensions in GraphQL response if extension function is defined ', async () => {
-    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: logger, debug: true, removeValidationRecommendations: true, extensionFunction: () => extensionTestData  })
+    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: LOGGER, debug: true, removeValidationRecommendations: true, extensionFunction: () => extensionTestData  })
     const response = await fetchResponse(`{"query":"${usersQuery}"}`)
     const responseObject = await response.json()
     expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
     expect(responseObject.extensions).toStrictEqual(extensionTestData)
-    customGraphQLServer.setOptions(initialGraphQLServerOptions)
+    customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
 test('Should get data response if introspection is requested when introspection is allowed', async () => {
@@ -247,16 +247,16 @@ test('Should get data response if introspection is requested when introspection 
 })
 
 test('Should get error response if introspection is requested when validation rule NoSchemaIntrospectionCustomRule is set', async () => {
-    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: logger, debug: true, removeValidationRecommendations: true, validationRules: [NoSchemaIntrospectionCustomRule]  })
+    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: LOGGER, debug: true, removeValidationRecommendations: true, validationRules: [NoSchemaIntrospectionCustomRule]  })
     const response = await fetchResponse(`{"query":"${introspectionQuery}"}`)
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe('GraphQL introspection has been disabled, but the requested query contained the field "__schema".')
-    customGraphQLServer.setOptions(initialGraphQLServerOptions)
+    customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
 function setupGraphQLServer(): Express {
     const graphQLServerExpress = express()
-    customGraphQLServer = new GraphQLServer(initialGraphQLServerOptions)
+    customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
     graphQLServerExpress.all('/graphql', (req, res) => {
         return customGraphQLServer.handleRequest(req, res)
     })

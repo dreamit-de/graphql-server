@@ -31,9 +31,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
     extractInformationFromUrlParameters(url: string): GraphQLRequestInfo {
         const urlParameters = new URLSearchParams(url.substring(url.indexOf('?')))
         const extractedQuery= urlParameters.get('query') ?? undefined
-        const extractedVariables= (urlParameters.get('variables')) as {
-            readonly [name: string]: unknown;
-        } | null || undefined
+        const extractedVariables= (urlParameters.get('variables')) as Readonly<Record<string, unknown>> | null || undefined
         const extractedOperationName= urlParameters.get('operationName') ?? undefined
         return {
             query: extractedQuery,
@@ -48,12 +46,10 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
 
         // If express has already parsed a body as a keyed object, use it.
         if (typeof body === 'object' && !(body instanceof Buffer)) {
-            const bodyAsMap = body as { [param: string]: unknown };
+            const bodyAsMap = body as Record<string, unknown>;
             return {
                 query: bodyAsMap.query as string,
-                variables: bodyAsMap.variables as {
-                    readonly [name: string]: unknown;
-                } | null || undefined,
+                variables: bodyAsMap.variables as Readonly<Record<string, unknown>> | null || undefined,
                 operationName: bodyAsMap.operationName as string
             };
         }

@@ -51,14 +51,14 @@ const errorWithVariables = 'A GraphQLError message ' + messageWithVariables;
 
 test.each`
     logMessage                  | loglevel          | error                         | expectedLogMessage      | expectedLogLevel | expectedStacktrace        | expectedQuery | expectedServiceName
-    ${'A info message'}         | ${LogLevel.Info}  | ${null}                       | ${'A info message'}     | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
-    ${messageWithVariables}     | ${LogLevel.Info}  | ${null}                       | ${messageWithVariables} | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
-    ${'A debug message'}        | ${LogLevel.Debug} | ${null}                       | ${'A debug message'}    | ${'DEBUG'}       | ${undefined}              | ${undefined}  | ${'myTestService'}
-    ${'A FetchError message'}   | ${LogLevel.Error} | ${fetchError}                 | ${fetchErrorMessage}    | ${'ERROR'}       | ${'FetchError: An error'} | ${undefined}  | ${'myTestService'}
-    ${'A GraphQLError message'} | ${LogLevel.Error} | ${graphQLError}               | ${graphQLErrorMessage}  | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
-    ${'A GraphQLError message'} | ${LogLevel.Error} | ${graphQLErrorWithVariables}  | ${errorWithVariables}   | ${'ERROR'}       | ${'A stacktrace'}         | ${'customer'} | ${'myTestService'}
-    ${'A GraphQLError message'} | ${LogLevel.Error} | ${graphQLErrorWithSourceBody} | ${graphQLErrorMessage}  | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
-    ${'A GraphQLError message'} | ${LogLevel.Error} | ${graphQLErrorWithAstNode}    | ${graphQLErrorMessage}  | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
+    ${'A info message'}         | ${LogLevel.info}  | ${null}                       | ${'A info message'}     | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
+    ${messageWithVariables}     | ${LogLevel.info}  | ${null}                       | ${messageWithVariables} | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
+    ${'A debug message'}        | ${LogLevel.debug} | ${null}                       | ${'A debug message'}    | ${'DEBUG'}       | ${undefined}              | ${undefined}  | ${'myTestService'}
+    ${'A FetchError message'}   | ${LogLevel.error} | ${fetchError}                 | ${fetchErrorMessage}    | ${'ERROR'}       | ${'FetchError: An error'} | ${undefined}  | ${'myTestService'}
+    ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLError}               | ${graphQLErrorMessage}  | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
+    ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLErrorWithVariables}  | ${errorWithVariables}   | ${'ERROR'}       | ${'A stacktrace'}         | ${'customer'} | ${'myTestService'}
+    ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLErrorWithSourceBody} | ${graphQLErrorMessage}  | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
+    ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLErrorWithAstNode}    | ${graphQLErrorMessage}  | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
 `('expects a correct logEntry is created for given $logMessage , $loglevel and $error ', ({logMessage, loglevel, error, expectedLogMessage, expectedLogLevel, expectedStacktrace, expectedQuery, expectedServiceName}) => {
     const logEntry = LogHelper.createLogEntry(logMessage, loglevel, 'test-logger', 'myTestService', error);
     expect(logEntry.message).toBe(expectedLogMessage);

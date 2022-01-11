@@ -11,9 +11,9 @@ import {
 } from '../ExampleSchemas'
 import {
     fetchResponse,
-    graphQLServerPort,
-    initialGraphQLServerOptions,
-    logger
+    GRAPHQL_SERVER_PORT,
+    INITIAL_GRAPHQL_SERVER_OPTIONS,
+    LOGGER
 } from '../TestHelpers'
 import {
     FETCH_ERROR,
@@ -32,8 +32,8 @@ let customGraphQLServer: GraphQLServer
 let graphQLServer: Server
 
 beforeAll(async () => {
-    graphQLServer = setupGraphQLServer().listen({port: graphQLServerPort})
-    console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
+    graphQLServer = setupGraphQLServer().listen({port: GRAPHQL_SERVER_PORT})
+    console.info(`Starting GraphQL server on port ${GRAPHQL_SERVER_PORT}`)
 })
 
 afterAll(async () => {
@@ -60,7 +60,7 @@ test('Should get correct metrics', async () => {
      * When schema is invalid, availability should be 0. As only metrics endpoint is being called, request_throughput
      * should stay at 0, SchemaValidationError should increase to 1 and GraphQLError counter should stay at 0
      */
-    customGraphQLServer.setOptions({schema: initialSchemaWithOnlyDescription, rootValue: userSchemaResolvers, logger: logger, debug: true,
+    customGraphQLServer.setOptions({schema: initialSchemaWithOnlyDescription, rootValue: userSchemaResolvers, logger: LOGGER, debug: true,
         shouldUpdateSchemaFunction: () => true})
     metricsResponseBody = await getMetricsResponse()
     expect(metricsResponseBody).toContain('graphql_server_availability 0')
@@ -73,7 +73,7 @@ test('Should get correct metrics', async () => {
     expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${MISSING_QUERY_PARAMETER_ERROR}"} 0`)
     expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${VALIDATION_ERROR}"} 0`)
     expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${SYNTAX_ERROR}"} 0`)
-    customGraphQLServer.setOptions(initialGraphQLServerOptions)
+    customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 
     /** Test:
      * With working schema, availability should be 1. When sending request with valid data response, request_throughput
@@ -129,7 +129,7 @@ test('Should get correct metrics', async () => {
     /** Test:
      * When forcing a FetchError in execute function, FetchError counter and request throughput should increase by 1
      */
-    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: logger, debug: true, executeFunction: () => {
+    customGraphQLServer.setOptions({schema: userSchema, rootValue: userSchemaResolvers, logger: LOGGER, debug: true, executeFunction: () => {
         throw new GraphQLError('FetchError: An error occurred while connecting to following endpoint');
     }})
 
@@ -145,12 +145,12 @@ test('Should get correct metrics', async () => {
     expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${MISSING_QUERY_PARAMETER_ERROR}"} 0`)
     expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${VALIDATION_ERROR}"} 0`)
     expect(metricsResponseBody).toContain(  `graphql_server_errors{errorClass="${SYNTAX_ERROR}"} 0`)
-    customGraphQLServer.setOptions(initialGraphQLServerOptions)
+    customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
 function setupGraphQLServer(): Express {
     const graphQLServerExpress = express()
-    customGraphQLServer = new GraphQLServer(initialGraphQLServerOptions)
+    customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
     graphQLServerExpress.all('/graphql', (req, res) => {
         return customGraphQLServer.handleRequest(req, res)
     })
@@ -161,7 +161,7 @@ function setupGraphQLServer(): Express {
 }
 
 async function getMetricsResponse(): Promise<string> {
-    const metricsResponse = await fetch(`http://localhost:${graphQLServerPort}/metrics`)
+    const metricsResponse = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/metrics`)
     return await metricsResponse.text()
 }
 

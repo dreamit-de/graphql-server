@@ -21,20 +21,20 @@ export class JsonLogger implements Logger {
         this.serviceName = serviceName
     }
 
-    debug(logMessage: string) {
-        this.logMessage(logMessage, LogLevel.Debug)
+    debug(logMessage: string): void {
+        this.logMessage(logMessage, LogLevel.debug)
     }
 
     error(logMessage: string, error: Error): void {
-        this.logMessage(logMessage, LogLevel.Error, error)
+        this.logMessage(logMessage, LogLevel.error, error)
     }
 
     info(logMessage: string): void {
-        this.logMessage(logMessage, LogLevel.Info)
+        this.logMessage(logMessage, LogLevel.info)
     }
 
     warn(logMessage: string): void {
-        this.logMessage(logMessage, LogLevel.Warn)
+        this.logMessage(logMessage, LogLevel.warn)
     }
 
     logMessage(logMessage: string, loglevel: LogLevel, error?: Error): void {

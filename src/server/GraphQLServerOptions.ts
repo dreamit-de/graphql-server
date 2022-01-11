@@ -51,9 +51,9 @@ export interface GraphQLServerOptions {
                        document: DocumentNode,
                        rootValue?: unknown,
                        contextValue?: unknown,
-                       variableValues?: Maybe<{ [key: string]: unknown }>,
+                       variableValues?: Maybe<Record<string, unknown>>,
                        operationName?: Maybe<string>,
                        fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>,
                        typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>) => PromiseOrValue<ExecutionResult>
-    readonly extensionFunction?: (request: Request, requestInformation: GraphQLRequestInfo, executionResult: ExecutionResult) => MaybePromise<undefined | { [key: string]: unknown }>
+    readonly extensionFunction?: (request: Request, requestInformation: GraphQLRequestInfo, executionResult: ExecutionResult) => MaybePromise<undefined | Record<string, unknown>>
 }
