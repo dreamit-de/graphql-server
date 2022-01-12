@@ -2,10 +2,10 @@ import {
     buildSchema,
     GraphQLError,
     GraphQLSchema
-} from 'graphql';
-import {GraphQLRequestInfo} from '../src';
+} from 'graphql'
+import {GraphQLRequestInfo} from '../src'
 
-//Contains example schemas and data that can be used across tests
+// Contains example schemas and data that can be used across tests
 
 export interface User {
     userId: string
@@ -25,7 +25,8 @@ export const userQuery = 'query user($id201: String!){ user(id: $id201) { userId
 export const userVariables = '{"id201":"1"}'
 export const usersQuery = 'query users{ users { userId userName } }'
 export const returnErrorQuery = 'query returnError{ returnError { userId } }'
-export const loginMutation = 'mutation login{ login(userName:"magic_man", password:"123456") { jwt } }'
+export const loginMutation =
+    'mutation login{ login(userName:"magic_man", password:"123456") { jwt } }'
 export const logoutMutation = 'mutation logout{ logout { result } }'
 export const introspectionQuery = 'query introspection{ __schema { queryType { name } } }'
 
@@ -96,5 +97,5 @@ export const userSchemaResolvers= {
     logout(): LogoutResult {
         return {result: 'Goodbye!'}
     }
-};
+}
 

@@ -3,7 +3,11 @@ import {LogEntry} from './LogEntry'
 import {GraphQLError} from 'graphql'
 
 export class LogHelper {
-    static createLogEntry(logMessage: string, loglevel: LogLevel, loggerName: string, serviceName: string, error?: Error): LogEntry {
+    static createLogEntry(logMessage: string,
+        loglevel: LogLevel,
+        loggerName: string,
+        serviceName: string,
+        error?: Error): LogEntry {
         const logEntry: LogEntry = {
             logger: loggerName,
             timestamp: LogHelper.createTimestamp(),
@@ -30,7 +34,9 @@ export class LogHelper {
 
                 if (error.extensions.serviceName) {
                     logEntry.serviceName = error.extensions.serviceName
-                    logEntry.level = error.extensions.serviceName === serviceName ? LogLevel.error : LogLevel.warn
+                    logEntry.level = error.extensions.serviceName === serviceName
+                        ? LogLevel.error
+                        : LogLevel.warn
                 }
 
                 if (error.extensions.exception) {

@@ -31,8 +31,11 @@ test('Should not update schema when given schema is undefined', () => {
     expectRootQueryNotDefined(graphqlServer)
 })
 
-test('Should update schema when given schema is undefined and shouldUpdateSchemaFunction is true', () => {
-    const graphqlServer = new GraphQLServer({schema: initialSchemaWithOnlyDescription, debug: true, shouldUpdateSchemaFunction: (): boolean => true})
+test('Should update schema when given schema is undefined ' +
+    'and shouldUpdateSchemaFunction is true', () => {
+    const graphqlServer = new GraphQLServer({schema: initialSchemaWithOnlyDescription
+        , debug: true
+        , shouldUpdateSchemaFunction: (): boolean => true})
     graphqlServer.setSchema(undefined)
     const schema = graphqlServer.getSchema()
     expect(schema).toBeUndefined()

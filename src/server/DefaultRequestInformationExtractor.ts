@@ -13,6 +13,8 @@ import zlib,
 import {RequestInformationExtractor} from './RequestInformationExtractor'
 import {Buffer} from 'buffer'
 
+export const MAX_BUFFER_SIZE = 102400
+
 /**
  * Default implementation of RequestInformationExtractor interface
  */
@@ -32,7 +34,9 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
     extractInformationFromUrlParameters(url: string): GraphQLRequestInfo {
         const urlParameters = new URLSearchParams(url.substring(url.indexOf('?')))
         const extractedQuery= urlParameters.get('query') ?? undefined
-        const extractedVariables= (urlParameters.get('variables')) as Readonly<Record<string, unknown>> | null || undefined
+        const extractedVariables=
+            (urlParameters.get('variables')) as Readonly<Record<string, unknown>>
+            | null || undefined
         const extractedOperationName= urlParameters.get('operationName') ?? undefined
         return {
             query: extractedQuery,
@@ -50,7 +54,8 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
             const bodyAsMap = body as Record<string, unknown>
             return {
                 query: bodyAsMap.query as string,
-                variables: bodyAsMap.variables as Readonly<Record<string, unknown>> | null || undefined,
+                variables: bodyAsMap.variables as Readonly<Record<string, unknown>>
+                    | null || undefined,
                 operationName: bodyAsMap.operationName as string
             }
         }
@@ -58,15 +63,19 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
         // Skip requests without content types.
         if (request.headers['content-type'] === undefined) {
             return {
-                error: { graphQLError: new GraphQLError('Invalid request. Request header content-type is undefined.'), statusCode: 400 }
+                error: { graphQLError: new GraphQLError('Invalid request. ' +
+                        'Request header content-type is undefined.'),
+                statusCode: 400 }
             }
         }
 
         try {
             const typeInfo = contentType.parse(request)
 
-            // If express has already parsed a body as a string, and the content-type
-            // was application/graphql, parse the string body.
+            /*
+             * If express has already parsed a body as a string, and the content-type
+             * was application/graphql, parse the string body.
+             */
             if (typeof body === 'string' && typeInfo.type === 'application/graphql') {
                 return { query: body }
             }
@@ -88,7 +97,8 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
                         return JSON.parse(rawBody)
                     } catch {
                         return {
-                            error: { graphQLError: new GraphQLError('POST body contains invalid JSON.'), statusCode: 400 }
+                            error: { graphQLError: new GraphQLError('POST body' +
+                                    ' contains invalid JSON.'), statusCode: 400 }
                         }
                     }
                 case 'application/x-www-form-urlencoded':
@@ -97,7 +107,9 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
 
                 // If no Content-Type header matches, parse nothing.
                 return {
-                    error: { graphQLError: new GraphQLError(`POST body contains invalid content type: ${typeInfo.type}.`), statusCode: 400 }
+                    error: { graphQLError: new GraphQLError(
+                        `POST body contains invalid content type: ${typeInfo.type}.`
+                    ), statusCode: 400 }
                 }
             } else {
                 return {
@@ -106,7 +118,8 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
             }
         } catch {
             return {
-                error: { graphQLError: new GraphQLError('Content type could not be parsed.'), statusCode: 400 }
+                error: { graphQLError: new GraphQLError('Content type' +
+                        ' could not be parsed.'), statusCode: 400 }
             }
         }
     }
@@ -126,7 +139,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
         }
 
         const encoding = this.determineContentEncoding(req)
-        const maxBuffer = 100 * 1024 // 100kb
+        const maxBuffer = MAX_BUFFER_SIZE
         const stream = this.decompressed(req, encoding)
         if ('graphQLError' in stream && 'statusCode' in stream) {
             return {
@@ -172,7 +185,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
         return Buffer.isEncoding(charset) ? charset : undefined
     }
 
-    //Determines the content encoding using the request information
+    // Determines the content encoding using the request information
     determineContentEncoding(req: Request): string {
         const contentEncoding = req.headers['content-encoding']
         return typeof contentEncoding === 'string' ? contentEncoding.toLowerCase() : 'identity'

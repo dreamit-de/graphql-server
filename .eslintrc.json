@@ -51,6 +51,12 @@
         "space-before-function-paren": ["error", "never"],
         "space-in-parens": ["error", "never"],
         "keyword-spacing": "error",
-        "semi": ["error", "never"]
+        "semi": ["error", "never"],
+        "max-len": ["error", {"code": 100 }],
+        "multiline-comment-style": ["error", "starred-block"],
+        "no-inline-comments": "error",
+        "spaced-comment": ["error", "always"],
+        "line-comment-position": "error",
+        "lines-around-comment": "error"
     }
 }

@@ -49,11 +49,13 @@ export class DefaultMetricsClient implements MetricsClient {
             help: 'Number of errors per Error class',
             labelNames: ['errorClass'],
         })
-        /*
-         * Initializes the error counter for errors with type GraphQLError. When evaluating time series this can help
-         * to create an initial time series that can be used for actions like alerting. Otherwise calculating
-         * differences with functions like "increase" with an undefined time series might not work for the first
-         * occurrence of an error.
+
+        /**
+         * Initializes the error counter for errors with type GraphQLError.
+         * When evaluating time series this can help
+         * to create an initial time series that can be used for actions like alerting.
+         * Otherwise calculating differences with functions like "increase" with
+         * an undefined time series might not work for the first occurrence of an error.
          */
         this.graphQLServerErrorCounter.labels(GRAPHQL_ERROR).inc(0)
         this.graphQLServerErrorCounter.labels(SCHEMA_VALIDATION_ERROR).inc(0)

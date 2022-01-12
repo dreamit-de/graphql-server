@@ -31,7 +31,9 @@ export interface GraphQLServerOptions {
     readonly schema?: GraphQLSchema | undefined
     readonly shouldUpdateSchemaFunction?: (schema?: GraphQLSchema) => boolean
     readonly formatErrorFunction?: (error: GraphQLError) => GraphQLFormattedError
-    readonly collectErrorMetricsFunction?: (errorName: string, error?: unknown, request?: Request) => void
+    readonly collectErrorMetricsFunction?: (errorName: string,
+                                            error?: unknown,
+                                            request?: Request) => void
     readonly schemaValidationFunction?: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError>
     readonly parseFunction?: (source: string | Source, options?: ParseOptions) => DocumentNode
     readonly validationRules?: ReadonlyArray<ValidationRule>
@@ -54,6 +56,10 @@ export interface GraphQLServerOptions {
                        variableValues?: Maybe<Record<string, unknown>>,
                        operationName?: Maybe<string>,
                        fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>,
-                       typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>) => PromiseOrValue<ExecutionResult>
-    readonly extensionFunction?: (request: Request, requestInformation: GraphQLRequestInfo, executionResult: ExecutionResult) => MaybePromise<undefined | Record<string, unknown>>
+                       typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>)
+        => PromiseOrValue<ExecutionResult>
+    readonly extensionFunction?: (request: Request,
+                                  requestInformation: GraphQLRequestInfo,
+                                  executionResult: ExecutionResult)
+        => MaybePromise<undefined | Record<string, unknown>>
 }

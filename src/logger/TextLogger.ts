@@ -10,9 +10,14 @@ export class TextLogger implements Logger {
     loggerName: string
     serviceName: string
 
-    /** Creates a new instance of Logger.
-     * @param {string} loggerName - The logger name of the logger. Will be used in output if not empty.
-     * @param {string} serviceName - The service name of the logger. Used to identify the graphql server and can be used to differentiate it from remote graphql services like in a gateway setup. Will be output to "serviceName" field in JSON.
+    /**
+     * Creates a new instance of Logger.
+     * @param {string} loggerName - The logger name of the logger.
+     * Will be used in output if not empty.
+     * @param {string} serviceName - The service name of the logger.
+     * Used to identify the graphql server and can be used to differentiate
+     * it from remote graphql services like in a gateway setup.
+     * Will be output to "serviceName" field in JSON.
      */
     constructor(loggerName: string, serviceName: string) {
         this.loggerName = loggerName
@@ -36,15 +41,23 @@ export class TextLogger implements Logger {
     }
 
     logMessage(logMessage: string, loglevel: LogLevel, error?: Error): void {
-        const logEntry: LogEntry = LogHelper.createLogEntry(logMessage, loglevel, this.loggerName, this.serviceName, error)
+        const logEntry: LogEntry = LogHelper.createLogEntry(logMessage,
+            loglevel,
+            this.loggerName,
+            this.serviceName,
+            error)
         const logOutput = this.prepareLogOutput(logEntry)
         console.log(`${loglevel.toUpperCase()} - ${logOutput}`)
     }
 
-    /** Prepares the text used in the log output. Can be overwritten if it does not match expected output format.
+    /**
+     * Prepares the text used in the log output.
+     * Can be overwritten if it does not match expected output format.
      * @param {LogEntry} logEntry - The extracted log information.
      */
     prepareLogOutput(logEntry: LogEntry): string {
-        return `${logEntry.timestamp} [${logEntry.level.toUpperCase()}] ${this.loggerName}-${this.serviceName} : ${logEntry.message} ${logEntry.stacktrace || ''}`
+        return `${logEntry.timestamp} [${logEntry.level.toUpperCase()}]`
+            + `${this.loggerName}-${this.serviceName} :`
+            + `${logEntry.message} ${logEntry.stacktrace || ''}`
     }
 }

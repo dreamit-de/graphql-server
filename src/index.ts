@@ -1,5 +1,6 @@
 /**
- * A GraphQL server implementation written in NodeJS/Typescript. It uses the standard graphql library to receive GraphQL
+ * A GraphQL server implementation written in NodeJS/Typescript.
+ * It uses the standard graphql library to receive GraphQL
  * requests and send back appropriate responses.
  */
 export * from './error/ErrorNameConstants'
@@ -17,5 +18,5 @@ export * from './metrics/MetricsClient'
 
 export * from './server/DefaultRequestInformationExtractor'
 export * from './server/RequestInformationExtractor'
-export * from './server/GraphQLServer';
+export * from './server/GraphQLServer'
 export * from './server/GraphQLServerOptions'
