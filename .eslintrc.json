@@ -16,13 +16,24 @@
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 2017,
-        "sourceType": "module"
+        "sourceType": "module",
+        "project": ["tsconfig.json"]
     },
     "plugins": [
         "@typescript-eslint/eslint-plugin",
         "modules-newline"
     ],
     "rules": {
+        "@typescript-eslint/class-literal-property-style": "error",
+        "@typescript-eslint/consistent-indexed-object-style": "error",
+        "@typescript-eslint/naming-convention": "error",
+        "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
+        "@typescript-eslint/explicit-function-return-type": "error",
+        "@typescript-eslint/no-confusing-non-null-assertion": "error",
+        "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
+        "@typescript-eslint/no-parameter-properties": "error",
+        "@typescript-eslint/non-nullable-type-assertion-style": "error",
+        "@typescript-eslint/prefer-includes": "error",
         "quotes": [ 2, "single", { "avoidEscape": true }],
         "indent": ["error", 4, { "MemberExpression" :  0}],
         "arrow-spacing": [ 2, { "before": true, "after": true }],
@@ -32,10 +43,20 @@
         "array-element-newline": ["error", "consistent"],
         "function-call-argument-newline": ["error", "consistent"],
         "function-paren-newline": ["error", "consistent"],
-        "newline-per-chained-call": "error",
-        "object-curly-newline": ["error", { "consistent": true }],
         "modules-newline/import-declaration-newline": "error",
         "modules-newline/export-declaration-newline": "error",
-        "space-before-blocks": "error"
+        "newline-per-chained-call": "error",
+        "object-curly-newline": ["error", { "consistent": true }],
+        "space-before-blocks": "error",
+        "space-before-function-paren": ["error", "never"],
+        "space-in-parens": ["error", "never"],
+        "keyword-spacing": "error",
+        "semi": ["error", "never"],
+        "max-len": ["error", {"code": 100 }],
+        "multiline-comment-style": ["error", "starred-block"],
+        "no-inline-comments": "error",
+        "spaced-comment": ["error", "always"],
+        "line-comment-position": "error",
+        "lines-around-comment": "error"
     }
 }
