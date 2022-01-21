@@ -9,6 +9,7 @@ import {
     parse,
     ParseOptions,
     Source,
+    specifiedRules,
     validate,
     validateSchema
 } from 'graphql'
@@ -88,7 +89,8 @@ export class GraphQLServer {
         (schema: GraphQLSchema) => ReadonlyArray<GraphQLError> = validateSchema
     private schemaValidationErrors: ReadonlyArray<GraphQLError> = []
     private parseFunction: (source: string | Source, options?: ParseOptions) => DocumentNode = parse
-    private validationRules?: ReadonlyArray<ValidationRule>
+    private defaultValidationRules:  ReadonlyArray<ValidationRule> = specifiedRules
+    private customValidationRules: ReadonlyArray<ValidationRule> = []
     private validationTypeInfo?: TypeInfo
     private validationOptions?: { maxErrors?: number }
 
@@ -142,7 +144,8 @@ export class GraphQLServer {
                 options.collectErrorMetricsFunction || this.defaultCollectErrorMetrics
             this.schemaValidationFunction = options.schemaValidationFunction || validateSchema
             this.parseFunction = options.parseFunction || parse
-            this.validationRules = options.validationRules
+            this.defaultValidationRules = options.defaultValidationRules || specifiedRules
+            this.customValidationRules = options.customValidationRules || []
             this.validationTypeInfo = options.validationTypeInfo
             this.validationOptions = options.validationOptions
             this.removeValidationRecommendations =
@@ -282,7 +285,7 @@ export class GraphQLServer {
          */
         const validationErrors = this.validateSchemaFunction(this.schema,
             documentAST,
-            this.validationRules,
+            [...this.defaultValidationRules, ...this.customValidationRules],
             this.validationTypeInfo,
             this.validationOptions)
         if (validationErrors.length > 0) {

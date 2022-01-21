@@ -25,7 +25,8 @@ import {
     SYNTAX_ERROR,
     VALIDATION_ERROR
 } from '../../src'
-import {GraphQLError} from 'graphql'
+import {GraphQLError,
+    NoSchemaIntrospectionCustomRule} from 'graphql'
 
 
 let customGraphQLServer: GraphQLServer
@@ -292,7 +293,13 @@ test('Should get correct metrics', async() => {
 
 function setupGraphQLServer(): Express {
     const graphQLServerExpress = express()
-    customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
+    customGraphQLServer = new GraphQLServer(
+        {schema: userSchema,
+            rootValue: userSchemaResolvers,
+            logger: LOGGER,
+            debug: true,
+            customValidationRules: [NoSchemaIntrospectionCustomRule]}
+    )
     graphQLServerExpress.all('/graphql', (req, res) => {
         return customGraphQLServer.handleRequest(req, res)
     })

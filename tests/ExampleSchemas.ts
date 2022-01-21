@@ -24,6 +24,7 @@ export const userTwo: User = {userId: '2', userName:'UserTwo'}
 export const userQuery = 'query user($id201: String!){ user(id: $id201) { userId userName } }'
 export const userVariables = '{"id201":"1"}'
 export const usersQuery = 'query users{ users { userId userName } }'
+export const usersQueryWithUnknownField = 'query users{ users { userId userName hobby } }'
 export const returnErrorQuery = 'query returnError{ returnError { userId } }'
 export const loginMutation =
     'mutation login{ login(userName:"magic_man", password:"123456") { jwt } }'
