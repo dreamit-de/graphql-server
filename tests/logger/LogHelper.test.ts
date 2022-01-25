@@ -85,3 +85,14 @@ test.each`
     }
     expect(logEntry.serviceName).toBe(expectedServiceName)
 })
+
+test('Should use customErrorName instead or error.name if customErrorName is set', () => {
+    const logEntry = LogHelper.createLogEntry('A GraphQLError message',
+        LogLevel.error,
+        'test-logger',
+        'myTestService',
+        undefined,
+        graphQLError,
+        'MyCustomError')
+    expect(logEntry.errorName).toBe('MyCustomError')
+})
