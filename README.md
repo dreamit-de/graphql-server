@@ -142,6 +142,23 @@ graphQLServerExpress.listen({port: graphQLServerPort})
 console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 ```
 
+## CORS requests
+
+The `GraphQLServer` does not handle CORS requests on its own. It is recommended to handle this on the webserver level,
+e.g. by using `cors` library with an ExpressJS webserver like in the example below. 
+
+```typescript
+const graphQLServerPort = 3592
+const graphQLServerExpress = express()
+graphQLServerExpress.use(cors())
+const customGraphQLServer = new GraphQLServer({schema: someExampleSchema})
+graphQLServerExpress.all('/graphql', (req, res) => {
+    return customGraphQLServer.handleRequest(req, res)
+})
+graphQLServerExpress.listen({port: graphQLServerPort})
+console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
+```
+
 ## Available Options
 
 The `GraphQLServer` accepts the following options. Note that all options are optional and can be overwritten by 

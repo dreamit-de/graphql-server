@@ -361,14 +361,6 @@ test('Should get data response if query with unknown field is executed ' +
     customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
-test('Should get proper response to preflight request with fitting' +
-    'access-control-allow-methods header', async() => {
-    const response = await fetchResponse(`{"query":"${userQuery}"}`, 'OPTIONS')
-    const allowMethodResponseHeader = response.headers.get('access-control-allow-methods')
-    expect(response.status).toBe(200)
-    expect(allowMethodResponseHeader).toStrictEqual('GET,POST')
-})
-
 function setupGraphQLServer(): Express {
     const graphQLServerExpress = express()
     customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
