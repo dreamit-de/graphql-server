@@ -51,7 +51,7 @@ validation rules you can overwrite them by setting `defaultValidationRules` opti
 
 **Warning!**
 Setting both `defaultValidationRules` and `customValidationRules` options to `[]` will disable validation. This might 
-result in unexpected responses that are hard to use for requestors like api users or Frontends.
+result in unexpected responses that are hard to use for requestors like API users or frontends.
 
 ```typescript
 import {NoSchemaIntrospectionCustomRule} from 'graphql'
