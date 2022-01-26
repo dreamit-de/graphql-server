@@ -230,8 +230,11 @@ export class GraphQLServer {
         // Increase request throughput
         this.metricsClient.increaseRequestThroughput(request)
 
+        if (request.method === 'OPTIONS') {
+            return this.sendPreflightResponse(request, response)
+        }
         // Reject requests that do not use GET and POST methods.
-        if (request.method !== 'GET' && request.method !== 'POST') {
+        else if (request.method !== 'GET' && request.method !== 'POST') {
             this.logger.error(requestCouldNotBeProcessed,
                 methodNotAllowedError,
                 METHOD_NOT_ALLOWED_ERROR,
@@ -603,5 +606,21 @@ export class GraphQLServer {
         } else {
             return GRAPHQL_ERROR
         }
+    }
+
+    /**
+     * Sends back a preflight response containing a fitting
+     * 'Access-Control-Allow-Methods' header
+     * @param {Request} request - The initial request
+     * @param {Response} response - The response to send back
+     */
+    sendPreflightResponse(request: Request, response: Response): void {
+        this.logDebugIfEnabled(
+            'Responding to OPTIONS request',
+            request
+        )
+        response.statusCode = 200
+        response.setHeader('Access-Control-Allow-Methods', 'GET,POST')
+        response.end()
     }
 }
