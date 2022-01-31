@@ -1,24 +1,29 @@
 import {LogLevel} from './LogLevel'
 import {LogEntry} from './LogEntry'
 import {GraphQLError} from 'graphql'
+import {Request} from '../server/GraphQLServer'
+
+export const VARIABLES_IN_MESSAGE_REGEX = new RegExp(/got invalid value (.*); Field/gm)
 
 export class LogHelper {
     static createLogEntry(logMessage: string,
         loglevel: LogLevel,
         loggerName: string,
         serviceName: string,
-        error?: Error): LogEntry {
+        request?: Request,
+        error?: Error,
+        customErrorName?: string): LogEntry {
         const logEntry: LogEntry = {
             logger: loggerName,
             timestamp: LogHelper.createTimestamp(),
-            message: logMessage,
+            message: LogHelper.sanitizeMessage(logMessage),
             level: loglevel,
             serviceName: serviceName
         }
 
         if (error) {
-            logEntry.errorName = error.name
-            logEntry.message = logEntry.message + ' ' + error.message
+            logEntry.errorName = customErrorName ?? error.name
+            logEntry.message = logEntry.message + ' ' + LogHelper.sanitizeMessage(error.message)
             if (error.stack) {
                 logEntry.stacktrace = error.stack
             }
@@ -49,5 +54,20 @@ export class LogHelper {
 
     static createTimestamp(): string {
         return new Date().toISOString()
+    }
+
+    /**
+     * Removes sensible information that might occur when
+     * variables are used in log messages from the message.
+     * @param {string} logMessage - The original log message
+     * @returns {string} The sanitized message. Sensible parts will
+     * be overwritten with the text REMOVED BY SANITIZER
+     */
+    static sanitizeMessage(logMessage: string): string {
+        let foundVariable
+        if (logMessage && (foundVariable = VARIABLES_IN_MESSAGE_REGEX.exec(logMessage))) {
+            return logMessage.replace(foundVariable[1], 'REMOVED BY SANITIZER')
+        }
+        return logMessage
     }
 }

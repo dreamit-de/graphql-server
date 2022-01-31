@@ -42,21 +42,46 @@ so the request won't be rejected because of a missing/invalid schema. When using
 recommended to provide a `rootValue` to return a fitting value. Examples for these requests can be found in the 
 integration test in the `GraphQLServer.integration.test.ts` class in the `tests` folder. 
 
-## Disable introspection
+## Schema Validation and Disable introspection
 
-Introspection can be used to get information about the available schema. While this may be useful in development 
-environments and public APIs you should consider disabling it for production if e.g. your API is only used with a 
-specific matching frontend.
+Validation rules can be used to define how the `GraphQLServer` should behave when validating the request against the given
+schema. 
+To ease the use `GraphQLServer` uses the `specifiedRules` from `graphql-js` library. If you don't want to use the default
+validation rules you can overwrite them by setting `defaultValidationRules` option to `[]`.
 
-Introspection can be disabled by adding the `NoSchemaIntrospectionCustomRule` from the `graphql-js` library to the
-`validationRules` option.
+**Warning!**
+Setting both `defaultValidationRules` and `customValidationRules` options to `[]` will disable validation. This might 
+result in unexpected responses that are hard to use for requestors like API users or frontends.
 
 ```typescript
 import {NoSchemaIntrospectionCustomRule} from 'graphql'
 
 const graphQLServerPort = 3592
 const graphQLServerExpress = express()
-const customGraphQLServer = new GraphQLServer({schema: someExampleSchema, validationRules: [NoSchemaIntrospectionCustomRule]})
+const customGraphQLServer = new GraphQLServer({schema: someExampleSchema, defaultValidationRules: []})
+graphQLServerExpress.all('/graphql', (req, res) => {
+    return customGraphQLServer.handleRequest(req, res)
+})
+graphQLServerExpress.listen({port: graphQLServerPort})
+console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
+```
+
+If you want to define custom validation rules you can use the `customValidationRules` option (e.g. to 
+handle introspection like shown in the example below).
+
+Introspection can be used to get information about the available schema. While this may be useful in development 
+environments and public APIs you should consider disabling it for production if e.g. your API is only used with a 
+specific matching frontend.
+
+Introspection can be disabled by adding the `NoSchemaIntrospectionCustomRule` from the `graphql-js` library to the
+`customValidationRules` option.
+
+```typescript
+import {NoSchemaIntrospectionCustomRule} from 'graphql'
+
+const graphQLServerPort = 3592
+const graphQLServerExpress = express()
+const customGraphQLServer = new GraphQLServer({schema: someExampleSchema, customValidationRules: [NoSchemaIntrospectionCustomRule]})
 graphQLServerExpress.all('/graphql', (req, res) => {
     return customGraphQLServer.handleRequest(req, res)
 })
@@ -112,6 +137,23 @@ graphQLServerExpress.all('/graphql', (req, res) => {
 })
 graphQLServerExpress.get('/metrics', async (req, res) => {
   return res.contentType(customGraphQLServer.getMetricsContentType()).send(await customGraphQLServer.getMetrics());
+})
+graphQLServerExpress.listen({port: graphQLServerPort})
+console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
+```
+
+## CORS requests
+
+The `GraphQLServer` does not handle CORS requests on its own. It is recommended to handle this on the webserver level,
+e.g. by using `cors` library with an ExpressJS webserver like in the example below. 
+
+```typescript
+const graphQLServerPort = 3592
+const graphQLServerExpress = express()
+graphQLServerExpress.use(cors())
+const customGraphQLServer = new GraphQLServer({schema: someExampleSchema})
+graphQLServerExpress.all('/graphql', (req, res) => {
+    return customGraphQLServer.handleRequest(req, res)
 })
 graphQLServerExpress.listen({port: graphQLServerPort})
 console.info(`Starting GraphQL server on port ${graphQLServerPort}`)

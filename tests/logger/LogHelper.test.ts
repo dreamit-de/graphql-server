@@ -54,12 +54,14 @@ const fetchError = new FetchError('An error occurred while connecting to followi
 const graphQLErrorMessage = 'A GraphQLError message `CustomerPayload` is an extension type'
 const fetchErrorMessage = 'A FetchError message ' +
     'An error occurred while connecting to following endpoint'
-const errorWithVariables = 'A GraphQLError message ' + messageWithVariables
+const sanitizedMessage = 'Variable \\"$login\\" got invalid value REMOVED BY SANITIZER; Field \\"abc\\" is not defined by type LoginInput.'
+const errorWithVariables = 'A GraphQLError message ' + sanitizedMessage
+
 
 test.each`
     logMessage                  | loglevel          | error                         | expectedLogMessage      | expectedLogLevel | expectedStacktrace        | expectedQuery | expectedServiceName
     ${'A info message'}         | ${LogLevel.info}  | ${null}                       | ${'A info message'}     | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
-    ${messageWithVariables}     | ${LogLevel.info}  | ${null}                       | ${messageWithVariables} | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
+    ${messageWithVariables}     | ${LogLevel.info}  | ${null}                       | ${sanitizedMessage}     | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
     ${'A debug message'}        | ${LogLevel.debug} | ${null}                       | ${'A debug message'}    | ${'DEBUG'}       | ${undefined}              | ${undefined}  | ${'myTestService'}
     ${'A FetchError message'}   | ${LogLevel.error} | ${fetchError}                 | ${fetchErrorMessage}    | ${'ERROR'}       | ${'FetchError: An error'} | ${undefined}  | ${'myTestService'}
     ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLError}               | ${graphQLErrorMessage}  | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
@@ -67,7 +69,7 @@ test.each`
     ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLErrorWithSourceBody} | ${graphQLErrorMessage}  | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
     ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLErrorWithAstNode}    | ${graphQLErrorMessage}  | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
 `('expects a correct logEntry is created for given $logMessage , $loglevel and $error ', ({logMessage, loglevel, error, expectedLogMessage, expectedLogLevel, expectedStacktrace, expectedQuery, expectedServiceName}) => {
-    const logEntry = LogHelper.createLogEntry(logMessage, loglevel, 'test-logger', 'myTestService', error)
+    const logEntry = LogHelper.createLogEntry(logMessage, loglevel, 'test-logger', 'myTestService', undefined, error)
     expect(logEntry.message).toBe(expectedLogMessage)
     expect(logEntry.level).toBe(expectedLogLevel)
     if (expectedStacktrace) {
@@ -82,4 +84,15 @@ test.each`
         expect(logEntry.query).toBe(expectedQuery)
     }
     expect(logEntry.serviceName).toBe(expectedServiceName)
+})
+
+test('Should use customErrorName instead or error.name if customErrorName is set', () => {
+    const logEntry = LogHelper.createLogEntry('A GraphQLError message',
+        LogLevel.error,
+        'test-logger',
+        'myTestService',
+        undefined,
+        graphQLError,
+        'MyCustomError')
+    expect(logEntry.errorName).toBe('MyCustomError')
 })

@@ -15,7 +15,8 @@ import {
     userTwo,
     userQuery,
     userVariables,
-    introspectionQuery
+    introspectionQuery,
+    usersQueryWithUnknownField
 } from './ExampleSchemas'
 import {GraphQLError,
     NoSchemaIntrospectionCustomRule} from 'graphql'
@@ -307,13 +308,56 @@ test('Should get error response if introspection is requested ' +
         logger: LOGGER,
         debug: true,
         removeValidationRecommendations: true,
-        validationRules: [NoSchemaIntrospectionCustomRule]  })
+        customValidationRules: [NoSchemaIntrospectionCustomRule]  })
     const response = await fetchResponse(`{"query":"${introspectionQuery}"}`)
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe(
         'GraphQL introspection has been disabled, ' +
         'but the requested query contained the field "__schema".'
     )
+    customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
+})
+
+test('Should get error response if query with unknown field is executed ' +
+    'and custom validation rule is set', async() => {
+    customGraphQLServer.setOptions({schema: userSchema,
+        rootValue: userSchemaResolvers,
+        logger: LOGGER,
+        debug: true,
+        removeValidationRecommendations: true,
+        customValidationRules: [NoSchemaIntrospectionCustomRule]  })
+    const response = await fetchResponse(`{"query":"${usersQueryWithUnknownField}"}`)
+    const responseObject = await response.json()
+    expect(responseObject.errors[0].message).toBe('Cannot query field "hobby" on type "User".')
+    customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
+})
+
+test('Should get error response if query with unknown field is executed ' +
+    'and no custom validation rule is set', async() => {
+    customGraphQLServer.setOptions({schema: userSchema,
+        rootValue: userSchemaResolvers,
+        logger: LOGGER,
+        debug: true,
+        removeValidationRecommendations: true,
+        customValidationRules: [] })
+    const response = await fetchResponse(`{"query":"${usersQueryWithUnknownField}"}`)
+    const responseObject = await response.json()
+    expect(responseObject.errors[0].message).toBe('Cannot query field "hobby" on type "User".')
+    customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
+})
+
+test('Should get data response if query with unknown field is executed ' +
+    'and validation rules are removed', async() => {
+    customGraphQLServer.setOptions({schema: userSchema,
+        rootValue: userSchemaResolvers,
+        logger: LOGGER,
+        debug: true,
+        removeValidationRecommendations: true,
+        defaultValidationRules: [],
+        customValidationRules: [] })
+    const response = await fetchResponse(`{"query":"${usersQueryWithUnknownField}"}`)
+    const responseObject = await response.json()
+    expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
     customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 

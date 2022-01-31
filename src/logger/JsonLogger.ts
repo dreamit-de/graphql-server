@@ -3,6 +3,7 @@ import {Console} from 'console'
 import {LogLevel} from './LogLevel'
 import {LogEntry} from './LogEntry'
 import {LogHelper} from './LogHelper'
+import {Request} from '../server/GraphQLServer'
 
 const loggerConsole: Console = new Console(process.stdout, process.stderr, false)
 
@@ -28,28 +29,34 @@ export class JsonLogger implements Logger {
         this.serviceName = serviceName
     }
 
-    debug(logMessage: string): void {
-        this.logMessage(logMessage, LogLevel.debug)
+    debug(logMessage: string, request?: Request): void {
+        this.logMessage(logMessage, LogLevel.debug, request)
     }
 
-    error(logMessage: string, error: Error): void {
-        this.logMessage(logMessage, LogLevel.error, error)
+    error(logMessage: string, error: Error, customErrorName: string, request?: Request): void {
+        this.logMessage(logMessage, LogLevel.error, request, error, customErrorName)
     }
 
-    info(logMessage: string): void {
-        this.logMessage(logMessage, LogLevel.info)
+    info(logMessage: string, request?: Request): void {
+        this.logMessage(logMessage, LogLevel.info, request)
     }
 
-    warn(logMessage: string): void {
-        this.logMessage(logMessage, LogLevel.warn)
+    warn(logMessage: string, request?: Request): void {
+        this.logMessage(logMessage, LogLevel.warn, request)
     }
 
-    logMessage(logMessage: string, loglevel: LogLevel, error?: Error): void {
+    logMessage(logMessage: string,
+        loglevel: LogLevel,
+        request?: Request,
+        error?: Error,
+        customErrorName?: string): void {
         const logEntry: LogEntry = LogHelper.createLogEntry(logMessage,
             loglevel,
             this.loggerName,
             this.serviceName,
-            error)
+            request,
+            error,
+            customErrorName)
         loggerConsole.log(JSON.stringify(logEntry))
     }
 }
