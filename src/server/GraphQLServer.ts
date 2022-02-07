@@ -598,6 +598,7 @@ export class GraphQLServer {
         if (error instanceof Error && error.message && (error.message.includes(FETCH_ERROR)
             || error.message.includes('ECONNREFUSED')
             || error.message.includes('ECONNRESET')
+            || error.message.includes('ETIMEDOUT')
             || error.message.includes('socket hang up'))) {
             return FETCH_ERROR
         } else {
