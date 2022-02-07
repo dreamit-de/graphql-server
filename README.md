@@ -19,7 +19,7 @@ TypeScript declarations are provided within the project.
 - Uses out-of-the-box default options to ease use and keep code short
 - Provides hot reloading for schema and options
 - Provides out-of-the-box metrics for GraphQLServer
-- Uses and is compatible to `graphql-js` library version 14 and 15.
+- Uses and is compatible with `graphql-js` library version 14 and 15.
 
 ## Usage
 
@@ -42,7 +42,7 @@ so the request won't be rejected because of a missing/invalid schema. When using
 recommended to provide a `rootValue` to return a fitting value. Examples for these requests can be found in the 
 integration test in the `GraphQLServer.integration.test.ts` class in the `tests` folder. 
 
-## Schema Validation and Disable introspection
+## Schema validation and disabling Introspection
 
 Validation rules can be used to define how the `GraphQLServer` should behave when validating the request against the given
 schema. 
@@ -51,7 +51,7 @@ validation rules you can overwrite them by setting `defaultValidationRules` opti
 
 **Warning!**
 Setting both `defaultValidationRules` and `customValidationRules` options to `[]` will disable validation. This might 
-result in unexpected responses that are hard to use for requestors like API users or frontends.
+result in unexpected responses that are hard to use for API users or frontends.
 
 ```typescript
 import {NoSchemaIntrospectionCustomRule} from 'graphql'
@@ -122,8 +122,16 @@ GraphQL server:
 - **graphql_server_availability**: Availability gauge with status 0 (unavailable) and 1 (available)
 - **graphql_server_request_throughput**: The number of incoming requests
 - **graphql_server_errors**: The number of errors that are encountered while running the GraphQLServer. The counter uses
-the *errorName* field as label so errors could be differentiated. Default label for schema validation errors is 
-"SchemaValidationError", "GraphQLError" for graphql errors and the error name if another type of error occurs.
+the *errorName* field as label so errors could be differentiated. At the moment the following labels are available
+and initialised with 0:
+  - FetchError
+  - GraphQLError
+  - SchemaValidationError
+  - MethodNotAllowedError
+  - InvalidSchemaError
+  - MissingQueryParameterError
+  - ValidationError
+  - SyntaxError
 
 A simple metrics endpoint can be created by using `getMetricsContentType` and `getMetrics` functions from 
 the `GraphQLServer` instance. In the example below a second route is used to return metrics data.
@@ -159,7 +167,7 @@ graphQLServerExpress.listen({port: graphQLServerPort})
 console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 ```
 
-## Available Options
+## Available options
 
 The `GraphQLServer` accepts the following options. Note that all options are optional and can be overwritten by 
 calling the `setOptions` function of the `GraphQLServer` instance.
@@ -171,7 +179,8 @@ calling the `setOptions` function of the `GraphQLServer` instance.
 ### GraphQL related options
 
 - **`schema`**: The schema that is used to handle the request and send a response. If undefined the `GraphQLServer` will
-reject responses with a GraphQL error response with status code 500.
+reject responses with a GraphQL error response with status code 500. 
+- **`shouldUpdateSchemaFunction`**: Function that can be used to determine whether a schema update should be executed. 
 - **`formatErrorFunction`**: Function that can be used to format occurring GraphQL errors. Given a `GraphQLError` it
 should return a `GraphQLFormattedError`. By default `formatError` from `graphql-js` library is called.
 - **`schemaValidationFunction`**: Function that is called when a schema is set or updated. Given a `GraphQLSchema` it
@@ -180,8 +189,14 @@ By default `validateSchema` from `graphql-js` library is called.
 - **`parseFunction`**: Function that is called to create a `DocumentNode` with the extracted query in the 
 request information. Given a `source` and `ParseOptions` it should return a `DocumentNode`.
     By default `parse` from `graphql-js` library is called.
-- **`validationRules`**: Validation rules that are used when `validateSchemaFunction` is called. Can be used e.g. to 
-check whether the request contains an introspection query that should be rejected.
+- **`defaultValidationRules`**: Default validation rules that are used when `validateSchemaFunction` is called. 
+Both `defaultValidationRules` and `customValidationRules` will be merged together when `validateSchemaFunction` 
+is called. By default `specifiedRules` from `graphql-js` are used. 
+Can be overwritten if no or other default rules should be used.
+- **`customValidationRules`**: Custom validation rules that are used when `validateSchemaFunction` is called.
+Both `defaultValidationRules` and `customValidationRules` will be merged together when `validateSchemaFunction` 
+is called. By default, an empty array is set. Can be overwritten to add additional rules 
+like `NoSchemaIntrospectionCustomRule`.
 - **`validationTypeInfo`**: Validation type info that is used when `validateSchemaFunction` is called.
 - **`validationOptions`**: Validation options containing `{ maxErrors?: number }` that is used 
 when `validateSchemaFunction` is called.
@@ -192,41 +207,59 @@ these recommendations so users can not circumvent disabled introspection request
 the schema.
 - **`validateFunction`**: Validation function that validates the extracted request against the available schema. 
 By default `validate` from `graphql-js` library is called. 
+- **`rootValue`**: Root value that is used when `executeFunction` is called. Can be used to define resolvers that
+handle how defined queries and/or mutations should be resolved (e.g. fetch object from database and return entity).
+- **`contextFunction`**: Given a `Request` and `Response` this function is used to create a context value
+that is used when `executeFunction` is called. Default implementation is `defaultContextFunction`. Can be used to 
+extract information from the request and/or response and return them as context. This is often used to extract headers
+like 'Authorization' and set them in the execute function. `defaultContextFunction` just returns the whole initial
+`Request` object.
+- **`fieldResolver`**: Field resolver function that is used when `executeFunction` is called. Default is undefined,
+if custom logic is necessary it can be added.
+- **`typeResolver`**: Type resolver function that is used when `executeFunction` is called. Default is undefined,
+  if custom logic is necessary it can be added.
+- **`executeFunction`**: Execute function that executes the parsed `DocumentNode` (created in `parseFunction`) using
+given schema, values and resolvers. Returns a Promise or value of an `ExecutionResult`. 
+By default `execute` from `graphql-js` library is called.
+- **`extensionFunction`**: Extension function that can be used to add additional information to 
+the `extensions` field of the response. Given a `Request`, `GraphQLRequestInfo` and `ExecutionResult` it should return
+undefined or a Map of key-value-pairs that are added to the`extensions` field. By default `defaultCollectErrorMetrics` 
+is used and returns undefined.
 
+### Metrics options
+- **`collectErrorMetricsFunction:`**: Given an error name as string, `Error` and request this function can be used
+to trigger collecting error metrics. Default implementation is `defaultCollectErrorMetrics` that increase
+the error counter for the given errorName or Error by 1.
 
 ### Technical components
 - **`logger`**: Logger to be used in the GraphQL server. `TextLogger` and `JsonLogger` are available in the module.
-  Own Logger can be used by implementing `Logger` interface.
+  Own Logger can be created by implementing `Logger` interface.
 - **`requestInformationExtractor`**: The `RequestInformationExtractor` used to extract information from the `Request`
   and return a `Promise<GraphQLRequestInfo>`. By default, the `DefaultRequestInformationExtractor` is used that tries to
-  extract the information from the body and URL params of the request. Own Extractor can be used by
+  extract the information from the body and URL params of the request. Own Extractor can be created by
   implementing `RequestInformationExtractor` interface.
 - **`metricsClient`**: The `MetricsClient` used to collect metrics from the GraphQLServer. By default, 
 the `DefaultMetricsClient` is used that collects default NodeJS and three custom metrics using `prom-client` library.
 Own MetricsClient can be used by implementing `MetricsClient` interface.
 
-## To be added as Options descriptions
+## Customise and extend GraphQLServer
 
-readonly shouldUpdateSchemaFunction?: (schema?: GraphQLSchema) => boolean
+To make it easier to customise and extend the GraphQLServer classes and class functions are public. This makes
+extending a class and overwriting logic easy.
 
-readonly collectErrorMetricsFunction?: (error: GraphQLError, request?: Request) => void
+In the example below the logic of `TextLogger` is changed to add the text "SECRETAPP" in front of every log output. 
 
-readonly rootValue?: unknown | undefined
+```typescript
+export class SecretApplicationTextLogger extends TextLogger {
+  prepareLogOutput(logEntry: LogEntry): string {
+    return `SECRETAPP - ${super.prepareLogOutput(logEntry)}`
+  }
+}
+```
 
-readonly contextValue?: unknown
+## Contact
+If you have questions or issues please visit our [Issue page](https://github.com/dreamit-de/graphql-server/issues) 
+and open a new issue if there are no fitting issues for your topic yet.
 
-readonly fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
-
-readonly typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
-
-readonly executeFunction?: (schema: GraphQLSchema,
-document: DocumentNode,
-rootValue?: unknown,
-contextValue?: unknown,
-variableValues?: Maybe<{ [key: string]: unknown }>,
-operationName?: Maybe<string>,
-fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>,
-typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>) => PromiseOrValue<ExecutionResult>
-
-
-readonly extensionFunction?: (request: Request, requestInformation: GraphQLRequestInfo, executionResult: ExecutionResult) => MaybePromise<undefined | { [key: string]: unknown }>
+## License
+graphql-server is under [MIT-License](./LICENSE).
