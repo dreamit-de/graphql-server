@@ -36,27 +36,42 @@ export class DefaultMetricsClient implements MetricsClient {
     initMetrics(): void {
         prom.register.clear()
         prom.collectDefaultMetrics()
-        this.requestThroughput = new prom.Counter({
-            name: this.requestThroughputMetricName,
-            help: 'Number of incoming requests',
-        })
-        this.graphQLServerAvailabilityGauge = new prom.Gauge({
-            name: this.availabilityMetricName,
-            help: 'GraphQL server availability',
-        })
+        this.createRequestThroughputCounter()
+        this.createServerAvailabilityGauge()
+        this.createServerErrorCounter()
+        this.initErrorCounterLabels()
+    }
+
+    createServerErrorCounter(): void {
         this.graphQLServerErrorCounter = new prom.Counter({
             name: this.errorsMetricName,
             help: 'Number of errors per Error class',
             labelNames: ['errorClass'],
         })
+    }
 
-        /**
-         * Initializes the error counter for errors with type GraphQLError.
-         * When evaluating time series this can help
-         * to create an initial time series that can be used for actions like alerting.
-         * Otherwise calculating differences with functions like "increase" with
-         * an undefined time series might not work for the first occurrence of an error.
-         */
+    createServerAvailabilityGauge(): void {
+        this.graphQLServerAvailabilityGauge = new prom.Gauge({
+            name: this.availabilityMetricName,
+            help: 'GraphQL server availability',
+        })
+    }
+
+    createRequestThroughputCounter(): void {
+        this.requestThroughput = new prom.Counter({
+            name: this.requestThroughputMetricName,
+            help: 'Number of incoming requests',
+        })
+    }
+
+    /**
+     * Initializes the error counter.
+     * When evaluating time series this can help
+     * to create an initial time series that can be used for actions like alerting.
+     * Otherwise calculating differences with functions like "increase" with
+     * an undefined time series might not work for the first occurrence of an error.
+     */
+    initErrorCounterLabels(): void {
         this.graphQLServerErrorCounter.labels(GRAPHQL_ERROR).inc(0)
         this.graphQLServerErrorCounter.labels(SCHEMA_VALIDATION_ERROR).inc(0)
         this.graphQLServerErrorCounter.labels(FETCH_ERROR).inc(0)
