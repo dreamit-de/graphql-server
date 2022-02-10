@@ -29,7 +29,7 @@ export class LogHelper {
             }
 
             if (error instanceof GraphQLError) {
-                if (error.extensions.query) {
+                if (error.extensions && error.extensions.query) {
                     logEntry.query = error.extensions.query
                 } else if (error.source && error.source.body) {
                     logEntry.query = error.source.body
@@ -37,14 +37,14 @@ export class LogHelper {
                     logEntry.query = JSON.stringify(error.nodes)
                 }
 
-                if (error.extensions.serviceName) {
+                if (error.extensions &&error.extensions.serviceName) {
                     logEntry.serviceName = error.extensions.serviceName
                     logEntry.level = error.extensions.serviceName === serviceName
                         ? LogLevel.error
                         : LogLevel.warn
                 }
 
-                if (error.extensions.exception) {
+                if (error.extensions && error.extensions.exception) {
                     logEntry.stacktrace = error.extensions.exception
                 }
             }

@@ -11,6 +11,18 @@ npm install --save @dreamit/graphql-server
 
 TypeScript declarations are provided within the project.
 
+## Compatibility
+
+The following table shows which version of `graphql-js` library is compatible with which version of
+`@dreamit/graphql-server`. As `@dreamit/graphql-server` defines `graphql-js` as peerDependency you might want
+to choose a fitting version according to the `graphql-js` version used in your project and by other libraries depending
+on `graphql-js`.
+
+| graphql-js version | graphql-server Version | Github branch  |
+| ------------- |:-------------:| -----:|
+| ^15.2.0 | 1.x | [legacy-graphql15](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15)|
+| ^16.0.0 | 2.x | [main](https://github.com/dreamit-de/graphql-server)  |
+
 ## Features
 
 - Creates GraphQL responses for (GraphQL) requests
@@ -19,7 +31,7 @@ TypeScript declarations are provided within the project.
 - Uses out-of-the-box default options to ease use and keep code short
 - Provides hot reloading for schema and options
 - Provides out-of-the-box metrics for GraphQLServer
-- Uses and is compatible with `graphql-js` library version 14 and 15.
+- Uses and is compatible with `graphql-js` library version 15 and 16.
 
 ## Usage
 
