@@ -1,8 +1,10 @@
 import {Logger} from '../logger/Logger'
 import {
     DocumentNode,
+    ExecutionArgs,
     ExecutionResult,
     GraphQLError,
+    GraphQLFormattedError,
     GraphQLSchema,
     ParseOptions,
     Source
@@ -16,12 +18,11 @@ import {GraphQLFieldResolver,
 import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue'
 import {
     GraphQLRequestInfo,
-    MaybePromise,
     Request,
     Response
 } from './GraphQLServer'
-import {GraphQLFormattedError} from 'graphql/error/formatError'
 import {MetricsClient} from '../metrics/MetricsClient'
+import {ObjMap} from 'graphql/jsutils/ObjMap'
 
 export interface GraphQLServerOptions {
     readonly logger?: Logger
@@ -44,23 +45,17 @@ export interface GraphQLServerOptions {
     readonly validateFunction?: (schema: GraphQLSchema,
                         documentAST: DocumentNode,
                         rules?: ReadonlyArray<ValidationRule>,
+                        options?: { maxErrors?: number },
                         typeInfo?: TypeInfo,
-                        options?: { maxErrors?: number },) => ReadonlyArray<GraphQLError>
+                        ) => ReadonlyArray<GraphQLError>
     readonly rootValue?: unknown | undefined
     readonly contextFunction?: (request: Request, response: Response) => unknown
     readonly fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
     readonly typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
-    readonly executeFunction?: (schema: GraphQLSchema,
-                       document: DocumentNode,
-                       rootValue?: unknown,
-                       contextValue?: unknown,
-                       variableValues?: Maybe<Record<string, unknown>>,
-                       operationName?: Maybe<string>,
-                       fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>,
-                       typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>)
+    readonly executeFunction?: (args: ExecutionArgs)
         => PromiseOrValue<ExecutionResult>
     readonly extensionFunction?: (request: Request,
                                   requestInformation: GraphQLRequestInfo,
                                   executionResult: ExecutionResult)
-        => MaybePromise<undefined | Record<string, unknown>>
+        => ObjMap<unknown> | undefined
 }
