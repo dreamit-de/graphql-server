@@ -14,8 +14,10 @@ import {
     validate,
     validateSchema
 } from 'graphql'
-import {IncomingMessage,
-    ServerResponse} from 'http'
+import {
+    IncomingMessage,
+    ServerResponse
+} from 'http'
 import {Logger} from '../logger/Logger'
 import {GraphQLServerOptions} from './GraphQLServerOptions'
 import {TextLogger} from '../logger/TextLogger'
@@ -24,8 +26,10 @@ import {DefaultRequestInformationExtractor} from './DefaultRequestInformationExt
 import {ValidationRule} from 'graphql/validation/ValidationContext'
 import {TypeInfo} from 'graphql/utilities/TypeInfo'
 import {Maybe} from 'graphql/jsutils/Maybe'
-import {GraphQLFieldResolver,
-    GraphQLTypeResolver} from 'graphql/type/definition'
+import {
+    GraphQLFieldResolver,
+    GraphQLTypeResolver
+} from 'graphql/type/definition'
 import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue'
 import {RequestInformationExtractor} from './RequestInformationExtractor'
 import {MetricsClient} from '../metrics/MetricsClient'
@@ -354,14 +358,16 @@ export class GraphQLServer {
          * Return 400 if errors are available
          */
         try {
-            const executionResult = await this.executeFunction({schema: this.schema,
+            const executionResult = await this.executeFunction({
+                schema: this.schema,
                 document: documentAST,
                 rootValue: this.rootValue,
                 contextValue: context,
                 variableValues: requestInformation.variables,
                 operationName: requestInformation.operationName,
                 fieldResolver: this.fieldResolver,
-                typeResolver: this.typeResolver})
+                typeResolver: this.typeResolver
+            })
 
             const extensionsResult = this.extensionFunction(request,
                 requestInformation,

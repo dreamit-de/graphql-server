@@ -1,8 +1,12 @@
-import {GraphQLRequestInfo,
+import {
+    GraphQLRequestInfo,
     GraphQLServerOptions,
-    JsonLogger} from '../src'
-import {userSchema,
-    userSchemaResolvers} from './ExampleSchemas'
+    JsonLogger
+} from '../src'
+import {
+    userSchema,
+    userSchemaResolvers
+} from './ExampleSchemas'
 import fetch from 'cross-fetch'
 
 export const GRAPHQL_SERVER_PORT = 3000

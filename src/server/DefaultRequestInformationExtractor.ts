@@ -1,5 +1,7 @@
-import {GraphQLRequestInfo,
-    Request} from './GraphQLServer'
+import {
+    GraphQLRequestInfo,
+    Request
+} from './GraphQLServer'
 import {URLSearchParams} from 'url'
 import {GraphQLError} from 'graphql'
 import contentType,
@@ -8,8 +10,10 @@ import {GraphQLErrorWithStatusCode} from '../error/GraphQLErrorWithStatusCode'
 import getStream,
 {MaxBufferError} from 'get-stream'
 import zlib,
-{Gunzip,
-    Inflate} from 'zlib'
+{
+    Gunzip,
+    Inflate
+} from 'zlib'
 import {RequestInformationExtractor} from './RequestInformationExtractor'
 import {Buffer} from 'buffer'
 
@@ -63,9 +67,11 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
         // Skip requests without content types.
         if (request.headers['content-type'] === undefined) {
             return {
-                error: { graphQLError: new GraphQLError('Invalid request. ' +
+                error: {
+                    graphQLError: new GraphQLError('Invalid request. ' +
                         'Request header content-type is undefined.'),
-                statusCode: 400 }
+                    statusCode: 400 
+                }
             }
         }
 
@@ -97,8 +103,10 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
                         return JSON.parse(rawBody)
                     } catch {
                         return {
-                            error: { graphQLError: new GraphQLError('POST body' +
-                                    ' contains invalid JSON.'), statusCode: 400 }
+                            error: {
+                                graphQLError: new GraphQLError('POST body' +
+                                    ' contains invalid JSON.'), statusCode: 400 
+                            }
                         }
                     }
                 case 'application/x-www-form-urlencoded':
@@ -107,9 +115,11 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
 
                 // If no Content-Type header matches, parse nothing.
                 return {
-                    error: { graphQLError: new GraphQLError(
-                        `POST body contains invalid content type: ${typeInfo.type}.`
-                    ), statusCode: 400 }
+                    error: {
+                        graphQLError: new GraphQLError(
+                            `POST body contains invalid content type: ${typeInfo.type}.`
+                        ), statusCode: 400 
+                    }
                 }
             } else {
                 return {
@@ -118,8 +128,10 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
             }
         } catch {
             return {
-                error: { graphQLError: new GraphQLError('Content type' +
-                        ' could not be parsed.'), statusCode: 400 }
+                error: {
+                    graphQLError: new GraphQLError('Content type' +
+                        ' could not be parsed.'), statusCode: 400 
+                }
             }
         }
     }

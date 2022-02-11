@@ -1,6 +1,8 @@
 /* eslint-disable max-len */
-import {GraphQLError,
-    Kind} from 'graphql'
+import {
+    GraphQLError,
+    Kind
+} from 'graphql'
 import {LogHelper} from '../../src'
 import {LogLevel} from '../../src'
 
@@ -34,9 +36,14 @@ const graphQLErrorWithVariables: GraphQLError = new GraphQLError(messageWithVari
     undefined
     , {exception: 'A stacktrace', query: customerQuery, serviceName: 'myTestService'})
 const graphQLErrorWithSourceBody = new GraphQLError('`CustomerPayload` is an extension type',{
-    source: {get [Symbol.toStringTag](): string {
-        return this[Symbol.toStringTag]
-    }, locationOffset: {line: 1, column: 1}, name: 'doesnotmatter', body: customerQuery},
+    source: {
+        get [Symbol.toStringTag](): string {
+            return this[Symbol.toStringTag]
+        },
+        locationOffset: {line: 1, column: 1},
+        name: 'doesnotmatter',
+        body: customerQuery
+    },
     extensions: {exception: 'A stacktrace', serviceName: 'customer'}
 })
 

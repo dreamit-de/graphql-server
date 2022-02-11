@@ -13,8 +13,10 @@ import {RequestInformationExtractor} from './RequestInformationExtractor'
 import {ValidationRule} from 'graphql/validation/ValidationContext'
 import {TypeInfo} from 'graphql/utilities/TypeInfo'
 import {Maybe} from 'graphql/jsutils/Maybe'
-import {GraphQLFieldResolver,
-    GraphQLTypeResolver} from 'graphql/type/definition'
+import {
+    GraphQLFieldResolver,
+    GraphQLTypeResolver
+} from 'graphql/type/definition'
 import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue'
 import {
     GraphQLRequestInfo,

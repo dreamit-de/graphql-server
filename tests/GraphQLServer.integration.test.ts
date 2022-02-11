@@ -18,8 +18,10 @@ import {
     introspectionQuery,
     usersQueryWithUnknownField
 } from './ExampleSchemas'
-import {GraphQLError,
-    NoSchemaIntrospectionCustomRule} from 'graphql'
+import {
+    GraphQLError,
+    NoSchemaIntrospectionCustomRule
+} from 'graphql'
 import {
     fetchResponse,
     generateGetParamsFromGraphQLRequestInfo,
@@ -105,11 +107,13 @@ test('Should get filtered error response if a validation error occurs ', async()
 
 test('Should get unfiltered error response if a' +
     ' validation error occurs and removeValidationRecommendations is enabled', async() => {
-    customGraphQLServer.setOptions({schema: userSchema,
+    customGraphQLServer.setOptions({
+        schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
-        removeValidationRecommendations: false  })
+        removeValidationRecommendations: false  
+    })
     const response = await fetchResponse('{"query":"query users{ users { userIdABC userName } }"}')
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe(
@@ -170,11 +174,13 @@ test('Should get error response if content type is not set', async() => {
 test('Should get error response when GraphQL context error' +
     ' occurs when calling execute function', async() => {
     // Change options to let executeFunction return an error
-    customGraphQLServer.setOptions({schema: userSchema,
+    customGraphQLServer.setOptions({
+        schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
-        executeFunction: () => {throw new GraphQLError('A GraphQL context error occurred!')} })
+        executeFunction: () => {throw new GraphQLError('A GraphQL context error occurred!')} 
+    })
     const response = await fetchResponse(`{"query":"${usersQuery}"}`)
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe('A GraphQL context error occurred!')
@@ -190,11 +196,13 @@ test('Should get error response if resolver returns GraphQL error', async() => {
 
 test('Should get error response with formatted error results ' +
     'if resolver returns GraphQL error and formatError function is defined', async() => {
-    customGraphQLServer.setOptions({schema: userSchema,
+    customGraphQLServer.setOptions({
+        schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
-        formatErrorFunction: testFormatErrorFunction})
+        formatErrorFunction: testFormatErrorFunction
+    })
     const response = await fetchResponse(`{"query":"${returnErrorQuery}"}`)
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe('Formatted: Something went wrong!')
@@ -257,11 +265,13 @@ test('Should get data response for application graphql request', async() => {
 
 test('Should get error response if invalid schema is used', async() => {
     // Change options to use schema validation function that always returns a validation error
-    customGraphQLServer.setOptions({schema: userSchema,
+    customGraphQLServer.setOptions({
+        schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
-        schemaValidationFunction: () => [new GraphQLError('Schema is not valid!')] })
+        schemaValidationFunction: () => [new GraphQLError('Schema is not valid!')] 
+    })
     const response = await fetchResponse('doesnotmatter')
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe(
@@ -281,12 +291,14 @@ test('Should get error response if invalid method is used', async() => {
 })
 
 test('Should get extensions in GraphQL response if extension function is defined ', async() => {
-    customGraphQLServer.setOptions({schema: userSchema,
+    customGraphQLServer.setOptions({
+        schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
         removeValidationRecommendations: true,
-        extensionFunction: () => extensionTestData  })
+        extensionFunction: () => extensionTestData  
+    })
     const response = await fetchResponse(`{"query":"${usersQuery}"}`)
     const responseObject = await response.json()
     expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
@@ -303,12 +315,14 @@ test('Should get data response if introspection' +
 
 test('Should get error response if introspection is requested ' +
     'when validation rule NoSchemaIntrospectionCustomRule is set', async() => {
-    customGraphQLServer.setOptions({schema: userSchema,
+    customGraphQLServer.setOptions({
+        schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
         removeValidationRecommendations: true,
-        customValidationRules: [NoSchemaIntrospectionCustomRule]  })
+        customValidationRules: [NoSchemaIntrospectionCustomRule]  
+    })
     const response = await fetchResponse(`{"query":"${introspectionQuery}"}`)
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe(
@@ -320,12 +334,14 @@ test('Should get error response if introspection is requested ' +
 
 test('Should get error response if query with unknown field is executed ' +
     'and custom validation rule is set', async() => {
-    customGraphQLServer.setOptions({schema: userSchema,
+    customGraphQLServer.setOptions({
+        schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
         removeValidationRecommendations: true,
-        customValidationRules: [NoSchemaIntrospectionCustomRule]  })
+        customValidationRules: [NoSchemaIntrospectionCustomRule]  
+    })
     const response = await fetchResponse(`{"query":"${usersQueryWithUnknownField}"}`)
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe('Cannot query field "hobby" on type "User".')
@@ -334,12 +350,14 @@ test('Should get error response if query with unknown field is executed ' +
 
 test('Should get error response if query with unknown field is executed ' +
     'and no custom validation rule is set', async() => {
-    customGraphQLServer.setOptions({schema: userSchema,
+    customGraphQLServer.setOptions({
+        schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
         removeValidationRecommendations: true,
-        customValidationRules: [] })
+        customValidationRules: [] 
+    })
     const response = await fetchResponse(`{"query":"${usersQueryWithUnknownField}"}`)
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe('Cannot query field "hobby" on type "User".')
@@ -348,13 +366,15 @@ test('Should get error response if query with unknown field is executed ' +
 
 test('Should get data response if query with unknown field is executed ' +
     'and validation rules are removed', async() => {
-    customGraphQLServer.setOptions({schema: userSchema,
+    customGraphQLServer.setOptions({
+        schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
         removeValidationRecommendations: true,
         defaultValidationRules: [],
-        customValidationRules: [] })
+        customValidationRules: [] 
+    })
     const response = await fetchResponse(`{"query":"${usersQueryWithUnknownField}"}`)
     const responseObject = await response.json()
     expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
