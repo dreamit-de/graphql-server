@@ -31,7 +31,7 @@ on `graphql-js`.
 - Uses out-of-the-box default options to ease use and keep code short
 - Provides hot reloading for schema and options
 - Provides out-of-the-box metrics for GraphQLServer
-- Uses and is compatible with `graphql-js` library version 14 and 15.
+- Uses and is compatible with `graphql-js` library version 15 and 16.
 
 ## Usage
 
@@ -194,7 +194,8 @@ calling the `setOptions` function of the `GraphQLServer` instance.
 reject responses with a GraphQL error response with status code 500. 
 - **`shouldUpdateSchemaFunction`**: Function that can be used to determine whether a schema update should be executed. 
 - **`formatErrorFunction`**: Function that can be used to format occurring GraphQL errors. Given a `GraphQLError` it
-should return a `GraphQLFormattedError`. By default `formatError` from `graphql-js` library is called.
+should return a `GraphQLFormattedError`. By default `defaultFormatErrorFunction` is called that uses `error.toJSON` to
+format the error.
 - **`schemaValidationFunction`**: Function that is called when a schema is set or updated. Given a `GraphQLSchema` it
   can return a `ReadonlyArray<GraphQLError>` or an empty array if no errors occurred/should be returned. 
 By default `validateSchema` from `graphql-js` library is called.
@@ -235,7 +236,7 @@ given schema, values and resolvers. Returns a Promise or value of an `ExecutionR
 By default `execute` from `graphql-js` library is called.
 - **`extensionFunction`**: Extension function that can be used to add additional information to 
 the `extensions` field of the response. Given a `Request`, `GraphQLRequestInfo` and `ExecutionResult` it should return
-undefined or a Map of key-value-pairs that are added to the`extensions` field. By default `defaultCollectErrorMetrics` 
+undefined or an ObjMap of key-value-pairs that are added to the`extensions` field. By default `defaultCollectErrorMetrics` 
 is used and returns undefined.
 
 ### Metrics options
