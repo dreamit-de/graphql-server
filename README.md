@@ -31,7 +31,7 @@ on `graphql-js`.
 - Uses out-of-the-box default options to ease use and keep code short
 - Provides hot reloading for schema and options
 - Provides out-of-the-box metrics for GraphQLServer
-- Uses and is compatible with `graphql-js` library version 15 and 16.
+- Uses and is compatible with `graphql-js` library version 15 (graphqlserver 1.x) and 16 (graphqlserver 2.x) .
 
 ## Usage
 
