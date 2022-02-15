@@ -46,7 +46,7 @@
         "modules-newline/import-declaration-newline": "error",
         "modules-newline/export-declaration-newline": "error",
         "newline-per-chained-call": "error",
-        "object-curly-newline": ["error", { "consistent": true }],
+        "object-curly-newline": ["error", { "consistent": true, "multiline": true }],
         "space-before-blocks": "error",
         "space-before-function-paren": ["error", "never"],
         "space-in-parens": ["error", "never"],

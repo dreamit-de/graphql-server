@@ -1,5 +1,8 @@
 /* eslint-disable max-len */
-import {GraphQLError} from 'graphql'
+import {
+    GraphQLError,
+    Kind
+} from 'graphql'
 import {LogHelper} from '../../src'
 import {LogLevel} from '../../src'
 
@@ -32,22 +35,23 @@ const graphQLErrorWithVariables: GraphQLError = new GraphQLError(messageWithVari
     undefined,
     undefined
     , {exception: 'A stacktrace', query: customerQuery, serviceName: 'myTestService'})
-const graphQLErrorWithSourceBody: GraphQLError =
-    new GraphQLError('`CustomerPayload` is an extension type',
-        undefined,
-        {locationOffset: {line: 1, column: 1}, name: 'doesnotmatter', body: customerQuery},
-        undefined,
-        undefined,
-        undefined
-        , {exception: 'A stacktrace', serviceName: 'customer'})
-const graphQLErrorWithAstNode: GraphQLError =
-    new GraphQLError('`CustomerPayload` is an extension type',
-        {kind: 'NamedType', loc: undefined, name: { kind: 'Name', value: 'customer'}},
-        undefined,
-        undefined,
-        undefined,
-        undefined
-        , {exception: 'A stacktrace', serviceName: 'customer'})
+const graphQLErrorWithSourceBody = new GraphQLError('`CustomerPayload` is an extension type',{
+    source: {
+        get [Symbol.toStringTag](): string {
+            return this[Symbol.toStringTag]
+        },
+        locationOffset: {line: 1, column: 1},
+        name: 'doesnotmatter',
+        body: customerQuery
+    },
+    extensions: {exception: 'A stacktrace', serviceName: 'customer'}
+})
+
+const graphQLErrorWithAstNode = new GraphQLError('`CustomerPayload` is an extension type', {
+    nodes: {kind: Kind.NAMED_TYPE, loc: undefined, name: { kind: Kind.NAME, value: 'customer'}},
+    extensions: {exception: 'A stacktrace', serviceName: 'customer'}
+})
+
 const fetchError = new FetchError('An error occurred while connecting to following endpoint',
     'system')
 

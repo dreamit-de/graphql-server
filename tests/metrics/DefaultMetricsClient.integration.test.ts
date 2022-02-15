@@ -25,8 +25,10 @@ import {
     SYNTAX_ERROR,
     VALIDATION_ERROR
 } from '../../src'
-import {GraphQLError,
-    NoSchemaIntrospectionCustomRule} from 'graphql'
+import {
+    GraphQLError,
+    NoSchemaIntrospectionCustomRule
+} from 'graphql'
 
 
 let customGraphQLServer: GraphQLServer
@@ -86,11 +88,13 @@ test('Should get correct metrics', async() => {
      * is being called, request_throughput should stay at 0,
      * SchemaValidationError should increase to 1 and GraphQLError counter should stay at 0
      */
-    customGraphQLServer.setOptions({schema: initialSchemaWithOnlyDescription,
+    customGraphQLServer.setOptions({
+        schema: initialSchemaWithOnlyDescription,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
-        shouldUpdateSchemaFunction: () => true})
+        shouldUpdateSchemaFunction: () => true
+    })
     metricsResponseBody = await getMetricsResponse()
     expect(metricsResponseBody).toContain(
         'graphql_server_availability 0'
@@ -247,14 +251,16 @@ test('Should get correct metrics', async() => {
      * When forcing a FetchError in execute function,
      * FetchError counter and request throughput should increase by 1
      */
-    customGraphQLServer.setOptions({schema: userSchema,
+    customGraphQLServer.setOptions({
+        schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
         executeFunction: () => {
             throw new GraphQLError('FetchError: ' +
                 'An error occurred while connecting to following endpoint')
-        }})
+        }
+    })
 
     await fetchResponse(`{"query":"${usersQuery}"}`)
     metricsResponseBody = await getMetricsResponse()
@@ -294,11 +300,13 @@ test('Should get correct metrics', async() => {
 function setupGraphQLServer(): Express {
     const graphQLServerExpress = express()
     customGraphQLServer = new GraphQLServer(
-        {schema: userSchema,
+        {
+            schema: userSchema,
             rootValue: userSchemaResolvers,
             logger: LOGGER,
             debug: true,
-            customValidationRules: [NoSchemaIntrospectionCustomRule]}
+            customValidationRules: [NoSchemaIntrospectionCustomRule]
+        }
     )
     graphQLServerExpress.all('/graphql', (req, res) => {
         return customGraphQLServer.handleRequest(req, res)

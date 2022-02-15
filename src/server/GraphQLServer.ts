@@ -1,10 +1,11 @@
 import {
     DocumentNode,
     execute,
+    ExecutionArgs,
     ExecutionResult,
-    formatError,
     getOperationAST,
     GraphQLError,
+    GraphQLFormattedError,
     GraphQLSchema,
     parse,
     ParseOptions,
@@ -13,8 +14,10 @@ import {
     validate,
     validateSchema
 } from 'graphql'
-import {IncomingMessage,
-    ServerResponse} from 'http'
+import {
+    IncomingMessage,
+    ServerResponse
+} from 'http'
 import {Logger} from '../logger/Logger'
 import {GraphQLServerOptions} from './GraphQLServerOptions'
 import {TextLogger} from '../logger/TextLogger'
@@ -23,11 +26,12 @@ import {DefaultRequestInformationExtractor} from './DefaultRequestInformationExt
 import {ValidationRule} from 'graphql/validation/ValidationContext'
 import {TypeInfo} from 'graphql/utilities/TypeInfo'
 import {Maybe} from 'graphql/jsutils/Maybe'
-import {GraphQLFieldResolver,
-    GraphQLTypeResolver} from 'graphql/type/definition'
+import {
+    GraphQLFieldResolver,
+    GraphQLTypeResolver
+} from 'graphql/type/definition'
 import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue'
 import {RequestInformationExtractor} from './RequestInformationExtractor'
-import {GraphQLFormattedError} from 'graphql/error/formatError'
 import {MetricsClient} from '../metrics/MetricsClient'
 import {DefaultMetricsClient} from '../metrics/DefaultMetricsClient'
 import {
@@ -40,6 +44,7 @@ import {
     SYNTAX_ERROR,
     VALIDATION_ERROR
 } from '../error/ErrorNameConstants'
+import {ObjMap} from 'graphql/jsutils/ObjMap'
 
 export type Request = IncomingMessage & { url: string,  body?: unknown }
 export type Response = ServerResponse & { json?: (data: unknown) => void }
@@ -83,7 +88,8 @@ export class GraphQLServer {
     private schema?: GraphQLSchema
     private shouldUpdateSchemaFunction:
         (schema?: GraphQLSchema) => boolean = this.defaultShouldUpdateSchema
-    private formatErrorFunction: (error: GraphQLError) => GraphQLFormattedError = formatError
+    private formatErrorFunction:
+        (error: GraphQLError) => GraphQLFormattedError = this.defaultFormatErrorFunction
     private collectErrorMetricsFunction:
         (errorName: string, error?: unknown, request?: Request) => void
         = this.defaultCollectErrorMetrics
@@ -109,26 +115,18 @@ export class GraphQLServer {
         (schema: GraphQLSchema,
          documentAST: DocumentNode,
          rules?: ReadonlyArray<ValidationRule>,
-         typeInfo?: TypeInfo,
-         options?: { maxErrors?: number },) => ReadonlyArray<GraphQLError>  = validate
+         options?: { maxErrors?: number },
+         typeInfo?: TypeInfo,) => ReadonlyArray<GraphQLError>  = validate
     private rootValue?: unknown
     private contextFunction:
         (request: Request, response: Response) => unknown = this.defaultContextFunction
     private fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
     private typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
-    private executeFunction: (schema: GraphQLSchema,
-                              document: DocumentNode,
-                              rootValue?: unknown,
-                              contextValue?: unknown,
-                              variableValues?: Maybe<Record<string, unknown>>,
-                              operationName?: Maybe<string>,
-                              fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>,
-                              typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>)
-        => PromiseOrValue<ExecutionResult> = execute
+    private executeFunction: (args: ExecutionArgs) => PromiseOrValue<ExecutionResult> = execute
     private extensionFunction: (request: Request,
                                 requestInformation: GraphQLRequestInfo,
                                 executionResult: ExecutionResult)
-        => MaybePromise<undefined | Record<string, unknown>> = this.defaultExtensions
+        => ObjMap<unknown> | undefined = this.defaultExtensions
 
     constructor(options?: GraphQLServerOptions) {
         this.setOptions(options)
@@ -141,7 +139,8 @@ export class GraphQLServer {
             this.requestInformationExtractor =
                 options.requestInformationExtractor || defaultRequestInformationExtractor
             this.metricsClient = options.metricsClient || defaultMetricsClient
-            this.formatErrorFunction = options.formatErrorFunction || formatError
+            this.formatErrorFunction = options.formatErrorFunction
+                || this.defaultFormatErrorFunction
             this.collectErrorMetricsFunction =
                 options.collectErrorMetricsFunction || this.defaultCollectErrorMetrics
             this.schemaValidationFunction = options.schemaValidationFunction || validateSchema
@@ -312,8 +311,8 @@ export class GraphQLServer {
         const validationErrors = this.validateSchemaFunction(this.schema,
             documentAST,
             [...this.defaultValidationRules, ...this.customValidationRules],
-            this.validationTypeInfo,
-            this.validationOptions)
+            this.validationOptions,
+            this.validationTypeInfo)
         if (validationErrors.length > 0) {
             this.logDebugIfEnabled(
                 `One or more validation errors occurred: ${JSON.stringify(validationErrors)}`,
@@ -359,14 +358,16 @@ export class GraphQLServer {
          * Return 400 if errors are available
          */
         try {
-            const executionResult = await this.executeFunction(this.schema,
-                documentAST,
-                this.rootValue,
-                context,
-                requestInformation.variables,
-                requestInformation.operationName,
-                this.fieldResolver,
-                this.typeResolver)
+            const executionResult = await this.executeFunction({
+                schema: this.schema,
+                document: documentAST,
+                rootValue: this.rootValue,
+                contextValue: context,
+                variableValues: requestInformation.variables,
+                operationName: requestInformation.operationName,
+                fieldResolver: this.fieldResolver,
+                typeResolver: this.typeResolver
+            })
 
             const extensionsResult = this.extensionFunction(request,
                 requestInformation,
@@ -525,6 +526,15 @@ export class GraphQLServer {
     }
 
     /**
+     * Default format error function to format error if necessary.
+     * Default behaviour: Calls toJSON function of error. Can be set in options.
+     * @param {GraphQLError} error - The error to be formatted
+     */
+    defaultFormatErrorFunction(error: GraphQLError): GraphQLFormattedError {
+        return error.toJSON()
+    }
+
+    /**
      * Default context error metrics function to store information in context for further use.
      * Default behaviour: return request object. Can be set in options.
      * @param {Request} request - The initial request
@@ -544,12 +554,12 @@ export class GraphQLServer {
      * @param {Request} request - The initial request
      * @param {GraphQLRequestInfo} requestInfo - The extracted requestInfo
      * @param {ExecutionResult} executionResult - The executionResult created by execute function
-     * @returns {MaybePromise<undefined | { [key: string]: unknown }>}
+     * @returns {ObjMap<unknown>}
      * A key-value map to be added as extensions in response
      */
     defaultExtensions(request: Request,
         requestInfo: GraphQLRequestInfo,
-        executionResult: ExecutionResult): MaybePromise<undefined | Record<string, unknown>> {
+        executionResult: ExecutionResult): ObjMap<unknown> | undefined {
         this.logDebugIfEnabled(
             `Calling defaultExtensions for request ${request}`+
             `, requestInfo ${JSON.stringify(requestInfo)}`+

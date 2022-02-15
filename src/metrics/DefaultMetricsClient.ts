@@ -1,7 +1,9 @@
 import {MetricsClient} from './MetricsClient'
 import prom,
-{Counter,
-    Gauge} from 'prom-client'
+{
+    Counter,
+    Gauge
+} from 'prom-client'
 import {
     FETCH_ERROR,
     GRAPHQL_ERROR,
