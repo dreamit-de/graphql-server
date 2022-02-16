@@ -25,7 +25,7 @@ export class LogHelper {
             logEntry.errorName = customErrorName ?? error.name
             logEntry.message = logEntry.message + ' ' + LogHelper.sanitizeMessage(error.message)
             if (error.stack) {
-                logEntry.stacktrace = error.stack
+                logEntry.stacktrace = LogHelper.sanitizeMessage(error.stack)
             }
 
             if (error instanceof GraphQLError) {
@@ -45,7 +45,7 @@ export class LogHelper {
                 }
 
                 if (error.extensions && error.extensions.exception) {
-                    logEntry.stacktrace = error.extensions.exception
+                    logEntry.stacktrace = LogHelper.sanitizeMessage(error.extensions.exception)
                 }
             }
         }
