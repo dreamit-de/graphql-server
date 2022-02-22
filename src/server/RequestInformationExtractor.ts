@@ -1,7 +1,7 @@
 import {
     GraphQLRequestInfo,
-    Request
 } from './GraphQLServer'
+import {GraphQLServerRequest} from './GraphQLServerRequest'
 
 /**
  * Interface for RequestInformationExtractor.
@@ -9,5 +9,6 @@ import {
  * from request url parameters or body and returns a Promise with the extracted GraphQLRequestInfo
  */
 export interface RequestInformationExtractor {
-    extractInformationFromRequest(request: Request): Promise<GraphQLRequestInfo>
+    extractInformationFromRequest(request: GraphQLServerRequest)
+    : Promise<GraphQLRequestInfo>
 }

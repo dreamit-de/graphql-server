@@ -1,4 +1,4 @@
-import {Request} from '../server/GraphQLServer'
+import {GraphQLServerRequest} from '..'
 
 /**
  * Interface for collecting GraphQL server metrics
@@ -13,14 +13,14 @@ export interface MetricsClient {
      */
     setAvailability(value: number): void
     // Increases the number of requests (by 1)
-    increaseRequestThroughput(request?: Request): void
+    increaseRequestThroughput(request?: GraphQLServerRequest): void
 
     /**
      * Increases the error counter (by 1)
      * @param {string} label - A label to specify what kind error occurred
-     * @param {Request} request - The initial request
+     * @param {GraphQLServerRequest} request - The initial request
      */
-    increaseErrors(label: string, request?: Request): void
+    increaseErrors(label: string, request?: GraphQLServerRequest): void
     // Gets the Content-Type of the metrics for use in the response headers.
     getMetricsContentType(): string
     // Gets the metrics for use in the response body.

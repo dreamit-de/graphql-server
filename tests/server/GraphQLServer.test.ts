@@ -24,7 +24,7 @@ test('Should update schema when calling GraphQLServer updateGraphQLSchema functi
 
 test('Should not update schema when given schema is undefined', () => {
     const graphqlServer = new GraphQLServer({schema: initialSchemaWithOnlyDescription, debug: true})
-    graphqlServer.setSchema(undefined)
+    graphqlServer.setSchema()
     const schema = graphqlServer.getSchema()
     expect(schema).toBeDefined()
     expect(schema?.description).toBe('initial')
@@ -38,7 +38,7 @@ test('Should update schema when given schema is undefined ' +
         , debug: true
         , shouldUpdateSchemaFunction: (): boolean => true
     })
-    graphqlServer.setSchema(undefined)
+    graphqlServer.setSchema()
     const schema = graphqlServer.getSchema()
     expect(schema).toBeUndefined()
 })

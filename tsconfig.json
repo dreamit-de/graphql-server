@@ -11,6 +11,6 @@
     "strict": true,
     "declaration": true
   },
-  "include": ["src/**/*", "tests/**/*"],
+  "include": ["jest.config.js", "src/**/*", "tests/**/*"],
   "exclude": ["node_modules"]
 }

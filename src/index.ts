@@ -1,3 +1,4 @@
+/* eslint-disable import/no-internal-modules */
 /**
  * A GraphQL server implementation written in NodeJS/Typescript.
  * It uses the standard graphql library to receive GraphQL
@@ -20,3 +21,5 @@ export * from './server/DefaultRequestInformationExtractor'
 export * from './server/RequestInformationExtractor'
 export * from './server/GraphQLServer'
 export * from './server/GraphQLServerOptions'
+export * from './server/GraphQLServerRequest'
+export * from './server/GraphQLServerResponse'

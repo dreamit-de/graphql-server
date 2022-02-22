@@ -1,30 +1,31 @@
 import {
-    GraphQLRequestInfo,
-    Request
-} from './GraphQLServer'
-import {URLSearchParams} from 'url'
+    GraphQLRequestInfo, 
+    GraphQLErrorWithStatusCode,
+    GraphQLServerRequest,
+    RequestInformationExtractor
+} from '..'
+import {URLSearchParams} from 'node:url'
 import {GraphQLError} from 'graphql'
 import contentType,
 {ParsedMediaType} from 'content-type'
-import {GraphQLErrorWithStatusCode} from '../error/GraphQLErrorWithStatusCode'
 import getStream,
 {MaxBufferError} from 'get-stream'
 import zlib,
 {
     Gunzip,
     Inflate
-} from 'zlib'
-import {RequestInformationExtractor} from './RequestInformationExtractor'
-import {Buffer} from 'buffer'
+} from 'node:zlib'
+import {Buffer} from 'node:buffer'
 
-export const MAX_BUFFER_SIZE = 102400
+export const MAX_BUFFER_SIZE = 102_400
 
 /**
  * Default implementation of RequestInformationExtractor interface
  */
 export class DefaultRequestInformationExtractor implements RequestInformationExtractor {
 
-    async extractInformationFromRequest(request: Request): Promise<GraphQLRequestInfo> {
+    async extractInformationFromRequest(request: GraphQLServerRequest)
+    : Promise<GraphQLRequestInfo> {
         const extractedURLParameters = this.extractInformationFromUrlParameters(request.url)
         const extractedBody = await this.extractInformationFromBody(request)
         return {
@@ -36,7 +37,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
     }
 
     extractInformationFromUrlParameters(url: string): GraphQLRequestInfo {
-        const urlParameters = new URLSearchParams(url.substring(url.indexOf('?')))
+        const urlParameters = new URLSearchParams(url.slice(Math.max(0, url.indexOf('?'))))
         const extractedQuery= urlParameters.get('query') ?? undefined
         const extractedVariables=
             (urlParameters.get('variables')) as Readonly<Record<string, unknown>>
@@ -50,7 +51,8 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
     }
 
     /** Extracts information from request body. Based on implementation from express-graphql */
-    async extractInformationFromBody(request: Request):Promise<GraphQLRequestInfo> {
+    async extractInformationFromBody(request: GraphQLServerRequest)
+    : Promise<GraphQLRequestInfo> {
         const { body } = request
 
         // If express has already parsed a body as a keyed object, use it.
@@ -65,6 +67,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
         }
 
         // Skip requests without content types.
+        // eslint-disable-next-line unicorn/consistent-destructuring
         if (request.headers['content-type'] === undefined) {
             return {
                 error: {
@@ -87,7 +90,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
             }
 
             // Already parsed body we didn't recognise? Parse nothing.
-            if (body != null) {
+            if (body != undefined) {
                 return {}
             }
 
@@ -138,10 +141,10 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
 
     // Read and parse a request body.
     async readBody(
-        req: Request,
+        request: GraphQLServerRequest,
         typeInfo: ParsedMediaType,
     ): Promise<string | GraphQLErrorWithStatusCode> {
-        const charset = typeInfo.parameters.charset?.toLowerCase() ?? 'utf-8'
+        const charset = typeInfo.parameters.charset?.toLowerCase() ?? 'utf8'
 
         if (!this.isCharsetSupported(charset)) {
             return {
@@ -150,9 +153,9 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
             }
         }
 
-        const encoding = this.determineContentEncoding(req)
+        const encoding = this.determineContentEncoding(request)
         const maxBuffer = MAX_BUFFER_SIZE
-        const stream = this.decompressed(req, encoding)
+        const stream = this.decompressed(request, encoding)
         if ('graphQLError' in stream && 'statusCode' in stream) {
             return {
                 graphQLError: stream.graphQLError,
@@ -171,16 +174,16 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
 
     // Return a decompressed stream, given an encoding.
     decompressed(
-        req: Request,
+        request: GraphQLServerRequest ,
         encoding: string,
-    ): Request | Inflate | Gunzip | GraphQLErrorWithStatusCode {
+    ): GraphQLServerRequest | Inflate | Gunzip | GraphQLErrorWithStatusCode {
         switch (encoding) {
         case 'identity':
-            return req
+            return request
         case 'deflate':
-            return req.pipe(zlib.createInflate())
+            return request.pipe(zlib.createInflate())
         case 'gzip':
-            return req.pipe(zlib.createGunzip())
+            return request.pipe(zlib.createGunzip())
         }
         return {
             graphQLError: new GraphQLError(`Unsupported content-encoding "${encoding}".`),
@@ -190,7 +193,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
 
     // Assert charset encoding per JSON RFC 7159 sec 8.1
     isCharsetSupported(charset: string): boolean {
-        return charset === 'utf8' || charset === 'utf-8' || charset === 'utf16le'
+        return charset === 'utf8' || charset === 'utf8' || charset === 'utf16le'
     }
 
     charsetToBufferEncoding(charset: string) : BufferEncoding | undefined {
@@ -198,8 +201,8 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
     }
 
     // Determines the content encoding using the request information
-    determineContentEncoding(req: Request): string {
-        const contentEncoding = req.headers['content-encoding']
+    determineContentEncoding(reqest: GraphQLServerRequest): string {
+        const contentEncoding = reqest.headers['content-encoding']
         return typeof contentEncoding === 'string' ? contentEncoding.toLowerCase() : 'identity'
     }
 
