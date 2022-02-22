@@ -72,7 +72,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
             return {
                 error: {
                     graphQLError: new GraphQLError('Invalid request. ' +
-                        'Request header content-type is undefined.'),
+                        'Request header content-type is undefined.', {}),
                     statusCode: 400 
                 }
             }
@@ -108,7 +108,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
                         return {
                             error: {
                                 graphQLError: new GraphQLError('POST body' +
-                                    ' contains invalid JSON.'), statusCode: 400 
+                                    ' contains invalid JSON.', {}), statusCode: 400 
                             }
                         }
                     }
@@ -120,7 +120,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
                 return {
                     error: {
                         graphQLError: new GraphQLError(
-                            `POST body contains invalid content type: ${typeInfo.type}.`
+                            `POST body contains invalid content type: ${typeInfo.type}.`, {}
                         ), statusCode: 400 
                     }
                 }
@@ -133,7 +133,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
             return {
                 error: {
                     graphQLError: new GraphQLError('Content type' +
-                        ' could not be parsed.'), statusCode: 400 
+                        ' could not be parsed.', {}), statusCode: 400 
                 }
             }
         }
@@ -148,7 +148,8 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
 
         if (!this.isCharsetSupported(charset)) {
             return {
-                graphQLError: new GraphQLError(`Unsupported charset "${charset.toUpperCase()}".`),
+                graphQLError: new GraphQLError(`Unsupported charset "${charset.toUpperCase()}".`,
+                    {}),
                 statusCode: 415
             }
         }
@@ -186,7 +187,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
             return request.pipe(zlib.createGunzip())
         }
         return {
-            graphQLError: new GraphQLError(`Unsupported content-encoding "${encoding}".`),
+            graphQLError: new GraphQLError(`Unsupported content-encoding "${encoding}".`, {}),
             statusCode: 415
         }
     }
@@ -209,14 +210,15 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
     handleBufferError(rawError: unknown): GraphQLErrorWithStatusCode {
         if (rawError instanceof MaxBufferError) {
             return {
-                graphQLError: new GraphQLError('Invalid request body: request entity too large.'),
+                graphQLError: new GraphQLError('Invalid request body: request entity too large.', 
+                    {}),
                 statusCode: 413
             }
         } else {
             const message =
                 rawError instanceof Error ? rawError.message : String(rawError)
             return {
-                graphQLError: new GraphQLError(`Invalid request body: ${message}.`),
+                graphQLError: new GraphQLError(`Invalid request body: ${message}.`, {}),
                 statusCode: 400
             }
         }

@@ -259,7 +259,7 @@ test('Should get correct metrics', async() => {
         debug: true,
         executeFunction: () => {
             throw new GraphQLError('FetchError: ' +
-                'An error occurred while connecting to following endpoint')
+                'An error occurred while connecting to following endpoint', {})
         }
     })
 

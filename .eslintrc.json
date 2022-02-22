@@ -26,7 +26,8 @@
         "@typescript-eslint/eslint-plugin",
         "modules-newline",
         "unicorn",
-        "import"
+        "import",
+        "deprecation"
     ],
     "rules": {
         "@typescript-eslint/class-literal-property-style": "error",
@@ -80,6 +81,7 @@
         "import/no-internal-modules":  [ "error", {
             "allow": [ "graphql/**" ]
           } ],
-        "import/no-unresolved": 0
+        "import/no-unresolved": 0,
+        "deprecation/deprecation": "error"
     }
 }

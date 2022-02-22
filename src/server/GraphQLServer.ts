@@ -62,13 +62,13 @@ const recommendationText = 'Did you mean'
 
 // Error constants
 const methodNotAllowedError =
-    new GraphQLError('GraphQL server only supports GET and POST requests.')
+    new GraphQLError('GraphQL server only supports GET and POST requests.', {})
 const invalidSchemaError =
-    new GraphQLError('Request cannot be processed. Schema in GraphQL server is invalid.')
+    new GraphQLError('Request cannot be processed. Schema in GraphQL server is invalid.', {})
 const missingQueryParameterError =
-    new GraphQLError('Request cannot be processed. No query was found in parameters or body.')
+    new GraphQLError('Request cannot be processed. No query was found in parameters or body.', {})
 const onlyQueryInGetRequestsError =
-    new GraphQLError('Only "query" operation is allowed in "GET" requests')
+    new GraphQLError('Only "query" operation is allowed in "GET" requests', {})
 
 const requestCouldNotBeProcessed = 'Request could not be processed: '
 

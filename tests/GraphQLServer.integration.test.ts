@@ -179,7 +179,7 @@ test('Should get error response when GraphQL context error' +
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
-        executeFunction: () => {throw new GraphQLError('A GraphQL context error occurred!')} 
+        executeFunction: () => {throw new GraphQLError('A GraphQL context error occurred!', {})} 
     })
     const response = await fetchResponse(`{"query":"${usersQuery}"}`)
     const responseObject = await response.json()
@@ -270,7 +270,7 @@ test('Should get error response if invalid schema is used', async() => {
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
-        schemaValidationFunction: () => [new GraphQLError('Schema is not valid!')] 
+        schemaValidationFunction: () => [new GraphQLError('Schema is not valid!', {})] 
     })
     const response = await fetchResponse('doesnotmatter')
     const responseObject = await response.json()

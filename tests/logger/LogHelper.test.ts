@@ -23,20 +23,10 @@ const messageWithVariables = 'Variable \\"$login\\" got invalid value' +
     ' { email: \\"max@mustermann.de\\", password: \\"12345678\\", abc: \\"def\\" }' +
     '; Field \\"abc\\" is not defined by type LoginInput.'
 
-const graphQLError: GraphQLError = new GraphQLError('`CustomerPayload` is an extension type',
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined
-    , {exception: 'A stacktrace', query: customerQuery, serviceName: 'customer'})
-const graphQLErrorWithVariables: GraphQLError = new GraphQLError(messageWithVariables ,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined
-    , {exception: 'A stacktrace', query: customerQuery, serviceName: 'myTestService'})
+const graphQLError: GraphQLError = new GraphQLError('`CustomerPayload` is an extension type', {
+    extensions:  {exception: 'A stacktrace', query: customerQuery, serviceName: 'customer'}
+})
+const graphQLErrorWithVariables: GraphQLError = new GraphQLError(messageWithVariables, {extensions:  {exception: 'A stacktrace', query: customerQuery, serviceName: 'myTestService'}})
 const graphQLErrorWithSourceBody = new GraphQLError('`CustomerPayload` is an extension type',{
     source: {
         get [Symbol.toStringTag](): string {
