@@ -9,13 +9,13 @@ export interface GraphQLServerRequest {
         }
     ): T;
     headers: IncomingHttpHeaders,
-    
+
     // From class Stream
-    addListener: (eventName: string | symbol, 
+    addListener: (eventName: string | symbol,
         listener: (...arguments_: unknown[]) => void) => Stream,
     on: (eventName: string | symbol, listener: (...arguments_: unknown[]) => void) => Stream,
     once: (eventName: string | symbol, listener: (...arguments_: unknown[]) => void) => Stream,
-    removeListener: (eventName: string | symbol, 
+    removeListener: (eventName: string | symbol,
         listener: (...arguments_: unknown[]) => void) => Stream,
     removeAllListeners: (event?: string | symbol | undefined) => Stream,
     off: (eventName: string | symbol, listener: (...arguments_: unknown[]) => void) => Stream,
@@ -27,11 +27,12 @@ export interface GraphQLServerRequest {
     rawListeners: (eventName: string | symbol) => Function[],
     emit: (eventName: string | symbol, ...arguments_: unknown[]) => boolean ,
     listenerCount: (eventName: string | symbol) => number,
-    prependListener: (eventName: string | symbol, 
+    prependListener: (eventName: string | symbol,
         listener: (...arguments_: unknown[]) => void) => Stream,
-    prependOnceListener: (eventName: string | symbol, 
+    prependOnceListener: (eventName: string | symbol,
         listener: (...arguments_: unknown[]) => void) => Stream,
     eventNames: () => (string | symbol)[]
+    // For GraphQLServer implementation
     url: string,
     body?: unknown,
     method?: string | undefined;

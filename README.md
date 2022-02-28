@@ -13,10 +13,10 @@ TypeScript declarations are provided within the project.
 
 ## Compatibility
 
-The following table shows which version of `graphql-js` library is compatible with which version of
-`@dreamit/graphql-server`. As `@dreamit/graphql-server` defines `graphql-js` as peerDependency you might want
-to choose a fitting version according to the `graphql-js` version used in your project and by other libraries depending
-on `graphql-js`.
+The following table shows which version of [graphql-js][1] library is compatible with which version of
+`@dreamit/graphql-server`. As `@dreamit/graphql-server` defines [graphql-js][1] as peerDependency you might want
+to choose a fitting version according to the [graphql-js][1] version used in your project and by other libraries depending
+on [graphql-js][1].
 
 | graphql-js version | graphql-server Version | Github branch  |
 | ------------- |:-------------:| -----:|
@@ -26,12 +26,12 @@ on `graphql-js`.
 ## Features
 
 - Creates GraphQL responses for (GraphQL) requests
-- Can be use with fitting webservers that provide a matching `Request` and `Response` object
-  (e.g. ExpressJS).
+- Can be use with fitting webservers that provide a matching `GraphQLServerRequest` and `GraphQLServerResponse` object
+  (e.g. [Express][2]).
 - Uses out-of-the-box default options to ease use and keep code short
 - Provides hot reloading for schema and options
 - Provides out-of-the-box metrics for GraphQLServer
-- Uses and is compatible with `graphql-js` library version 15 (graphqlserver 1.x) and 16 (graphqlserver 2.x) .
+- Uses and is compatible with [graphql-js][1] library version 15 (graphqlserver 1.x) and 16 (graphqlserver 2.x) .
 
 ## Usage
 
@@ -58,7 +58,7 @@ integration test in the `GraphQLServer.integration.test.ts` class in the `tests`
 
 Validation rules can be used to define how the `GraphQLServer` should behave when validating the request against the given
 schema. 
-To ease the use `GraphQLServer` uses the `specifiedRules` from `graphql-js` library. If you don't want to use the default
+To ease the use `GraphQLServer` uses the `specifiedRules` from [graphql-js][1] library. If you don't want to use the default
 validation rules you can overwrite them by setting `defaultValidationRules` option to `[]`.
 
 **Warning!**
@@ -85,7 +85,7 @@ Introspection can be used to get information about the available schema. While t
 environments and public APIs you should consider disabling it for production if e.g. your API is only used with a 
 specific matching frontend.
 
-Introspection can be disabled by adding the `NoSchemaIntrospectionCustomRule` from the `graphql-js` library to the
+Introspection can be disabled by adding the `NoSchemaIntrospectionCustomRule` from the [graphql-js][1] library to the
 `customValidationRules` option.
 
 ```typescript
@@ -129,7 +129,7 @@ console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 
 ## Metrics
 
-The implementation uses `prom-client` library to provide default NodeJS metrics as well as three custom metrics for the
+The implementation uses [prom-client][3] library to provide default NodeJS metrics as well as three custom metrics for the
 GraphQL server:
 - **graphql_server_availability**: Availability gauge with status 0 (unavailable) and 1 (available)
 - **graphql_server_request_throughput**: The number of incoming requests
@@ -165,7 +165,7 @@ console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 ## CORS requests
 
 The `GraphQLServer` does not handle CORS requests on its own. It is recommended to handle this on the webserver level,
-e.g. by using `cors` library with an ExpressJS webserver like in the example below. 
+e.g. by using `cors` library with an [Express][2] webserver like in the example below. 
 
 ```typescript
 const graphQLServerPort = 3592
@@ -178,6 +178,16 @@ graphQLServerExpress.all('/graphql', (req, res) => {
 graphQLServerExpress.listen({port: graphQLServerPort})
 console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 ```
+
+## Webserver framework compatibility
+
+The `GraphQLServer.handleRequest` function works with webservers that provide a fitting request and response object 
+that match `GraphQLServerRequest` and `GraphQLServerResponse` interfaces. As [Express][2] version 2.x  matches both no
+further adjustment is necessary. 
+
+If one or both objects do not match `GraphQLServerRequest` and `GraphQLServerResponse` it might still be possible
+to implement these interfaces and map the webserver framework to the graphql-server implementations. An example how to
+support [fastify][4] can be found in the [fastify-example](https://github.com/sgohlke/fastify-example/blob/main/src/FastifyGraphQLServer.ts)
 
 ## Available options
 
@@ -198,13 +208,13 @@ should return a `GraphQLFormattedError`. By default `defaultFormatErrorFunction`
 format the error.
 - **`schemaValidationFunction`**: Function that is called when a schema is set or updated. Given a `GraphQLSchema` it
   can return a `ReadonlyArray<GraphQLError>` or an empty array if no errors occurred/should be returned. 
-By default `validateSchema` from `graphql-js` library is called.
+By default `validateSchema` from [graphql-js][1] library is called.
 - **`parseFunction`**: Function that is called to create a `DocumentNode` with the extracted query in the 
 request information. Given a `source` and `ParseOptions` it should return a `DocumentNode`.
-    By default `parse` from `graphql-js` library is called.
+    By default `parse` from [graphql-js][1] library is called.
 - **`defaultValidationRules`**: Default validation rules that are used when `validateSchemaFunction` is called. 
 Both `defaultValidationRules` and `customValidationRules` will be merged together when `validateSchemaFunction` 
-is called. By default `specifiedRules` from `graphql-js` are used. 
+is called. By default `specifiedRules` from [graphql-js][1] are used. 
 Can be overwritten if no or other default rules should be used.
 - **`customValidationRules`**: Custom validation rules that are used when `validateSchemaFunction` is called.
 Both `defaultValidationRules` and `customValidationRules` will be merged together when `validateSchemaFunction` 
@@ -219,7 +229,7 @@ For production environments when not providing access to third-party users it is
 these recommendations so users can not circumvent disabled introspection request by using recommendations to explore 
 the schema.
 - **`validateFunction`**: Validation function that validates the extracted request against the available schema. 
-By default `validate` from `graphql-js` library is called. 
+By default `validate` from [graphql-js][1] library is called. 
 - **`rootValue`**: Root value that is used when `executeFunction` is called. Can be used to define resolvers that
 handle how defined queries and/or mutations should be resolved (e.g. fetch object from database and return entity).
 - **`contextFunction`**: Given a `Request` and `Response` this function is used to create a context value
@@ -233,7 +243,7 @@ if custom logic is necessary it can be added.
   if custom logic is necessary it can be added.
 - **`executeFunction`**: Execute function that executes the parsed `DocumentNode` (created in `parseFunction`) using
 given schema, values and resolvers. Returns a Promise or value of an `ExecutionResult`. 
-By default `execute` from `graphql-js` library is called.
+By default `execute` from [graphql-js][1] library is called.
 - **`extensionFunction`**: Extension function that can be used to add additional information to 
 the `extensions` field of the response. Given a `Request`, `GraphQLRequestInfo` and `ExecutionResult` it should return
 undefined or an ObjMap of key-value-pairs that are added to the`extensions` field. By default `defaultCollectErrorMetrics` 
@@ -252,7 +262,7 @@ the error counter for the given errorName or Error by 1.
   extract the information from the body and URL params of the request. Own Extractor can be created by
   implementing `RequestInformationExtractor` interface.
 - **`metricsClient`**: The `MetricsClient` used to collect metrics from the GraphQLServer. By default, 
-the `DefaultMetricsClient` is used that collects default NodeJS and three custom metrics using `prom-client` library.
+the `DefaultMetricsClient` is used that collects default NodeJS and three custom metrics using [prom-client][3] library.
 Own MetricsClient can be used by implementing `MetricsClient` interface.
 
 ## Customise and extend GraphQLServer
@@ -276,3 +286,8 @@ and open a new issue if there are no fitting issues for your topic yet.
 
 ## License
 graphql-server is under [MIT-License](./LICENSE).
+
+[1]: https://github.com/graphql/graphql-js
+[2]: https://expressjs.com/
+[3]: https://github.com/siimon/prom-client
+[4]: https://www.fastify.io/
