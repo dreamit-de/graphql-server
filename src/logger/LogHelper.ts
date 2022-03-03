@@ -1,16 +1,17 @@
 import {LogLevel} from './LogLevel'
 import {LogEntry} from './LogEntry'
 import {GraphQLError} from 'graphql'
-import {Request} from '../server/GraphQLServer'
+import {GraphQLServerRequest} from '..'
 
 export const VARIABLES_IN_MESSAGE_REGEX = new RegExp(/got invalid value (.*); Field/gm)
 
+// eslint-disable-next-line unicorn/no-static-only-class
 export class LogHelper {
     static createLogEntry(logMessage: string,
         loglevel: LogLevel,
         loggerName: string,
         serviceName: string,
-        request?: Request,
+        _request?: GraphQLServerRequest,
         error?: Error,
         customErrorName?: string): LogEntry {
         const logEntry: LogEntry = {

@@ -14,7 +14,8 @@ export const LOGGER = new JsonLogger('test-logger', 'myTestService')
 export const INITIAL_GRAPHQL_SERVER_OPTIONS: GraphQLServerOptions =
     {schema: userSchema, rootValue: userSchemaResolvers, logger: LOGGER, debug: true}
 
-export function generateGetParamsFromGraphQLRequestInfo(requestInfo: GraphQLRequestInfo): string {
+export function generateGetParametersFromGraphQLRequestInfo(requestInfo: GraphQLRequestInfo)
+: string {
     let result = ''
     if (requestInfo.query) {
         result += `query=${requestInfo.query}&`
@@ -30,6 +31,7 @@ export function generateGetParamsFromGraphQLRequestInfo(requestInfo: GraphQLRequ
 
 export function fetchResponse(body: BodyInit,
     method = 'POST',
+    // eslint-disable-next-line unicorn/no-object-as-default-parameter
     headers: HeadersInit = {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'Content-Type': 'application/json'

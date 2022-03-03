@@ -3,8 +3,10 @@ import {
     GraphQLError,
     Kind
 } from 'graphql'
-import {LogHelper} from '../../src'
-import {LogLevel} from '../../src'
+import {
+    LogHelper, 
+    LogLevel
+} from '../../src'
 
 // Created based upon implementation in node-fetch to avoid importing whole package for this class
 class FetchError extends Error {
@@ -21,20 +23,10 @@ const messageWithVariables = 'Variable \\"$login\\" got invalid value' +
     ' { email: \\"max@mustermann.de\\", password: \\"12345678\\", abc: \\"def\\" }' +
     '; Field \\"abc\\" is not defined by type LoginInput.'
 
-const graphQLError: GraphQLError = new GraphQLError('`CustomerPayload` is an extension type',
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined
-    , {exception: 'A stacktrace', query: customerQuery, serviceName: 'customer'})
-const graphQLErrorWithVariables: GraphQLError = new GraphQLError(messageWithVariables ,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined
-    , {exception: 'A stacktrace', query: customerQuery, serviceName: 'myTestService'})
+const graphQLError: GraphQLError = new GraphQLError('`CustomerPayload` is an extension type', {
+    extensions:  {exception: 'A stacktrace', query: customerQuery, serviceName: 'customer'}
+})
+const graphQLErrorWithVariables: GraphQLError = new GraphQLError(messageWithVariables, {extensions:  {exception: 'A stacktrace', query: customerQuery, serviceName: 'myTestService'}})
 const graphQLErrorWithSourceBody = new GraphQLError('`CustomerPayload` is an extension type',{
     source: {
         get [Symbol.toStringTag](): string {
@@ -71,9 +63,9 @@ const errorWithVariables = 'A GraphQLError message ' + sanitizedMessage
 
 test.each`
     logMessage                  | loglevel          | error                                 | expectedLogMessage      | expectedLogLevel | expectedStacktrace        | expectedQuery | expectedServiceName
-    ${'A info message'}         | ${LogLevel.info}  | ${null}                               | ${'A info message'}     | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
-    ${messageWithVariables}     | ${LogLevel.info}  | ${null}                               | ${sanitizedMessage}     | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
-    ${'A debug message'}        | ${LogLevel.debug} | ${null}                               | ${'A debug message'}    | ${'DEBUG'}       | ${undefined}              | ${undefined}  | ${'myTestService'}
+    ${'A info message'}         | ${LogLevel.info}  | ${undefined}                          | ${'A info message'}     | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
+    ${messageWithVariables}     | ${LogLevel.info}  | ${undefined}                          | ${sanitizedMessage}     | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
+    ${'A debug message'}        | ${LogLevel.debug} | ${undefined}                          | ${'A debug message'}    | ${'DEBUG'}       | ${undefined}              | ${undefined}  | ${'myTestService'}
     ${'A FetchError message'}   | ${LogLevel.error} | ${fetchError}                         | ${fetchErrorMessage}    | ${'ERROR'}       | ${'FetchError: An error'} | ${undefined}  | ${'myTestService'}
     ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLError}                       | ${graphQLErrorMessage}  | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
     ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLErrorWithVariables}          | ${errorWithVariables}   | ${'ERROR'}       | ${'A stacktrace'}         | ${'customer'} | ${'myTestService'}

@@ -80,7 +80,7 @@ export const userSchema = buildSchema(`
 
 export const userSchemaResolvers= {
     returnError(): User {
-        throw new GraphQLError('Something went wrong!')
+        throw new GraphQLError('Something went wrong!', {})
     },
     users(): User[] {
         return [userOne, userTwo]
@@ -92,7 +92,7 @@ export const userSchemaResolvers= {
         case '2':
             return userTwo
         default:
-            throw new GraphQLError(`User for userid=${input.id} was not found`)
+            throw new GraphQLError(`User for userid=${input.id} was not found`, {})
         }
     },
     logout(): LogoutResult {

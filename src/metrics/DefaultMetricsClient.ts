@@ -13,7 +13,7 @@ import {
     SCHEMA_VALIDATION_ERROR,
     SYNTAX_ERROR,
     VALIDATION_ERROR
-} from '../error/ErrorNameConstants'
+} from '..'
 
 /**
  * Default metrics client to collect metrics from application and GraphQL server.

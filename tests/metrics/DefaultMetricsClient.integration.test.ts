@@ -1,6 +1,16 @@
 import express, {Express} from 'express'
-import {Server} from 'http'
-import {GraphQLServer} from '../../src/'
+import {Server} from 'node:http'
+import {
+    GraphQLServer,
+    FETCH_ERROR,
+    GRAPHQL_ERROR,
+    INVALID_SCHEMA_ERROR,
+    METHOD_NOT_ALLOWED_ERROR,
+    MISSING_QUERY_PARAMETER_ERROR,
+    SCHEMA_VALIDATION_ERROR,
+    SYNTAX_ERROR,
+    VALIDATION_ERROR
+} from '../../src/'
 import fetch from 'cross-fetch'
 import {
     usersQuery,
@@ -15,16 +25,7 @@ import {
     INITIAL_GRAPHQL_SERVER_OPTIONS,
     LOGGER
 } from '../TestHelpers'
-import {
-    FETCH_ERROR,
-    GRAPHQL_ERROR,
-    INVALID_SCHEMA_ERROR,
-    METHOD_NOT_ALLOWED_ERROR,
-    MISSING_QUERY_PARAMETER_ERROR,
-    SCHEMA_VALIDATION_ERROR,
-    SYNTAX_ERROR,
-    VALIDATION_ERROR
-} from '../../src'
+
 import {
     GraphQLError,
     NoSchemaIntrospectionCustomRule
@@ -258,7 +259,7 @@ test('Should get correct metrics', async() => {
         debug: true,
         executeFunction: () => {
             throw new GraphQLError('FetchError: ' +
-                'An error occurred while connecting to following endpoint')
+                'An error occurred while connecting to following endpoint', {})
         }
     })
 
@@ -308,11 +309,11 @@ function setupGraphQLServer(): Express {
             customValidationRules: [NoSchemaIntrospectionCustomRule]
         }
     )
-    graphQLServerExpress.all('/graphql', (req, res) => {
-        return customGraphQLServer.handleRequest(req, res)
+    graphQLServerExpress.all('/graphql', (request, response) => {
+        return customGraphQLServer.handleRequest(request, response)
     })
-    graphQLServerExpress.get('/metrics', async(req, res) => {
-        return res.contentType(customGraphQLServer.getMetricsContentType())
+    graphQLServerExpress.get('/metrics', async(_request, response) => {
+        return response.contentType(customGraphQLServer.getMetricsContentType())
         .send(await customGraphQLServer.getMetrics())
     })
     return graphQLServerExpress

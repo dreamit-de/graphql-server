@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import express, {Express} from 'express'
-import {Server} from 'http'
+import {Server} from 'node:http'
 import {GraphQLServer} from '../src/'
 import fetch from 'cross-fetch'
 import {
@@ -24,7 +24,7 @@ import {
 } from 'graphql'
 import {
     fetchResponse,
-    generateGetParamsFromGraphQLRequestInfo,
+    generateGetParametersFromGraphQLRequestInfo,
     GRAPHQL_SERVER_PORT,
     INITIAL_GRAPHQL_SERVER_OPTIONS,
     LOGGER
@@ -179,7 +179,7 @@ test('Should get error response when GraphQL context error' +
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
-        executeFunction: () => {throw new GraphQLError('A GraphQL context error occurred!')} 
+        executeFunction: () => {throw new GraphQLError('A GraphQL context error occurred!', {})} 
     })
     const response = await fetchResponse(`{"query":"${usersQuery}"}`)
     const responseObject = await response.json()
@@ -212,7 +212,7 @@ test('Should get error response with formatted error results ' +
 test('Should get data response when using GET request', async() => {
     const response = await fetch(
         `http://localhost:${GRAPHQL_SERVER_PORT}/graphql?` +
-        generateGetParamsFromGraphQLRequestInfo(usersRequest)
+        generateGetParametersFromGraphQLRequestInfo(usersRequest)
     )
     const responseObject = await response.json()
     expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
@@ -220,7 +220,7 @@ test('Should get data response when using GET request', async() => {
 
 test('Should get error response when using mutation in a GET request', async() => {
     const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql?` +
-        generateGetParamsFromGraphQLRequestInfo(loginRequest))
+    generateGetParametersFromGraphQLRequestInfo(loginRequest))
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe(
         'Only "query" operation is allowed in "GET" requests'
@@ -236,7 +236,7 @@ test('Should get an error response when content type is not defined', async() =>
 })
 
 test('Should get data response when using urlencoded request', async() => {
-    const response = await fetchResponse(generateGetParamsFromGraphQLRequestInfo(usersRequest),
+    const response = await fetchResponse(generateGetParametersFromGraphQLRequestInfo(usersRequest),
         'POST',
         {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -270,7 +270,7 @@ test('Should get error response if invalid schema is used', async() => {
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
-        schemaValidationFunction: () => [new GraphQLError('Schema is not valid!')] 
+        schemaValidationFunction: () => [new GraphQLError('Schema is not valid!', {})] 
     })
     const response = await fetchResponse('doesnotmatter')
     const responseObject = await response.json()
@@ -384,8 +384,8 @@ test('Should get data response if query with unknown field is executed ' +
 function setupGraphQLServer(): Express {
     const graphQLServerExpress = express()
     customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
-    graphQLServerExpress.all('/graphql', (req, res) => {
-        return customGraphQLServer.handleRequest(req, res)
+    graphQLServerExpress.all('/graphql', (request, response) => {
+        return customGraphQLServer.handleRequest(request, response)
     })
     return graphQLServerExpress
 }
