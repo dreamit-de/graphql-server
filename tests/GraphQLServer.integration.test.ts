@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import express, {Express} from 'express'
 import {Server} from 'node:http'
-import {GraphQLServer} from '../src/'
+import {
+    AggregateError,
+    GraphQLServer
+} from '../src/'
 import fetch from 'cross-fetch'
 import {
     usersRequest,
@@ -378,6 +381,36 @@ test('Should get data response if query with unknown field is executed ' +
     const response = await fetchResponse(`{"query":"${usersQueryWithUnknownField}"}`)
     const responseObject = await response.json()
     expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
+    customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
+})
+
+test('Should reassign AggregateError to original errors field' +
+    ' when reassignAggregateError is enabled', async() => {
+    customGraphQLServer.setOptions({
+        schema: userSchema,
+        rootValue: userSchemaResolvers,
+        logger: LOGGER,
+        debug: true,
+        reassignAggregateError: true,
+        executeFunction: () => ({
+            errors: [new GraphQLError('The first error!, The second error!',
+                {
+                    originalError:
+                        {
+                            name: 'AggregateError',
+                            message:'The first error!, The second error!',
+                            errors: [
+                                new GraphQLError('The first error!', {}),
+                                new GraphQLError('The second error!', {})
+                            ]
+                        } as AggregateError
+                })]
+        })
+    })
+    const response = await fetchResponse(`{"query":"${usersQuery}"}`)
+    const responseObject = await response.json()
+    expect(responseObject.errors[0].message).toBe('The first error!')
+    expect(responseObject.errors[1].message).toBe('The second error!')
     customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 

@@ -248,6 +248,11 @@ By default `execute` from [graphql-js][1] library is called.
 the `extensions` field of the response. Given a `Request`, `GraphQLRequestInfo` and `ExecutionResult` it should return
 undefined or an ObjMap of key-value-pairs that are added to the`extensions` field. By default `defaultCollectErrorMetrics` 
 is used and returns undefined.
+- **`reassignAggregateError`**: If `true` and the `ExecutionResult` created by the `executeFunction` contains an `AggregateError`
+  (e.g. an error containing a comma-separated list of errors in the message and an `originalError` containing multiple errors)
+this function will reassign the `originalError.errors` to the `ExecutionResult.errors` field. This is helpful if another
+application creates `AggregateErrors` while the initiator of the request (e.g. a Frontend app) does not expect or know how
+to handle `AggregateErrors`.
 
 ### Metrics options
 - **`collectErrorMetricsFunction:`**: Given an error name as string, `Error` and request this function can be used

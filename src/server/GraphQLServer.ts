@@ -110,6 +110,12 @@ export class GraphQLServer {
      * introspection request by using recommendations to explore the schema.
      */
     private removeValidationRecommendations?: boolean
+
+    /**
+     * Reassign AggregateError containing more than one error back to the original
+     * errors field of the ExecutionResult.
+     */
+    private reassignAggregateError?: boolean
     private validateSchemaFunction:
         (schema: GraphQLSchema,
          documentAST: DocumentNode,
@@ -154,6 +160,10 @@ export class GraphQLServer {
                 options.removeValidationRecommendations === undefined
                     ? true
                     : options.removeValidationRecommendations
+            this.reassignAggregateError =
+                options.reassignAggregateError === undefined
+                    ? false
+                    : options.reassignAggregateError
             this.validateSchemaFunction = options.validateFunction || validate
             this.rootValue = options.rootValue
             this.contextFunction = options.contextFunction || this.defaultContextFunction
@@ -381,13 +391,13 @@ export class GraphQLServer {
             // Collect error metrics for execution result
             if (executionResult.errors && executionResult.errors.length > 0) {
                 for (const error of executionResult.errors) {
-                    if (error.originalError && isAggregateError(error.originalError)) {
-                        this.logger.error('Error has originalError '
-                            + JSON.stringify(error.originalError.errors),
-                        error,
-                        this.determineGraphQLOrFetchError(error),
+                    if (this.reassignAggregateError
+                        && error.originalError
+                        && isAggregateError(error.originalError)) {
+                        this.logger.info('Error is AggregateError and reassignAggregateError ' +
+                            'feature is enabled. AggregateError will be reassigned ' +
+                            'to original errors field.',
                         request)
-
                         executionResult.errors = error.originalError.errors
                     }
 
@@ -397,8 +407,6 @@ export class GraphQLServer {
                     this.determineGraphQLOrFetchError(error),
                     request)
                     this.increaseFetchOrGraphQLErrorMetric(error, request)
-
-
                 }
             }
 

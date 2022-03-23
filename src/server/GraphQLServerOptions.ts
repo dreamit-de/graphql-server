@@ -3,8 +3,8 @@ import {
     RequestInformationExtractor,
     GraphQLRequestInfo,
     MetricsClient,
-    GraphQLServerRequest, 
-    GraphQLServerResponse 
+    GraphQLServerRequest,
+    GraphQLServerResponse
 } from '..'
 import {
     DocumentNode,
@@ -46,6 +46,7 @@ export interface GraphQLServerOptions {
     readonly validationTypeInfo?: TypeInfo
     readonly validationOptions?: { maxErrors?: number }
     readonly removeValidationRecommendations?: boolean
+    readonly reassignAggregateError?: boolean
     readonly validateFunction?: (schema: GraphQLSchema,
                         documentAST: DocumentNode,
                         rules?: ReadonlyArray<ValidationRule>,
@@ -53,7 +54,7 @@ export interface GraphQLServerOptions {
                         typeInfo?: TypeInfo,
                         ) => ReadonlyArray<GraphQLError>
     readonly rootValue?: unknown | undefined
-    readonly contextFunction?: (request: GraphQLServerRequest, 
+    readonly contextFunction?: (request: GraphQLServerRequest,
         response: GraphQLServerResponse) => unknown
     readonly fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
     readonly typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
