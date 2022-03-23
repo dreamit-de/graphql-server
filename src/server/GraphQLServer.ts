@@ -29,10 +29,11 @@ import {
     MISSING_QUERY_PARAMETER_ERROR,
     SCHEMA_VALIDATION_ERROR,
     SYNTAX_ERROR,
-    VALIDATION_ERROR, 
+    VALIDATION_ERROR,
     GraphQLServerRequest,
-    GraphQLServerResponse ,
-    RequestInformationExtractor
+    GraphQLServerResponse,
+    RequestInformationExtractor,
+    isAggregateError
 } from '..'
 
 
@@ -117,11 +118,11 @@ export class GraphQLServer {
          typeInfo?: TypeInfo,) => ReadonlyArray<GraphQLError>  = validate
     private rootValue?: unknown
     private contextFunction:
-        (request: GraphQLServerRequest, 
+        (request: GraphQLServerRequest,
             response: GraphQLServerResponse) => unknown = this.defaultContextFunction
     private fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
     private typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
-    private executeFunction: (arguments_: ExecutionArgs) 
+    private executeFunction: (arguments_: ExecutionArgs)
     => PromiseOrValue<ExecutionResult> = execute
     private extensionFunction: (request: GraphQLServerRequest,
                                 requestInformation: GraphQLRequestInfo,
@@ -225,7 +226,7 @@ export class GraphQLServer {
         return this.metricsClient.getMetrics()
     }
 
-    async handleRequest(request: GraphQLServerRequest, 
+    async handleRequest(request: GraphQLServerRequest,
         response: GraphQLServerResponse): Promise<void> {
         // Increase request throughput
         this.metricsClient.increaseRequestThroughput(request)
@@ -380,12 +381,24 @@ export class GraphQLServer {
             // Collect error metrics for execution result
             if (executionResult.errors && executionResult.errors.length > 0) {
                 for (const error of executionResult.errors) {
+                    if (error.originalError && isAggregateError(error.originalError)) {
+                        this.logger.error('Error has originalError '
+                            + JSON.stringify(error.originalError.errors),
+                        error,
+                        this.determineGraphQLOrFetchError(error),
+                        request)
+
+                        executionResult.errors = error.originalError.errors
+                    }
+
                     this.logger.error('While processing the request ' +
                         'the following error occurred: ',
                     error,
                     this.determineGraphQLOrFetchError(error),
                     request)
                     this.increaseFetchOrGraphQLErrorMetric(error, request)
+
+
                 }
             }
 
@@ -435,7 +448,7 @@ export class GraphQLServer {
     }
 
     /** Sends a fitting response if the schema used by the GraphQL server is invalid */
-    sendInvalidSchemaResponse(request: GraphQLServerRequest, 
+    sendInvalidSchemaResponse(request: GraphQLServerRequest,
         response: GraphQLServerResponse): void {
         return this.sendResponse(response,
             {errors: [invalidSchemaError]},
@@ -454,8 +467,8 @@ export class GraphQLServer {
     }
 
     /** Sends a fitting response if a syntax error occurred during document parsing */
-    sendSyntaxErrorResponse(request: GraphQLServerRequest, 
-        response: GraphQLServerResponse, 
+    sendSyntaxErrorResponse(request: GraphQLServerRequest,
+        response: GraphQLServerResponse,
         syntaxError: GraphQLError): void {
         return this.sendResponse(response,
             {errors: [syntaxError]},
@@ -544,7 +557,7 @@ export class GraphQLServer {
      * @param {GraphQLServerRequest} request - The initial request
      * @param {GraphQLServerResponse} response - The response to send back
      */
-    defaultContextFunction(request: GraphQLServerRequest, 
+    defaultContextFunction(request: GraphQLServerRequest,
         response: GraphQLServerResponse): unknown {
         this.logDebugIfEnabled(
             `Calling defaultContextFunction with request ${request} and response ${response}`,
@@ -580,8 +593,8 @@ export class GraphQLServer {
      * @param {GraphQLError} error - An optional GraphQL error
      * @param {GraphQLServerRequest} request - The initial request
      */
-    defaultCollectErrorMetrics(errorName: string, 
-        error?: unknown, 
+    defaultCollectErrorMetrics(errorName: string,
+        error?: unknown,
         request?: GraphQLServerRequest): void {
         this.logDebugIfEnabled(
             `Calling defaultCollectErrorMetrics with request ${request}`+
@@ -596,7 +609,7 @@ export class GraphQLServer {
      * @param {unknown} error - An error
      * @param {GraphQLServerRequest} request - The initial request
      */
-    increaseFetchOrGraphQLErrorMetric(error: unknown, 
+    increaseFetchOrGraphQLErrorMetric(error: unknown,
         request: GraphQLServerRequest): void {
         this.logDebugIfEnabled(
             `Calling increaseFetchOrGraphQLErrorMetric with request ${request}`+

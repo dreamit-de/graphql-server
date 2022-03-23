@@ -112,7 +112,7 @@ test('Should get unfiltered error response if a' +
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
-        removeValidationRecommendations: false  
+        removeValidationRecommendations: false
     })
     const response = await fetchResponse('{"query":"query users{ users { userIdABC userName } }"}')
     const responseObject = await response.json()
@@ -179,7 +179,7 @@ test('Should get error response when GraphQL context error' +
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
-        executeFunction: () => {throw new GraphQLError('A GraphQL context error occurred!', {})} 
+        executeFunction: () => {throw new GraphQLError('A GraphQL context error occurred!', {})}
     })
     const response = await fetchResponse(`{"query":"${usersQuery}"}`)
     const responseObject = await response.json()
@@ -270,7 +270,7 @@ test('Should get error response if invalid schema is used', async() => {
         rootValue: userSchemaResolvers,
         logger: LOGGER,
         debug: true,
-        schemaValidationFunction: () => [new GraphQLError('Schema is not valid!', {})] 
+        schemaValidationFunction: () => [new GraphQLError('Schema is not valid!', {})]
     })
     const response = await fetchResponse('doesnotmatter')
     const responseObject = await response.json()
@@ -297,7 +297,7 @@ test('Should get extensions in GraphQL response if extension function is defined
         logger: LOGGER,
         debug: true,
         removeValidationRecommendations: true,
-        extensionFunction: () => extensionTestData  
+        extensionFunction: () => extensionTestData
     })
     const response = await fetchResponse(`{"query":"${usersQuery}"}`)
     const responseObject = await response.json()
@@ -321,7 +321,7 @@ test('Should get error response if introspection is requested ' +
         logger: LOGGER,
         debug: true,
         removeValidationRecommendations: true,
-        customValidationRules: [NoSchemaIntrospectionCustomRule]  
+        customValidationRules: [NoSchemaIntrospectionCustomRule]
     })
     const response = await fetchResponse(`{"query":"${introspectionQuery}"}`)
     const responseObject = await response.json()
@@ -340,7 +340,7 @@ test('Should get error response if query with unknown field is executed ' +
         logger: LOGGER,
         debug: true,
         removeValidationRecommendations: true,
-        customValidationRules: [NoSchemaIntrospectionCustomRule]  
+        customValidationRules: [NoSchemaIntrospectionCustomRule]
     })
     const response = await fetchResponse(`{"query":"${usersQueryWithUnknownField}"}`)
     const responseObject = await response.json()
@@ -356,7 +356,7 @@ test('Should get error response if query with unknown field is executed ' +
         logger: LOGGER,
         debug: true,
         removeValidationRecommendations: true,
-        customValidationRules: [] 
+        customValidationRules: []
     })
     const response = await fetchResponse(`{"query":"${usersQueryWithUnknownField}"}`)
     const responseObject = await response.json()
@@ -373,7 +373,7 @@ test('Should get data response if query with unknown field is executed ' +
         debug: true,
         removeValidationRecommendations: true,
         defaultValidationRules: [],
-        customValidationRules: [] 
+        customValidationRules: []
     })
     const response = await fetchResponse(`{"query":"${usersQueryWithUnknownField}"}`)
     const responseObject = await response.json()
