@@ -391,12 +391,14 @@ export class GraphQLServer {
             // Collect error metrics for execution result
             if (executionResult.errors && executionResult.errors.length > 0) {
                 for (const error of executionResult.errors) {
+                    this.logger.info(`rea is enabled ${this.reassignAggregateError}`)
                     if (this.reassignAggregateError
                         && error.originalError
                         && isAggregateError(error.originalError)) {
-                        this.logger.info('Error is AggregateError and reassignAggregateError ' +
-                            'feature is enabled. AggregateError will be reassigned ' +
-                            'to original errors field.',
+
+                        this.logDebugIfEnabled('Error is AggregateError and ' +
+                            'reassignAggregateError feature is enabled. AggregateError ' +
+                            'will be reassigned to original errors field.',
                         request)
                         executionResult.errors = error.originalError.errors
                     }
