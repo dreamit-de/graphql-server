@@ -4,6 +4,7 @@
  * It uses the standard graphql library to receive GraphQL
  * requests and send back appropriate responses.
  */
+export * from './error/AggregateError'
 export * from './error/ErrorNameConstants'
 export * from './error/GraphQLErrorWithStatusCode'
 

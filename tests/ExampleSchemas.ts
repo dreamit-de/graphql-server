@@ -3,7 +3,10 @@ import {
     GraphQLError,
     GraphQLSchema
 } from 'graphql'
-import {GraphQLRequestInfo} from '../src'
+import {
+    AggregateError,
+    GraphQLRequestInfo
+} from '../src'
 
 // Contains example schemas and data that can be used across tests
 
@@ -98,5 +101,20 @@ export const userSchemaResolvers= {
     logout(): LogoutResult {
         return {result: 'Goodbye!'}
     }
+}
+
+export const multipleErrorResponse = {
+    errors: [new GraphQLError('The first error!, The second error!',
+        {
+            originalError:
+                {
+                    name: 'AggregateError',
+                    message:'The first error!, The second error!',
+                    errors: [
+                        new GraphQLError('The first error!', {}),
+                        new GraphQLError('The second error!', {})
+                    ]
+                } as AggregateError
+        })]
 }
 
