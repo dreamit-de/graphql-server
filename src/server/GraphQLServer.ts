@@ -239,6 +239,8 @@ export class GraphQLServer {
 
     async handleRequest(request: GraphQLServerRequest,
         response: GraphQLServerResponse): Promise<void> {
+        const context = this.contextFunction(request, response)
+
         // Increase request throughput
         this.metricsClient.increaseRequestThroughput(request)
 
@@ -255,7 +257,8 @@ export class GraphQLServer {
                 {errors: [methodNotAllowedError]},
                 405,
                 { allow: 'GET, POST' },
-                request)
+                request,
+                context)
         }
 
         // Reject requests if schema is invalid
@@ -266,7 +269,7 @@ export class GraphQLServer {
                 INVALID_SCHEMA_ERROR,
                 request)
             this.collectErrorMetricsFunction(INVALID_SCHEMA_ERROR, invalidSchemaError, request)
-            return this.sendInvalidSchemaResponse(request, response)
+            return this.sendInvalidSchemaResponse(request, response, context)
         } else {
             this.metricsClient.setAvailability(1)
         }
@@ -285,7 +288,8 @@ export class GraphQLServer {
             this.collectErrorMetricsFunction(GRAPHQL_ERROR, requestInformation.error, request)
             return this.sendGraphQLErrorWithStatusCodeResponse(request,
                 response,
-                requestInformation.error)
+                requestInformation.error,
+                context)
         }
         // Reject request if no query parameter is provided
         else if (!requestInformation.query) {
@@ -296,7 +300,7 @@ export class GraphQLServer {
             this.collectErrorMetricsFunction(MISSING_QUERY_PARAMETER_ERROR,
                 missingQueryParameterError,
                 request)
-            return this.sendMissingQueryResponse(request, response)
+            return this.sendMissingQueryResponse(request, response, context)
         }
 
         // Parse given GraphQL source into a document (parse(query) function)
@@ -310,7 +314,10 @@ export class GraphQLServer {
                 SYNTAX_ERROR,
                 request)
             this.collectErrorMetricsFunction(SYNTAX_ERROR, syntaxError, request)
-            return this.sendSyntaxErrorResponse(request, response, syntaxError as GraphQLError)
+            return this.sendSyntaxErrorResponse(request,
+                response,
+                syntaxError as GraphQLError,
+                context)
         }
         this.logDebugIfEnabled(
             `Parsing query into document succeeded with document: ${JSON.stringify(documentAST)}`,
@@ -341,7 +348,8 @@ export class GraphQLServer {
             }
             return this.sendValidationErrorResponse(request,
                 response,
-                this.removeValidationRecommendationsFromErrors(validationErrors))
+                this.removeValidationRecommendationsFromErrors(validationErrors),
+                context)
         }
 
         /**
@@ -360,10 +368,11 @@ export class GraphQLServer {
                 request)
             return this.sendMutationNotAllowedForGetResponse(request,
                 response,
-                onlyQueryInGetRequestsError)
+                onlyQueryInGetRequestsError,
+                context)
         }
 
-        const context = this.contextFunction(request, response)
+
 
         /**
          * Perform execution
@@ -415,7 +424,12 @@ export class GraphQLServer {
             // Return execution result
             this.logDebugIfEnabled(`Create response from data ${JSON.stringify(executionResult)}`,
                 request)
-            return this.sendResponse(response, executionResult, 200, {}, request)
+            return this.sendResponse(response,
+                executionResult,
+                200,
+                {},
+                request,
+                context)
         } catch (error: unknown) {
             this.logger.error('While processing the request ' +
                 'a GraphQL execution error occurred',
@@ -423,7 +437,10 @@ export class GraphQLServer {
             this.determineGraphQLOrFetchError(error),
             request)
             this.increaseFetchOrGraphQLErrorMetric(error, request)
-            return this.sendGraphQLExecutionErrorResponse(request, response, error as GraphQLError)
+            return this.sendGraphQLExecutionErrorResponse(request,
+                response,
+                error as GraphQLError,
+                context)
         }
     }
 
@@ -431,11 +448,13 @@ export class GraphQLServer {
         executionResult: ExecutionResult,
         statusCode: number,
         customHeaders: Record<string, string>,
-        request: GraphQLServerRequest): void {
+        request: GraphQLServerRequest,
+        context: unknown): void {
 
         this.logDebugIfEnabled(
             `Preparing response with executionResult ${JSON.stringify(executionResult)}`+
-            `, status code ${statusCode} and custom headers ${JSON.stringify(customHeaders)}`,
+            `, status code ${statusCode} and custom headers ${JSON.stringify(customHeaders)}` +
+            `, and context ${context}`,
             request
         )
         if (executionResult.errors) {
@@ -459,65 +478,78 @@ export class GraphQLServer {
 
     /** Sends a fitting response if the schema used by the GraphQL server is invalid */
     sendInvalidSchemaResponse(request: GraphQLServerRequest,
-        response: GraphQLServerResponse): void {
+        response: GraphQLServerResponse,
+        context: unknown): void {
         return this.sendResponse(response,
             {errors: [invalidSchemaError]},
             500,
             {},
-            request)
+            request,
+            context)
     }
 
     /** Sends a fitting response if there is no query available in the request */
-    sendMissingQueryResponse(request: GraphQLServerRequest, response: GraphQLServerResponse): void {
+    sendMissingQueryResponse(request: GraphQLServerRequest,
+        response: GraphQLServerResponse,
+        context: unknown): void {
         return this.sendResponse(response,
             {errors: [missingQueryParameterError]},
             400,
             {},
-            request)
+            request,
+            context)
     }
 
     /** Sends a fitting response if a syntax error occurred during document parsing */
     sendSyntaxErrorResponse(request: GraphQLServerRequest,
         response: GraphQLServerResponse,
-        syntaxError: GraphQLError): void {
+        syntaxError: GraphQLError,
+        context: unknown): void {
         return this.sendResponse(response,
             {errors: [syntaxError]},
             400,
             {},
-            request)
+            request,
+            context)
     }
 
     /** Sends a fitting response if a validation error response occurred during schema validation */
     sendValidationErrorResponse(request: GraphQLServerRequest,
         response: GraphQLServerResponse,
-        errors: readonly GraphQLError[]): void {
+        errors: readonly GraphQLError[],
+        context: unknown): void {
         return this.sendResponse(response,
             {errors: errors},
             400,
             {},
-            request)
+            request,
+            context)
     }
 
     /** Sends a fitting response if a mutation is requested in a GET request */
     sendMutationNotAllowedForGetResponse(request: GraphQLServerRequest,
         response: GraphQLServerResponse,
-        error: GraphQLError): void {
+        error: GraphQLError,
+        context: unknown): void {
         return this.sendResponse(response,
             {errors: [error]},
             405,
             {allow: 'POST'},
-            request)
+            request,
+            context)
     }
 
     /** Sends a fitting response if a syntax error occurred during document parsing */
     sendGraphQLExecutionErrorResponse(request: GraphQLServerRequest,
         response: GraphQLServerResponse,
-        error: GraphQLError): void {
+        error: GraphQLError,
+        context: unknown): void {
         return this.sendResponse(response,
             {errors: [error]},
             400,
             {},
-            request)
+            request,
+            context)
     }
 
     /**
@@ -525,15 +557,18 @@ export class GraphQLServer {
      * @param {GraphQLServerRequest} request - The initial request
      * @param {GraphQLServerResponse} response - The response to send
      * @param {GraphQLErrorWithStatusCode} error - An error that occurred while executing a function
+     * @param {unknown} context - The context used for the GraphQL request
      */
     sendGraphQLErrorWithStatusCodeResponse(request: GraphQLServerRequest,
         response: GraphQLServerResponse,
-        error: GraphQLErrorWithStatusCode): void {
+        error: GraphQLErrorWithStatusCode,
+        context: unknown): void {
         return this.sendResponse(response,
             {errors: [error.graphQLError]},
             error.statusCode,
             {},
-            request)
+            request,
+            context)
     }
 
     // Removes validation recommendations matching the defined recommendation text
