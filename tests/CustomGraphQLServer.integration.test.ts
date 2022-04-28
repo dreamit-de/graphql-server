@@ -34,8 +34,7 @@ afterAll(async() => {
     await graphQLServer.close()
 })
 
-test('Should not reassign AggregateError to original errors field' +
-    ' when reassignAggregateError is disabled', async() => {
+test('Should return value from context instead of user data ', async() => {
     customGraphQLServer.setOptions({
         schema: userSchema,
         rootValue: userSchemaResolvers,
