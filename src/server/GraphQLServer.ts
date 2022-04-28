@@ -74,32 +74,33 @@ const onlyQueryInGetRequestsError =
 const requestCouldNotBeProcessed = 'Request could not be processed: '
 
 export class GraphQLServer {
-    private logger: Logger = fallbackTextLogger
-    private requestInformationExtractor: RequestInformationExtractor
+    protected logger: Logger = fallbackTextLogger
+    protected requestInformationExtractor: RequestInformationExtractor
         = defaultRequestInformationExtractor
-    private metricsClient: MetricsClient = defaultMetricsClient
+    protected metricsClient: MetricsClient = defaultMetricsClient
 
     /**
      * Enables additional debug output if set to true.
      * Recommendation: Set to false for production environments
      */
-    private debug?: boolean
-    private schema?: GraphQLSchema
-    private shouldUpdateSchemaFunction:
+    protected debug?: boolean
+    protected schema?: GraphQLSchema
+    protected shouldUpdateSchemaFunction:
         (schema?: GraphQLSchema) => boolean = this.defaultShouldUpdateSchema
-    private formatErrorFunction:
+    protected formatErrorFunction:
         (error: GraphQLError) => GraphQLFormattedError = this.defaultFormatErrorFunction
-    private collectErrorMetricsFunction:
+    protected collectErrorMetricsFunction:
         (errorName: string, error?: unknown, request?: GraphQLServerRequest) => void
         = this.defaultCollectErrorMetrics
-    private schemaValidationFunction:
+    protected schemaValidationFunction:
         (schema: GraphQLSchema) => ReadonlyArray<GraphQLError> = validateSchema
-    private schemaValidationErrors: ReadonlyArray<GraphQLError> = []
-    private parseFunction: (source: string | Source, options?: ParseOptions) => DocumentNode = parse
-    private defaultValidationRules:  ReadonlyArray<ValidationRule> = specifiedRules
-    private customValidationRules: ReadonlyArray<ValidationRule> = []
-    private validationTypeInfo?: TypeInfo
-    private validationOptions?: { maxErrors?: number }
+    protected schemaValidationErrors: ReadonlyArray<GraphQLError> = []
+    protected parseFunction:
+        (source: string | Source, options?: ParseOptions) => DocumentNode = parse
+    protected defaultValidationRules:  ReadonlyArray<ValidationRule> = specifiedRules
+    protected customValidationRules: ReadonlyArray<ValidationRule> = []
+    protected validationTypeInfo?: TypeInfo
+    protected validationOptions?: { maxErrors?: number }
 
     /**
      * Removes validation recommendations like "users not found. Did you mean user?".
@@ -109,28 +110,28 @@ export class GraphQLServer {
      * so users can not circumvent disabled
      * introspection request by using recommendations to explore the schema.
      */
-    private removeValidationRecommendations?: boolean
+    protected removeValidationRecommendations?: boolean
 
     /**
      * Reassign AggregateError containing more than one error back to the original
      * errors field of the ExecutionResult.
      */
-    private reassignAggregateError?: boolean
-    private validateSchemaFunction:
+    protected reassignAggregateError?: boolean
+    protected validateSchemaFunction:
         (schema: GraphQLSchema,
          documentAST: DocumentNode,
          rules?: ReadonlyArray<ValidationRule>,
          options?: { maxErrors?: number },
          typeInfo?: TypeInfo,) => ReadonlyArray<GraphQLError>  = validate
-    private rootValue?: unknown
-    private contextFunction:
+    protected rootValue?: unknown
+    protected contextFunction:
         (request: GraphQLServerRequest,
             response: GraphQLServerResponse) => unknown = this.defaultContextFunction
-    private fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
-    private typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
-    private executeFunction: (arguments_: ExecutionArgs)
+    protected fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
+    protected typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
+    protected executeFunction: (arguments_: ExecutionArgs)
     => PromiseOrValue<ExecutionResult> = execute
-    private extensionFunction: (request: GraphQLServerRequest,
+    protected extensionFunction: (request: GraphQLServerRequest,
                                 requestInformation: GraphQLRequestInfo,
                                 executionResult: ExecutionResult)
         => ObjMap<unknown> | undefined = this.defaultExtensions
