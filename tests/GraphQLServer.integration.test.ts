@@ -57,7 +57,7 @@ test('Should get data response', async() => {
     const response = await fetchResponse(`{"query":"${usersQuery}"}`)
     const responseObject = await response.json()
     expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
-    expect(responseObject.extensions).toBe(undefined)
+    expect(responseObject.extensions).toBeUndefined()
 })
 
 test('Should get data response for query with variables', async() => {
