@@ -50,7 +50,7 @@ test('Should return value from context instead of user data ', async() => {
     const response = await fetchResponse(`{"query":"${usersQuery}"}`)
     const responseObject = await response.json()
     expect(responseObject).toStrictEqual('customResponse')
-    expect(responseObject.extensions).toBe(undefined)
+    expect(responseObject.extensions).toBeUndefined()
 
     customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
