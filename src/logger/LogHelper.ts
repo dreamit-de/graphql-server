@@ -13,13 +13,23 @@ export class LogHelper {
         serviceName: string,
         _request?: GraphQLServerRequest,
         error?: Error,
-        customErrorName?: string): LogEntry {
+        customErrorName?: string,
+        context?: unknown): LogEntry {
         const logEntry: LogEntry = {
             logger: loggerName,
             timestamp: LogHelper.createTimestamp(),
             message: LogHelper.sanitizeMessage(logMessage),
             level: loglevel,
             serviceName: serviceName
+        }
+
+        // If there is a serviceName in the context, use it as serviceName for the LogEntry
+        const contextRecord =  context as Record<string, unknown>
+        if (contextRecord && contextRecord.serviceName) {
+            logEntry.serviceName = contextRecord.serviceName as string
+            if (loglevel === LogLevel.error && contextRecord.serviceName !== serviceName) {
+                logEntry.level = LogLevel.warn
+            }
         }
 
         if (error) {

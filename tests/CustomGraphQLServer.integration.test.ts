@@ -11,6 +11,7 @@ import {
     usersQuery,
     userSchema,
     userSchemaResolvers,
+    returnErrorQuery,
 } from './ExampleSchemas'
 import {
     ExecutionResult,
@@ -43,7 +44,8 @@ test('Should return value from context instead of user data ', async() => {
         reassignAggregateError: false,
         contextFunction: () => {
             return {
-                'customText': 'customResponse'
+                'customText': 'customResponse',
+                'serviceName': 'myRemoteService'
             }
         }
     })
@@ -54,6 +56,28 @@ test('Should return value from context instead of user data ', async() => {
 
     customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
+
+test('Should return error if context serviceName is different as graphql server serviceName',
+    async() => {
+        customGraphQLServer.setOptions({
+            schema: userSchema,
+            rootValue: userSchemaResolvers,
+            logger: LOGGER,
+            debug: true,
+            reassignAggregateError: false,
+            contextFunction: () => {
+                return {
+                    'serviceName': 'myTestServiceAlternative'
+                }
+            }
+        })
+        const response = await fetchResponse(`{"query":"${returnErrorQuery}"}`)
+        const responseObject = await response.json()
+        expect(responseObject.errors[0].message).toBe('Something went wrong!')
+        expect(responseObject.extensions).toBeUndefined()
+
+        customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
+    })
 
 class CustomGraphQLServer extends GraphQLServer {
     constructor(options: GraphQLServerOptions) {
@@ -69,10 +93,11 @@ class CustomGraphQLServer extends GraphQLServer {
 
         response.statusCode = statusCode
         response.setHeader('Content-Type', 'application/json; charset=utf-8')
-
-        if (context) {
-            const contextRecord = context as Record<string, unknown>
+        const contextRecord = context as Record<string, unknown>
+        if (contextRecord && contextRecord.customText) {
             response.end(Buffer.from(JSON.stringify(contextRecord.customText), 'utf8'))
+        } else {
+            response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))
         }
     }
 

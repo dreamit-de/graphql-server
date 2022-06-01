@@ -29,37 +29,40 @@ export class JsonLogger implements Logger {
         this.serviceName = serviceName
     }
 
-    debug(logMessage: string, request?: GraphQLServerRequest): void {
-        this.logMessage(logMessage, LogLevel.debug, request)
+    debug(logMessage: string, request?: GraphQLServerRequest, context?: unknown): void {
+        this.logMessage(logMessage, LogLevel.debug, request, undefined, undefined, context)
     }
 
-    error(logMessage: string, 
-        error: Error, 
-        customErrorName: string, 
-        request?: GraphQLServerRequest): void {
-        this.logMessage(logMessage, LogLevel.error, request, error, customErrorName)
+    error(logMessage: string,
+        error: Error,
+        customErrorName: string,
+        request?: GraphQLServerRequest,
+        context?: unknown): void {
+        this.logMessage(logMessage, LogLevel.error, request, error, customErrorName, context)
     }
 
-    info(logMessage: string, request?: GraphQLServerRequest): void {
-        this.logMessage(logMessage, LogLevel.info, request)
+    info(logMessage: string, request?: GraphQLServerRequest, context?: unknown): void {
+        this.logMessage(logMessage, LogLevel.info, request, undefined, undefined, context)
     }
 
-    warn(logMessage: string, request?: GraphQLServerRequest): void {
-        this.logMessage(logMessage, LogLevel.warn, request)
+    warn(logMessage: string, request?: GraphQLServerRequest, context?: unknown): void {
+        this.logMessage(logMessage, LogLevel.warn, request, undefined, undefined, context)
     }
 
     logMessage(logMessage: string,
         loglevel: LogLevel,
         request?: GraphQLServerRequest,
         error?: Error,
-        customErrorName?: string): void {
+        customErrorName?: string,
+        context?: unknown): void {
         const logEntry: LogEntry = LogHelper.createLogEntry(logMessage,
             loglevel,
             this.loggerName,
             this.serviceName,
             request,
             error,
-            customErrorName)
+            customErrorName,
+            context)
         loggerConsole.log(JSON.stringify(logEntry))
     }
 }

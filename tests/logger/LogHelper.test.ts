@@ -4,7 +4,7 @@ import {
     Kind
 } from 'graphql'
 import {
-    LogHelper, 
+    LogHelper,
     LogLevel
 } from '../../src'
 
@@ -100,4 +100,17 @@ test('Should use customErrorName instead or error.name if customErrorName is set
         graphQLError,
         'MyCustomError')
     expect(logEntry.errorName).toBe('MyCustomError')
+})
+
+test('Should use context.serviceName instead of error.extensions.serviceName' +
+    ' if context contains serviceName', () => {
+    const logEntry = LogHelper.createLogEntry('A GraphQLError message',
+        LogLevel.error,
+        'test-logger',
+        'myTestService',
+        undefined,
+        errorWithSensibleStackInformation,
+        'MyCustomError',
+        { serviceName: 'myRemoteService' })
+    expect(logEntry.serviceName).toBe('myRemoteService')
 })
