@@ -1,8 +1,8 @@
 import {
-    Logger, 
-    LogLevel, 
-    LogEntry, 
-    LogHelper, 
+    Logger,
+    LogLevel,
+    LogEntry,
+    LogHelper,
     GraphQLServerRequest
 } from '..'
 
@@ -27,38 +27,41 @@ export class TextLogger implements Logger {
         this.serviceName = serviceName
     }
 
-    debug(logMessage: string, request?: GraphQLServerRequest): void {
-        this.logMessage(logMessage, LogLevel.debug, request)
+    debug(logMessage: string, request?: GraphQLServerRequest, context?: unknown): void {
+        this.logMessage(logMessage, LogLevel.debug, request, undefined, undefined, context)
     }
 
-    error(logMessage: string, 
-        error: Error, 
-        customErrorName: string, 
-        request?: GraphQLServerRequest): void {
-        this.logMessage(logMessage, LogLevel.error, request, error)
+    error(logMessage: string,
+        error: Error,
+        customErrorName: string,
+        request?: GraphQLServerRequest,
+        context?: unknown): void {
+        this.logMessage(logMessage, LogLevel.error, request, error, customErrorName, context)
     }
 
-    info(logMessage: string, request?: GraphQLServerRequest): void {
-        this.logMessage(logMessage, LogLevel.info, request)
+    info(logMessage: string, request?: GraphQLServerRequest, context?: unknown): void {
+        this.logMessage(logMessage, LogLevel.info, request, undefined, undefined, context)
     }
 
-    warn(logMessage: string, request?: GraphQLServerRequest): void {
-        this.logMessage(logMessage, LogLevel.warn, request)
+    warn(logMessage: string, request?: GraphQLServerRequest, context?: unknown): void {
+        this.logMessage(logMessage, LogLevel.warn, request, undefined, undefined, context)
     }
 
     logMessage(logMessage: string,
         loglevel: LogLevel,
         request?: GraphQLServerRequest,
         error?: Error,
-        customErrorName?: string): void {
+        customErrorName?: string,
+        context?: unknown): void {
         const logEntry: LogEntry = LogHelper.createLogEntry(logMessage,
             loglevel,
             this.loggerName,
             this.serviceName,
             request,
             error,
-            customErrorName)
-        const logOutput = this.prepareLogOutput(logEntry)
+            customErrorName,
+            context)
+        const logOutput = this.prepareLogOutput(logEntry, context)
         console.log(`${loglevel.toUpperCase()} - ${logOutput}`)
     }
 
@@ -66,8 +69,10 @@ export class TextLogger implements Logger {
      * Prepares the text used in the log output.
      * Can be overwritten if it does not match expected output format.
      * @param {LogEntry} logEntry - The extracted log information.
+     * @param {unknown} context - The context information
      */
-    prepareLogOutput(logEntry: LogEntry): string {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    prepareLogOutput(logEntry: LogEntry, context?: unknown): string {
         return `${logEntry.timestamp} [${logEntry.level.toUpperCase()}]`
             + `${this.loggerName}-${this.serviceName} :`
             + `${logEntry.message} ${logEntry.stacktrace || ''}`

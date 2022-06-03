@@ -249,7 +249,8 @@ export class GraphQLServer {
             this.logger.error(requestCouldNotBeProcessed,
                 methodNotAllowedError,
                 METHOD_NOT_ALLOWED_ERROR,
-                request)
+                request,
+                context)
             this.collectErrorMetricsFunction(METHOD_NOT_ALLOWED_ERROR,
                 methodNotAllowedError,
                 request)
@@ -267,7 +268,8 @@ export class GraphQLServer {
             this.logger.error(requestCouldNotBeProcessed,
                 invalidSchemaError,
                 INVALID_SCHEMA_ERROR,
-                request)
+                request,
+                context)
             this.collectErrorMetricsFunction(INVALID_SCHEMA_ERROR, invalidSchemaError, request)
             return this.sendInvalidSchemaResponse(request, response, context)
         } else {
@@ -278,13 +280,16 @@ export class GraphQLServer {
         const requestInformation =
             await this.requestInformationExtractor.extractInformationFromRequest(request)
         this.logDebugIfEnabled(
-            `Extracted request information is ${JSON.stringify(requestInformation)}`, request
+            `Extracted request information is ${JSON.stringify(requestInformation)}`,
+            request,
+            context
         )
         if (!requestInformation.query && requestInformation.error) {
             this.logger.error(requestCouldNotBeProcessed,
                 requestInformation.error.graphQLError,
                 GRAPHQL_ERROR,
-                request)
+                request,
+                context)
             this.collectErrorMetricsFunction(GRAPHQL_ERROR, requestInformation.error, request)
             return this.sendGraphQLErrorWithStatusCodeResponse(request,
                 response,
@@ -296,7 +301,8 @@ export class GraphQLServer {
             this.logger.error(requestCouldNotBeProcessed,
                 missingQueryParameterError,
                 MISSING_QUERY_PARAMETER_ERROR,
-                request)
+                request,
+                context)
             this.collectErrorMetricsFunction(MISSING_QUERY_PARAMETER_ERROR,
                 missingQueryParameterError,
                 request)
@@ -312,7 +318,8 @@ export class GraphQLServer {
             this.logger.error(requestCouldNotBeProcessed,
                 syntaxError as GraphQLError,
                 SYNTAX_ERROR,
-                request)
+                request,
+                context)
             this.collectErrorMetricsFunction(SYNTAX_ERROR, syntaxError, request)
             return this.sendSyntaxErrorResponse(request,
                 response,
@@ -321,7 +328,8 @@ export class GraphQLServer {
         }
         this.logDebugIfEnabled(
             `Parsing query into document succeeded with document: ${JSON.stringify(documentAST)}`,
-            request
+            request,
+            context
         )
 
         /**
@@ -336,14 +344,16 @@ export class GraphQLServer {
         if (validationErrors.length > 0) {
             this.logDebugIfEnabled(
                 `One or more validation errors occurred: ${JSON.stringify(validationErrors)}`,
-                request
+                request,
+                context
             )
             for (const validationError of validationErrors) {
                 this.logger.error('While processing the request ' +
                     'the following validation error occurred: ',
                 validationError,
                 VALIDATION_ERROR,
-                request)
+                request,
+                context)
                 this.collectErrorMetricsFunction(VALIDATION_ERROR, validationError, request)
             }
             return this.sendValidationErrorResponse(request,
@@ -362,7 +372,8 @@ export class GraphQLServer {
             this.logger.error(requestCouldNotBeProcessed,
                 onlyQueryInGetRequestsError,
                 METHOD_NOT_ALLOWED_ERROR,
-                request)
+                request,
+                context)
             this.collectErrorMetricsFunction(METHOD_NOT_ALLOWED_ERROR,
                 onlyQueryInGetRequestsError,
                 request)
@@ -408,7 +419,8 @@ export class GraphQLServer {
                         this.logDebugIfEnabled('Error is AggregateError and ' +
                             'reassignAggregateError feature is enabled. AggregateError ' +
                             'will be reassigned to original errors field.',
-                        request)
+                        request,
+                        context)
                         executionResult.errors = error.originalError.errors
                     }
 
@@ -416,14 +428,16 @@ export class GraphQLServer {
                         'the following error occurred: ',
                     error,
                     this.determineGraphQLOrFetchError(error),
-                    request)
+                    request,
+                    context)
                     this.increaseFetchOrGraphQLErrorMetric(error, request)
                 }
             }
 
             // Return execution result
             this.logDebugIfEnabled(`Create response from data ${JSON.stringify(executionResult)}`,
-                request)
+                request,
+                context)
             return this.sendResponse(response,
                 executionResult,
                 200,
@@ -435,7 +449,8 @@ export class GraphQLServer {
                 'a GraphQL execution error occurred',
             error as GraphQLError,
             this.determineGraphQLOrFetchError(error),
-            request)
+            request,
+            context)
             this.increaseFetchOrGraphQLErrorMetric(error, request)
             return this.sendGraphQLExecutionErrorResponse(request,
                 response,
@@ -455,7 +470,8 @@ export class GraphQLServer {
             `Preparing response with executionResult ${JSON.stringify(executionResult)}`+
             `, status code ${statusCode} and custom headers ${JSON.stringify(customHeaders)}` +
             `, and context ${context}`,
-            request
+            request,
+            context
         )
         if (executionResult.errors) {
             executionResult.errors.map((element) => this.formatErrorFunction(element))
@@ -463,16 +479,18 @@ export class GraphQLServer {
         response.statusCode = statusCode
         response.setHeader('Content-Type', 'application/json; charset=utf-8')
         for (const [key, value] of Object.entries(customHeaders)) {
-            this.logDebugIfEnabled(`Set custom header ${key} to ${value}`, request)
+            this.logDebugIfEnabled(`Set custom header ${key} to ${value}`,
+                request,
+                context)
             response.setHeader(key, String(value))
         }
 
         response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))
     }
 
-    logDebugIfEnabled(message: string, request?: GraphQLServerRequest): void {
+    logDebugIfEnabled(message: string, request?: GraphQLServerRequest, context?: unknown): void {
         if (this.debug) {
-            this.logger.debug(message, request)
+            this.logger.debug(message, request, context)
         }
     }
 
