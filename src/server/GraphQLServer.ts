@@ -89,8 +89,10 @@ export class GraphQLServer {
         (schema?: GraphQLSchema) => boolean = this.defaultShouldUpdateSchema
     protected formatErrorFunction:
         (error: GraphQLError) => GraphQLFormattedError = this.defaultFormatErrorFunction
-    protected collectErrorMetricsFunction:
-        (errorName: string, error?: unknown, request?: GraphQLServerRequest) => void
+    protected collectErrorMetricsFunction: (errorName: string,
+                                            error?: unknown,
+                                            request?: GraphQLServerRequest,
+                                            context?: unknown) => void
         = this.defaultCollectErrorMetrics
     protected schemaValidationFunction:
         (schema: GraphQLSchema) => ReadonlyArray<GraphQLError> = validateSchema
@@ -242,7 +244,7 @@ export class GraphQLServer {
         const context = this.contextFunction(request, response)
 
         // Increase request throughput
-        this.metricsClient.increaseRequestThroughput(request)
+        this.metricsClient.increaseRequestThroughput(request, context)
 
         // Reject requests that do not use GET and POST methods.
         if (request.method !== 'GET' && request.method !== 'POST') {
@@ -253,7 +255,8 @@ export class GraphQLServer {
                 context)
             this.collectErrorMetricsFunction(METHOD_NOT_ALLOWED_ERROR,
                 methodNotAllowedError,
-                request)
+                request,
+                context)
             return this.sendResponse(response,
                 {errors: [methodNotAllowedError]},
                 405,
@@ -270,7 +273,10 @@ export class GraphQLServer {
                 INVALID_SCHEMA_ERROR,
                 request,
                 context)
-            this.collectErrorMetricsFunction(INVALID_SCHEMA_ERROR, invalidSchemaError, request)
+            this.collectErrorMetricsFunction(INVALID_SCHEMA_ERROR,
+                invalidSchemaError,
+                request,
+                context)
             return this.sendInvalidSchemaResponse(request, response, context)
         } else {
             this.metricsClient.setAvailability(1)
@@ -290,7 +296,10 @@ export class GraphQLServer {
                 GRAPHQL_ERROR,
                 request,
                 context)
-            this.collectErrorMetricsFunction(GRAPHQL_ERROR, requestInformation.error, request)
+            this.collectErrorMetricsFunction(GRAPHQL_ERROR,
+                requestInformation.error,
+                request,
+                context)
             return this.sendGraphQLErrorWithStatusCodeResponse(request,
                 response,
                 requestInformation.error,
@@ -305,7 +314,8 @@ export class GraphQLServer {
                 context)
             this.collectErrorMetricsFunction(MISSING_QUERY_PARAMETER_ERROR,
                 missingQueryParameterError,
-                request)
+                request,
+                context)
             return this.sendMissingQueryResponse(request, response, context)
         }
 
@@ -320,7 +330,7 @@ export class GraphQLServer {
                 SYNTAX_ERROR,
                 request,
                 context)
-            this.collectErrorMetricsFunction(SYNTAX_ERROR, syntaxError, request)
+            this.collectErrorMetricsFunction(SYNTAX_ERROR, syntaxError, request, context)
             return this.sendSyntaxErrorResponse(request,
                 response,
                 syntaxError as GraphQLError,
@@ -354,7 +364,10 @@ export class GraphQLServer {
                 VALIDATION_ERROR,
                 request,
                 context)
-                this.collectErrorMetricsFunction(VALIDATION_ERROR, validationError, request)
+                this.collectErrorMetricsFunction(VALIDATION_ERROR,
+                    validationError,
+                    request,
+                    context)
             }
             return this.sendValidationErrorResponse(request,
                 response,
@@ -376,7 +389,8 @@ export class GraphQLServer {
                 context)
             this.collectErrorMetricsFunction(METHOD_NOT_ALLOWED_ERROR,
                 onlyQueryInGetRequestsError,
-                request)
+                request,
+                context)
             return this.sendMutationNotAllowedForGetResponse(request,
                 response,
                 onlyQueryInGetRequestsError,
@@ -430,7 +444,7 @@ export class GraphQLServer {
                     this.determineGraphQLOrFetchError(error),
                     request,
                     context)
-                    this.increaseFetchOrGraphQLErrorMetric(error, request)
+                    this.increaseFetchOrGraphQLErrorMetric(error, request, context)
                 }
             }
 
@@ -451,7 +465,7 @@ export class GraphQLServer {
             this.determineGraphQLOrFetchError(error),
             request,
             context)
-            this.increaseFetchOrGraphQLErrorMetric(error, request)
+            this.increaseFetchOrGraphQLErrorMetric(error, request, context)
             return this.sendGraphQLExecutionErrorResponse(request,
                 response,
                 error as GraphQLError,
@@ -653,33 +667,40 @@ export class GraphQLServer {
     /**
      * Default collect error metrics function. Can be set in options.
      * @param {string} errorName - The error name that is used as label in error metrics
-     * @param {GraphQLError} error - An optional GraphQL error
+     * @param {unknown} error - An optional GraphQL error
      * @param {GraphQLServerRequest} request - The initial request
+     * @param {unknown} context - The request context
      */
     defaultCollectErrorMetrics(errorName: string,
         error?: unknown,
-        request?: GraphQLServerRequest): void {
+        request?: GraphQLServerRequest,
+        context?: unknown): void {
         this.logDebugIfEnabled(
             `Calling defaultCollectErrorMetrics with request ${request}`+
             ` and error ${error} and errorName ${errorName}`,
             request
         )
-        this.metricsClient.increaseErrors(errorName, request)
+        this.metricsClient.increaseErrors(errorName, request, context)
     }
 
     /**
      * Increases the error metric with either a FetchError or GraphQLError label
      * @param {unknown} error - An error
      * @param {GraphQLServerRequest} request - The initial request
+     * @param {unknown} context - The request context
      */
     increaseFetchOrGraphQLErrorMetric(error: unknown,
-        request: GraphQLServerRequest): void {
+        request: GraphQLServerRequest,
+        context: unknown): void {
         this.logDebugIfEnabled(
             `Calling increaseFetchOrGraphQLErrorMetric with request ${request}`+
             ` and error ${error} and errorIsFetch ${error instanceof Error }`,
             request
         )
-        this.collectErrorMetricsFunction(this.determineGraphQLOrFetchError(error) , error, request)
+        this.collectErrorMetricsFunction(this.determineGraphQLOrFetchError(error),
+            error,
+            request,
+            context)
     }
 
     /**

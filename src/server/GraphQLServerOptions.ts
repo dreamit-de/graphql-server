@@ -38,7 +38,8 @@ export interface GraphQLServerOptions {
     readonly formatErrorFunction?: (error: GraphQLError) => GraphQLFormattedError
     readonly collectErrorMetricsFunction?: (errorName: string,
                                             error?: unknown,
-                                            request?: GraphQLServerRequest) => void
+                                            request?: GraphQLServerRequest,
+                                            context?: unknown) => void
     readonly schemaValidationFunction?: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError>
     readonly parseFunction?: (source: string | Source, options?: ParseOptions) => DocumentNode
     readonly defaultValidationRules?:  ReadonlyArray<ValidationRule>
