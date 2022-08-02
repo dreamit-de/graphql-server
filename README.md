@@ -246,7 +246,7 @@ given schema, values and resolvers. Returns a Promise or value of an `ExecutionR
 By default `execute` from [graphql-js][1] library is called.
 - **`extensionFunction`**: Extension function that can be used to add additional information to 
 the `extensions` field of the response. Given a `Request`, `GraphQLRequestInfo` and `ExecutionResult` it should return
-undefined or an ObjMap of key-value-pairs that are added to the`extensions` field. By default `defaultCollectErrorMetrics` 
+undefined or an ObjMap of key-value-pairs that are added to the`extensions` field. By default `defaultExtensions` 
 is used and returns undefined.
 - **`reassignAggregateError`**: If `true` and the `ExecutionResult` created by the `executeFunction` contains an `AggregateError`
   (e.g. an error containing a comma-separated list of errors in the message and an `originalError` containing multiple errors)
@@ -255,8 +255,8 @@ application creates `AggregateErrors` while the initiator of the request (e.g. a
 to handle `AggregateErrors`.
 
 ### Metrics options
-- **`collectErrorMetricsFunction:`**: Given an error name as string, `Error` and request this function can be used
-to trigger collecting error metrics. Default implementation is `defaultCollectErrorMetrics` that increase
+- **`collectErrorMetricsFunction:`**: Given an error name as string, `Error`, request and request context
+this function can be used to trigger collecting error metrics. Default implementation is `defaultCollectErrorMetrics` that increase
 the error counter for the given errorName or Error by 1.
 
 ### Technical components
