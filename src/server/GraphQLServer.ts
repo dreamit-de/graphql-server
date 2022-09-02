@@ -33,7 +33,8 @@ import {
     GraphQLServerRequest,
     GraphQLServerResponse,
     RequestInformationExtractor,
-    isAggregateError
+    isAggregateError,
+    getRequestInfoForLogging
 } from '..'
 
 
@@ -656,7 +657,7 @@ export class GraphQLServer {
         requestInfo: GraphQLRequestInfo,
         executionResult: ExecutionResult): ObjMap<unknown> | undefined {
         this.logDebugIfEnabled(
-            `Calling defaultExtensions for request ${request}`+
+            `Calling defaultExtensions for request ${getRequestInfoForLogging(request)}`+
             `, requestInfo ${JSON.stringify(requestInfo)}`+
             ` and executionResult ${JSON.stringify(executionResult)}`,
             request
@@ -676,7 +677,7 @@ export class GraphQLServer {
         request?: GraphQLServerRequest,
         context?: unknown): void {
         this.logDebugIfEnabled(
-            `Calling defaultCollectErrorMetrics with request ${request}`+
+            `Calling defaultCollectErrorMetrics with request ${getRequestInfoForLogging(request)}`+
             ` and error ${error} and errorName ${errorName}`,
             request
         )
@@ -693,7 +694,8 @@ export class GraphQLServer {
         request: GraphQLServerRequest,
         context: unknown): void {
         this.logDebugIfEnabled(
-            `Calling increaseFetchOrGraphQLErrorMetric with request ${request}`+
+            'Calling increaseFetchOrGraphQLErrorMetric'+
+            ` with request ${getRequestInfoForLogging(request)}`+
             ` and error ${error} and errorIsFetch ${error instanceof Error }`,
             request
         )
