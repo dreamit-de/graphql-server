@@ -11,6 +11,6 @@ import {
  * ValidationError otherwise
  */
 export function determineValidationOrIntrospectionDisabledError(error: unknown): string {
-    return error instanceof Error && error.message && (error.message.includes('introspection')
-        && error.message.includes('disabled')) ? INTROSPECTION_DISABLED_ERROR : VALIDATION_ERROR
+    return error instanceof Error && error.message && error.message.includes('introspection')
+        && error.message.includes('disabled') ? INTROSPECTION_DISABLED_ERROR : VALIDATION_ERROR
 }
