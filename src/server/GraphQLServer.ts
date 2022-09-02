@@ -28,13 +28,13 @@ import {
     MISSING_QUERY_PARAMETER_ERROR,
     SCHEMA_VALIDATION_ERROR,
     SYNTAX_ERROR,
-    VALIDATION_ERROR,
     GraphQLServerRequest,
     GraphQLServerResponse,
     RequestInformationExtractor,
     isAggregateError,
     getRequestInfoForLogging,
-    determineGraphQLOrFetchError
+    determineGraphQLOrFetchError,
+    determineValidationOrIntrospectionDisabledError
 } from '..'
 
 
@@ -49,7 +49,6 @@ import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue'
 import {ObjMap} from 'graphql/jsutils/ObjMap'
 
 
-export type MaybePromise<T> = Promise<T> | T
 export interface GraphQLRequestInfo {
     query?: string
     variables?: Readonly<Record<string, unknown>>
@@ -359,13 +358,15 @@ export class GraphQLServer {
                 context
             )
             for (const validationError of validationErrors) {
+                const errorClassName =
+                    determineValidationOrIntrospectionDisabledError(validationError)
                 this.logger.error('While processing the request ' +
                     'the following validation error occurred: ',
                 validationError,
-                VALIDATION_ERROR,
+                errorClassName,
                 request,
                 context)
-                this.collectErrorMetricsFunction(VALIDATION_ERROR,
+                this.collectErrorMetricsFunction(errorClassName,
                     validationError,
                     request,
                     context)

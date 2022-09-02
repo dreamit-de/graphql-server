@@ -7,6 +7,7 @@ import prom,
 import {
     FETCH_ERROR,
     GRAPHQL_ERROR,
+    INTROSPECTION_DISABLED_ERROR,
     INVALID_SCHEMA_ERROR,
     METHOD_NOT_ALLOWED_ERROR,
     MISSING_QUERY_PARAMETER_ERROR,
@@ -82,6 +83,7 @@ export class DefaultMetricsClient implements MetricsClient {
         this.graphQLServerErrorCounter.labels(MISSING_QUERY_PARAMETER_ERROR).inc(0)
         this.graphQLServerErrorCounter.labels(VALIDATION_ERROR).inc(0)
         this.graphQLServerErrorCounter.labels(SYNTAX_ERROR).inc(0)
+        this.graphQLServerErrorCounter.labels(INTROSPECTION_DISABLED_ERROR).inc(0)
     }
 
     increaseErrors(label: string): void {
