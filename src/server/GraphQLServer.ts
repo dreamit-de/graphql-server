@@ -22,7 +22,6 @@ import {
     DefaultRequestInformationExtractor,
     MetricsClient,
     DefaultMetricsClient,
-    FETCH_ERROR,
     GRAPHQL_ERROR,
     INVALID_SCHEMA_ERROR,
     METHOD_NOT_ALLOWED_ERROR,
@@ -34,7 +33,8 @@ import {
     GraphQLServerResponse,
     RequestInformationExtractor,
     isAggregateError,
-    getRequestInfoForLogging
+    getRequestInfoForLogging,
+    determineGraphQLOrFetchError
 } from '..'
 
 
@@ -442,7 +442,7 @@ export class GraphQLServer {
                     this.logger.error('While processing the request ' +
                         'the following error occurred: ',
                     error,
-                    this.determineGraphQLOrFetchError(error),
+                    determineGraphQLOrFetchError(error),
                     request,
                     context)
                     this.increaseFetchOrGraphQLErrorMetric(error, request, context)
@@ -463,7 +463,7 @@ export class GraphQLServer {
             this.logger.error('While processing the request ' +
                 'a GraphQL execution error occurred',
             error as GraphQLError,
-            this.determineGraphQLOrFetchError(error),
+            determineGraphQLOrFetchError(error),
             request,
             context)
             this.increaseFetchOrGraphQLErrorMetric(error, request, context)
@@ -699,23 +699,9 @@ export class GraphQLServer {
             ` and error ${error} and errorIsFetch ${error instanceof Error }`,
             request
         )
-        this.collectErrorMetricsFunction(this.determineGraphQLOrFetchError(error),
+        this.collectErrorMetricsFunction(determineGraphQLOrFetchError(error),
             error,
             request,
             context)
-    }
-
-    /**
-     * Determines if an error is a GraphQLError or
-     * FetchError using the information in the error message
-     * @param {unknown} error - An error
-     * @returns {string} FETCH_ERROR if error is a FetchError, GraphQLError otherwise
-     */
-    determineGraphQLOrFetchError(error: unknown): string {
-        return error instanceof Error && error.message && (error.message.includes(FETCH_ERROR)
-            || error.message.includes('ECONNREFUSED')
-            || error.message.includes('ECONNRESET')
-            || error.message.includes('ETIMEDOUT')
-            || error.message.includes('socket hang up')) ? FETCH_ERROR : GRAPHQL_ERROR
     }
 }

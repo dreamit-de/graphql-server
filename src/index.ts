@@ -6,6 +6,7 @@
  */
 export * from './error/AggregateError'
 export * from './error/ErrorNameConstants'
+export * from './error/DetermineGraphQLOrFetchError'
 export * from './error/GraphQLErrorWithStatusCode'
 
 export * from './logger/JsonLogger'
