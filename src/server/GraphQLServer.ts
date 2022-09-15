@@ -22,18 +22,19 @@ import {
     DefaultRequestInformationExtractor,
     MetricsClient,
     DefaultMetricsClient,
-    FETCH_ERROR,
     GRAPHQL_ERROR,
     INVALID_SCHEMA_ERROR,
     METHOD_NOT_ALLOWED_ERROR,
     MISSING_QUERY_PARAMETER_ERROR,
     SCHEMA_VALIDATION_ERROR,
     SYNTAX_ERROR,
-    VALIDATION_ERROR,
     GraphQLServerRequest,
     GraphQLServerResponse,
     RequestInformationExtractor,
-    isAggregateError
+    isAggregateError,
+    getRequestInfoForLogging,
+    determineGraphQLOrFetchError,
+    determineValidationOrIntrospectionDisabledError
 } from '..'
 
 
@@ -48,7 +49,6 @@ import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue'
 import {ObjMap} from 'graphql/jsutils/ObjMap'
 
 
-export type MaybePromise<T> = Promise<T> | T
 export interface GraphQLRequestInfo {
     query?: string
     variables?: Readonly<Record<string, unknown>>
@@ -358,13 +358,15 @@ export class GraphQLServer {
                 context
             )
             for (const validationError of validationErrors) {
+                const errorClassName =
+                    determineValidationOrIntrospectionDisabledError(validationError)
                 this.logger.error('While processing the request ' +
                     'the following validation error occurred: ',
                 validationError,
-                VALIDATION_ERROR,
+                errorClassName,
                 request,
                 context)
-                this.collectErrorMetricsFunction(VALIDATION_ERROR,
+                this.collectErrorMetricsFunction(errorClassName,
                     validationError,
                     request,
                     context)
@@ -441,7 +443,7 @@ export class GraphQLServer {
                     this.logger.error('While processing the request ' +
                         'the following error occurred: ',
                     error,
-                    this.determineGraphQLOrFetchError(error),
+                    determineGraphQLOrFetchError(error),
                     request,
                     context)
                     this.increaseFetchOrGraphQLErrorMetric(error, request, context)
@@ -462,7 +464,7 @@ export class GraphQLServer {
             this.logger.error('While processing the request ' +
                 'a GraphQL execution error occurred',
             error as GraphQLError,
-            this.determineGraphQLOrFetchError(error),
+            determineGraphQLOrFetchError(error),
             request,
             context)
             this.increaseFetchOrGraphQLErrorMetric(error, request, context)
@@ -656,7 +658,7 @@ export class GraphQLServer {
         requestInfo: GraphQLRequestInfo,
         executionResult: ExecutionResult): ObjMap<unknown> | undefined {
         this.logDebugIfEnabled(
-            `Calling defaultExtensions for request ${request}`+
+            `Calling defaultExtensions for request ${getRequestInfoForLogging(request)}`+
             `, requestInfo ${JSON.stringify(requestInfo)}`+
             ` and executionResult ${JSON.stringify(executionResult)}`,
             request
@@ -676,7 +678,7 @@ export class GraphQLServer {
         request?: GraphQLServerRequest,
         context?: unknown): void {
         this.logDebugIfEnabled(
-            `Calling defaultCollectErrorMetrics with request ${request}`+
+            `Calling defaultCollectErrorMetrics with request ${getRequestInfoForLogging(request)}`+
             ` and error ${error} and errorName ${errorName}`,
             request
         )
@@ -693,27 +695,14 @@ export class GraphQLServer {
         request: GraphQLServerRequest,
         context: unknown): void {
         this.logDebugIfEnabled(
-            `Calling increaseFetchOrGraphQLErrorMetric with request ${request}`+
+            'Calling increaseFetchOrGraphQLErrorMetric'+
+            ` with request ${getRequestInfoForLogging(request)}`+
             ` and error ${error} and errorIsFetch ${error instanceof Error }`,
             request
         )
-        this.collectErrorMetricsFunction(this.determineGraphQLOrFetchError(error),
+        this.collectErrorMetricsFunction(determineGraphQLOrFetchError(error),
             error,
             request,
             context)
-    }
-
-    /**
-     * Determines if an error is a GraphQLError or
-     * FetchError using the information in the error message
-     * @param {unknown} error - An error
-     * @returns {string} FETCH_ERROR if error is a FetchError, GraphQLError otherwise
-     */
-    determineGraphQLOrFetchError(error: unknown): string {
-        return error instanceof Error && error.message && (error.message.includes(FETCH_ERROR)
-            || error.message.includes('ECONNREFUSED')
-            || error.message.includes('ECONNRESET')
-            || error.message.includes('ETIMEDOUT')
-            || error.message.includes('socket hang up')) ? FETCH_ERROR : GRAPHQL_ERROR
     }
 }
