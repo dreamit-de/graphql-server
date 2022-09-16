@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import bodyParser from 'body-parser'
 import express from 'express'
 import {
     GraphQLServer
@@ -33,6 +34,7 @@ test('Should reassign AggregateError to original errors field' +
         reassignAggregateError: true,
         executeFunction: ():PromiseOrValue<ExecutionResult> => (multipleErrorResponse)
     })
+    graphQLServerExpress.use(bodyParser.json())
     graphQLServerExpress.all('/graphql', (request, response) => {
         return customGraphQLServer.handleRequest(request, response)
     })

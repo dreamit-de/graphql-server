@@ -38,6 +38,7 @@ export const usersRequest: GraphQLRequestInfo = {
     query: usersQuery,
     operationName: 'users',
 }
+
 export const loginRequest: GraphQLRequestInfo = {
     query: loginMutation,
     operationName: 'login'

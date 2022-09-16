@@ -23,3 +23,53 @@ describe('Test that request information is extracted correctly from url paramete
         expect(result.operationName).toBe(expectedOperationName)
     })
 })
+
+test('Get fitting error if body type contains invalid type', async() => {
+    const request = {
+        headers: {},
+        url: 'doesnotmatter',
+        body: true,
+        method: 'POST'
+    }
+    const response = await requestInformationExtractor.extractInformationFromBody(request)
+    expect(response.error?.graphQLError.message).toBe('POST body contains invalid type boolean.')
+})
+
+test('Get fitting error if body contains a Buffer', async() => {
+    const request = {
+        headers: {},
+        url: 'doesnotmatter',
+        body: Buffer.alloc(3) ,
+        method: 'doesnotmatter'
+    }
+    const response = await requestInformationExtractor.extractInformationFromBody(request)
+    expect(response.error?.graphQLError.message).toBe('Cannot handle body when it contains an object buffer!')
+})
+
+test('Should properly extract variables from url', async() => {
+    const request = {
+        headers: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            'content-type': 'application/json'
+        },
+        url: '/graphql?query=mutation&variables=findme',
+        body: { query: 'doesnotmatter'} ,
+        method: 'doesnotmatter'
+    }
+    const response = await requestInformationExtractor.extractInformationFromRequest(request)
+    expect(response.variables).toBe('findme')
+})
+
+test('Should properly extract query from body for graphql request', async() => {
+    const request = {
+        headers: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            'content-type': 'application/graphql'
+        },
+        url: 'pengpeng',
+        body: { query: 'findTheQuery'} ,
+        method: 'doesnotmatter'
+    }
+    const response = await requestInformationExtractor.extractInformationFromRequest(request)
+    expect(response.query).toBe('{"query":"findTheQuery"}')
+})

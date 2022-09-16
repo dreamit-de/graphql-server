@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import bodyParser from 'body-parser'
 import express, {Express} from 'express'
 import {Server} from 'node:http'
 import {
@@ -106,6 +107,7 @@ class CustomGraphQLServer extends GraphQLServer {
 function setupGraphQLServer(): Express {
     const graphQLServerExpress = express()
     customGraphQLServer = new CustomGraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
+    graphQLServerExpress.use(bodyParser.json())
     graphQLServerExpress.all('/graphql', (request, response) => {
         return customGraphQLServer.handleRequest(request, response)
     })

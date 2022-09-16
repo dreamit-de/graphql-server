@@ -265,6 +265,13 @@ export class GraphQLServer {
                 context)
         }
 
+        this.logger.info(
+            `Incoming request with url ${request.url} ` +
+            `and content-type ${JSON.stringify(request.headers['content-type'])}`,
+            request,
+            context
+        )
+
         // Reject requests if schema is invalid
         if (!this.schema || !this.isValidSchema(this.schema)) {
             this.metricsClient.setAvailability(0)

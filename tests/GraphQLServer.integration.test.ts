@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import bodyParser from 'body-parser'
 import express, {Express} from 'express'
 import {Server} from 'node:http'
 import {
@@ -19,7 +20,7 @@ import {
     userVariables,
     introspectionQuery,
     usersQueryWithUnknownField,
-    multipleErrorResponse
+    multipleErrorResponse,
 } from './ExampleSchemas'
 import {
     GraphQLError,
@@ -125,53 +126,12 @@ test('Should get unfiltered error response if a' +
     customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
-test('Should get error response if charset could not be processed', async() => {
-    const response = await fetchResponse('{"query":"unknown"}', 'POST',{
-        'Content-Type': 'application/json; charset=utf-4711'
-    })
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('Unsupported charset "UTF-4711".')
-})
-
-test('Should get error response if request contains ' +
-    'gzip encoding but body does not match', async() => {
-    const response = await fetchResponse('{"query":"unknown"}', 'POST',{
-        'Content-Type': 'application/json',
-        'Content-Encoding': 'gzip'
-    })
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe(
-        'Invalid request body: Error: incorrect header check.'
-    )
-})
-
-test('Should get error response if request contains ' +
-    'deflate encoding but body does not match', async() => {
-    const response = await fetchResponse('{"query":"unknown"}', 'POST',{
-        'Content-Type': 'application/json',
-        'Content-Encoding': 'deflate'
-    })
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe(
-        'Invalid request body: Error: incorrect header check.'
-    )
-})
-
-test('Should get error response if request contains unknown encoding', async() => {
-    const response = await fetchResponse('{"query":"unknown"}', 'POST',{
-        'Content-Type': 'application/json',
-        'Content-Encoding': 'rar'
-    })
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('Unsupported content-encoding "rar".')
-})
-
 test('Should get error response if content type is not set', async() => {
     const response = await fetchResponse('{"query":"unknown"}', 'POST',{
         'Content-Type': ''
     })
     const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('Content type could not be parsed.')
+    expect(responseObject.errors[0].message).toBe('POST body contains invalid content type: .')
 })
 
 test('Should get error response when GraphQL context error' +
@@ -403,6 +363,11 @@ test('Should not reassign AggregateError to original errors field' +
 function setupGraphQLServer(): Express {
     const graphQLServerExpress = express()
     customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
+    graphQLServerExpress.use(bodyParser.text(
+        {
+            type: '*/*'
+        }
+    ))
     graphQLServerExpress.all('/graphql', (request, response) => {
         return customGraphQLServer.handleRequest(request, response)
     })

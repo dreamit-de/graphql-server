@@ -1,3 +1,4 @@
+import bodyParser from 'body-parser'
 import express, {Express} from 'express'
 import {Server} from 'node:http'
 import {
@@ -309,6 +310,7 @@ function setupGraphQLServer(): Express {
             customValidationRules: [NoSchemaIntrospectionCustomRule]
         }
     )
+    graphQLServerExpress.use(bodyParser.json())
     graphQLServerExpress.all('/graphql', (request, response) => {
         return customGraphQLServer.handleRequest(request, response)
     })
