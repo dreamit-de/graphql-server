@@ -18,9 +18,3 @@ jobs:
         run: npm test
       - name: Check types
         run: npm run check
-      - name: Check security vulnerabilites
-        run: npm audit
-        continue-on-error: true
-      - name: Check for outdated dependencies
-        run: npm outdated
-        continue-on-error: true
