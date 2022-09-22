@@ -4,7 +4,8 @@ import {
     GraphQLRequestInfo,
     MetricsClient,
     GraphQLServerRequest,
-    GraphQLServerResponse
+    GraphQLServerResponse,
+    ResponseHandler
 } from '..'
 import {
     DocumentNode,
@@ -30,8 +31,8 @@ import {ObjMap} from 'graphql/jsutils/ObjMap'
 
 export interface GraphQLServerOptions {
     readonly logger?: Logger
-    readonly debug?: boolean
     readonly requestInformationExtractor?: RequestInformationExtractor
+    readonly responseHandler?: ResponseHandler
     readonly metricsClient?: MetricsClient
     readonly schema?: GraphQLSchema | undefined
     readonly shouldUpdateSchemaFunction?: (schema?: GraphQLSchema) => boolean
@@ -39,7 +40,9 @@ export interface GraphQLServerOptions {
     readonly collectErrorMetricsFunction?: (errorName: string,
                                             error?: unknown,
                                             request?: GraphQLServerRequest,
-                                            context?: unknown) => void
+                                            context?: unknown,
+                                            logger?: Logger,
+                                            metricsClient?: MetricsClient) => void
     readonly schemaValidationFunction?: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError>
     readonly parseFunction?: (source: string | Source, options?: ParseOptions) => DocumentNode
     readonly defaultValidationRules?:  ReadonlyArray<ValidationRule>
@@ -56,13 +59,14 @@ export interface GraphQLServerOptions {
                         ) => ReadonlyArray<GraphQLError>
     readonly rootValue?: unknown | undefined
     readonly contextFunction?: (request: GraphQLServerRequest,
-        response: GraphQLServerResponse) => unknown
+        response: GraphQLServerResponse, logger?: Logger) => unknown
     readonly fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
     readonly typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
     readonly executeFunction?: (arguments_: ExecutionArgs)
         => PromiseOrValue<ExecutionResult>
     readonly extensionFunction?: (request: GraphQLServerRequest,
                                   requestInformation: GraphQLRequestInfo,
-                                  executionResult: ExecutionResult)
+                                  executionResult: ExecutionResult,
+                                  logger?: Logger)
         => ObjMap<unknown> | undefined
 }

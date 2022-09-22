@@ -1,11 +1,23 @@
-import {GraphQLSchema} from 'graphql'
-import {GraphQLServer} from '../../src'
+import {
+    GraphQLError,
+    GraphQLSchema
+} from 'graphql'
+import {
+    DefaultResponseHandler,
+    GraphQLServer
+} from '../../src'
 import {
     initialSchemaWithOnlyDescription
 } from '../ExampleSchemas'
 
 test('Should create schema on GraphQLServer class creation', () => {
-    const graphqlServer = new GraphQLServer({schema: initialSchemaWithOnlyDescription})
+    const graphqlServer = new GraphQLServer({
+        schema: initialSchemaWithOnlyDescription,
+        responseHandler: new DefaultResponseHandler(new GraphQLError('doesnotmatter', {}),
+            new GraphQLError('doesnotmatter', {}),
+            new GraphQLError('doesnotmatter', {}),
+            new GraphQLError('doesnotmatter', {}))
+    })
     const schema = graphqlServer.getSchema()
     expect(schema).toBeDefined()
     expect(schema?.description).toBe('initial')
@@ -13,7 +25,7 @@ test('Should create schema on GraphQLServer class creation', () => {
 })
 
 test('Should update schema when calling GraphQLServer updateGraphQLSchema function', () => {
-    const graphqlServer = new GraphQLServer({schema: initialSchemaWithOnlyDescription, debug: true})
+    const graphqlServer = new GraphQLServer({schema: initialSchemaWithOnlyDescription})
     const updatedSchema = new GraphQLSchema({description:'updated'})
     graphqlServer.setSchema(updatedSchema)
     const schema = graphqlServer.getSchema()
@@ -23,7 +35,7 @@ test('Should update schema when calling GraphQLServer updateGraphQLSchema functi
 })
 
 test('Should not update schema when given schema is undefined', () => {
-    const graphqlServer = new GraphQLServer({schema: initialSchemaWithOnlyDescription, debug: true})
+    const graphqlServer = new GraphQLServer({schema: initialSchemaWithOnlyDescription})
     graphqlServer.setSchema()
     const schema = graphqlServer.getSchema()
     expect(schema).toBeDefined()
@@ -35,7 +47,6 @@ test('Should update schema when given schema is undefined ' +
     'and shouldUpdateSchemaFunction is true', () => {
     const graphqlServer = new GraphQLServer({
         schema: initialSchemaWithOnlyDescription
-        , debug: true
         , shouldUpdateSchemaFunction: (): boolean => true
     })
     graphqlServer.setSchema()

@@ -10,9 +10,9 @@ import {
 import fetch from 'cross-fetch'
 
 export const GRAPHQL_SERVER_PORT = 3000
-export const LOGGER = new JsonLogger('test-logger', 'myTestService')
+export const LOGGER = new JsonLogger('test-logger', 'myTestService', false)
 export const INITIAL_GRAPHQL_SERVER_OPTIONS: GraphQLServerOptions =
-    {schema: userSchema, rootValue: userSchemaResolvers, logger: LOGGER, debug: true}
+    {schema: userSchema, rootValue: userSchemaResolvers, logger: LOGGER}
 
 export function generateGetParametersFromGraphQLRequestInfo(requestInfo: GraphQLRequestInfo)
 : string {

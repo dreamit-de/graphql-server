@@ -9,10 +9,7 @@ export * from './error/ErrorNameConstants'
 export * from './error/DetermineGraphQLOrFetchError'
 export * from './error/DetermineValidationOrIntrospectionDisabledError'
 export * from './error/GraphQLErrorWithStatusCode'
-
-export * from './extractor/ContentType'
-export * from './extractor/DefaultRequestInformationExtractor'
-export * from './extractor/RequestInformationExtractor'
+export * from './error/RemoveValidationRecommendationsFromErrors'
 
 export * from './logger/JsonLogger'
 export * from './logger/LogEntry'
@@ -22,9 +19,19 @@ export * from './logger/LogLevel'
 export * from './logger/TextLogger'
 
 export * from './metrics/DefaultMetricsClient'
+export * from './metrics/IncreaseFetchOrGraphQLErrorMetric'
 export * from './metrics/MetricsClient'
 
+export * from './request/ContentType'
+export * from './request/DefaultRequestInformationExtractor'
+export * from './request/RequestInformationExtractor'
+export * from './request/GraphQLServerRequest'
+
+export * from './response/DefaultResponseHandler'
+export * from './response/GraphQLServerResponse'
+export * from './response/ResponseHandler'
+
+export * from './server/DefaultGraphQLServerOptions'
 export * from './server/GraphQLServer'
 export * from './server/GraphQLServerOptions'
-export * from './server/GraphQLServerRequest'
-export * from './server/GraphQLServerResponse'
+

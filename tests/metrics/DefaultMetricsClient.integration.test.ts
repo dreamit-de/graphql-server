@@ -94,7 +94,6 @@ test('Should get correct metrics', async() => {
         schema: initialSchemaWithOnlyDescription,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         shouldUpdateSchemaFunction: () => true
     })
     metricsResponseBody = await getMetricsResponse()
@@ -257,7 +256,6 @@ test('Should get correct metrics', async() => {
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         executeFunction: () => {
             throw new GraphQLError('FetchError: ' +
                 'An error occurred while connecting to following endpoint', {})
@@ -306,7 +304,6 @@ function setupGraphQLServer(): Express {
             schema: userSchema,
             rootValue: userSchemaResolvers,
             logger: LOGGER,
-            debug: true,
             customValidationRules: [NoSchemaIntrospectionCustomRule]
         }
     )

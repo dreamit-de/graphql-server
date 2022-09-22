@@ -4,7 +4,7 @@ import express, {Express} from 'express'
 import {Server} from 'node:http'
 import {
     GraphQLServer
-} from '../src/'
+} from '../../src'
 import fetch from 'cross-fetch'
 import {
     usersRequest,
@@ -21,7 +21,7 @@ import {
     introspectionQuery,
     usersQueryWithUnknownField,
     multipleErrorResponse,
-} from './ExampleSchemas'
+} from '../ExampleSchemas'
 import {
     GraphQLError,
     NoSchemaIntrospectionCustomRule
@@ -32,7 +32,7 @@ import {
     GRAPHQL_SERVER_PORT,
     INITIAL_GRAPHQL_SERVER_OPTIONS,
     LOGGER
-} from './TestHelpers'
+} from '../TestHelpers'
 
 let customGraphQLServer: GraphQLServer
 let graphQLServer: Server
@@ -115,7 +115,6 @@ test('Should get unfiltered error response if a' +
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         removeValidationRecommendations: false
     })
     const response = await fetchResponse('{"query":"query users{ users { userIdABC userName } }"}')
@@ -141,7 +140,6 @@ test('Should get error response when GraphQL context error' +
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         executeFunction: () => {throw new GraphQLError('A GraphQL context error occurred!', {})}
     })
     const response = await fetchResponse(`{"query":"${usersQuery}"}`)
@@ -163,7 +161,6 @@ test('Should get error response with formatted error results ' +
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         formatErrorFunction: testFormatErrorFunction
     })
     const response = await fetchResponse(`{"query":"${returnErrorQuery}"}`)
@@ -232,7 +229,6 @@ test('Should get error response if invalid schema is used', async() => {
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         schemaValidationFunction: () => [new GraphQLError('Schema is not valid!', {})]
     })
     const response = await fetchResponse('doesnotmatter')
@@ -258,7 +254,6 @@ test('Should get extensions in GraphQL response if extension function is defined
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         removeValidationRecommendations: true,
         extensionFunction: () => extensionTestData
     })
@@ -282,7 +277,6 @@ test('Should get error response if introspection is requested ' +
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         removeValidationRecommendations: true,
         customValidationRules: [NoSchemaIntrospectionCustomRule]
     })
@@ -301,7 +295,6 @@ test('Should get error response if query with unknown field is executed ' +
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         removeValidationRecommendations: true,
         customValidationRules: [NoSchemaIntrospectionCustomRule]
     })
@@ -317,7 +310,6 @@ test('Should get error response if query with unknown field is executed ' +
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         removeValidationRecommendations: true,
         customValidationRules: []
     })
@@ -333,7 +325,6 @@ test('Should get data response if query with unknown field is executed ' +
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         removeValidationRecommendations: true,
         defaultValidationRules: [],
         customValidationRules: []
@@ -350,7 +341,6 @@ test('Should not reassign AggregateError to original errors field' +
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         reassignAggregateError: false,
         executeFunction: () => (multipleErrorResponse)
     })

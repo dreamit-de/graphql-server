@@ -12,6 +12,7 @@ import {
 export class TextLogger implements Logger {
     loggerName: string
     serviceName: string
+    debugEnabled = false
 
     /**
      * Creates a new instance of Logger.
@@ -21,14 +22,22 @@ export class TextLogger implements Logger {
      * Used to identify the graphql server and can be used to differentiate
      * it from remote graphql services like in a gateway setup.
      * Will be output to "serviceName" field in JSON.
+     * @param {boolean} debugEnabled - If debug output should be enabled
      */
-    constructor(loggerName: string, serviceName: string) {
+    constructor(loggerName: string, serviceName: string, debugEnabled = false) {
         this.loggerName = loggerName
         this.serviceName = serviceName
+        this.debugEnabled = debugEnabled
     }
 
     debug(logMessage: string, request?: GraphQLServerRequest, context?: unknown): void {
         this.logMessage(logMessage, LogLevel.debug, request, undefined, undefined, context)
+    }
+
+    logDebugIfEnabled(message: string, request?: GraphQLServerRequest, context?: unknown): void {
+        if (this.debugEnabled) {
+            this.debug(message, request, context)
+        }
     }
 
     error(logMessage: string,
