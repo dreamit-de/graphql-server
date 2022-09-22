@@ -4,7 +4,7 @@ export interface GraphQLServerRequest {
     headers: IncomingHttpHeaders,
     url: string,
     body?: unknown,
-    method?: string | undefined;
+    method?: string;
 }
 
 export function getRequestInfoForLogging(request?: GraphQLServerRequest): string {

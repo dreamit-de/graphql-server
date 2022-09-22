@@ -1,7 +1,7 @@
 import {
     GraphQLRequestInfo,
-} from './GraphQLServer'
-import {GraphQLServerRequest} from './GraphQLServerRequest'
+    GraphQLServerRequest
+} from '..'
 
 /**
  * Interface for RequestInformationExtractor.

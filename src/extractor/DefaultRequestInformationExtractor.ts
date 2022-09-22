@@ -1,4 +1,6 @@
 import {
+    ContentType,
+    getContentType,
     GraphQLRequestInfo,
     GraphQLServerRequest,
     RequestInformationExtractor
@@ -6,13 +8,6 @@ import {
 import {URLSearchParams} from 'node:url'
 import {GraphQLError} from 'graphql'
 import {Buffer} from 'node:buffer'
-
-export enum ContentType {
-    graphql,
-    json,
-    unknown,
-    urlencoded
-}
 
 /**
  * Default implementation of RequestInformationExtractor interface
@@ -56,15 +51,16 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
             return {
                 error: {
                     graphQLError: new GraphQLError(
-                        `POST body contains invalid type ${typeof body}.`, {}
+                        `POST body contains invalid type ${typeof body}. ` +
+                        'Only "object" and "string" are supported.', {}
                     ), statusCode: 400
                 }
             }
         } else if (bodyIsObject && body instanceof Buffer) {
             return {
                 error: {
-                    graphQLError: new GraphQLError('Cannot handle body when it contains' +
-                        ' an object buffer!', {}), statusCode: 400
+                    graphQLError: new GraphQLError('Cannot extract information from ' +
+                        'body because it contains an object buffer!', {}), statusCode: 400
                 }
             }
         }
@@ -72,7 +68,6 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
         // eslint-disable-next-line unicorn/consistent-destructuring
         const contentTypeFromHeader = request.headers['content-type']
 
-        // Skip requests without content types.
         if (contentTypeFromHeader === undefined) {
             return {
                 error: {
@@ -83,7 +78,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
             }
         }
 
-        const contentType = this.getContentType(contentTypeFromHeader)
+        const contentType = getContentType(contentTypeFromHeader)
         switch (contentType) {
         case ContentType.graphql:
             return { query: bodyIsString ? body : JSON.stringify(body) }
@@ -127,18 +122,5 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
                 }
             }
         }
-    }
-
-    getContentType(contentType: string | undefined): ContentType {
-        if (contentType) {
-            if (contentType.includes('application/graphql')) {
-                return ContentType.graphql
-            }  else if (contentType.includes('application/json')) {
-                return ContentType.json
-            } else if (contentType.includes('application/x-www-form-urlencoded')) {
-                return ContentType.urlencoded
-            }
-        }
-        return ContentType.unknown
     }
 }

@@ -363,11 +363,7 @@ test('Should not reassign AggregateError to original errors field' +
 function setupGraphQLServer(): Express {
     const graphQLServerExpress = express()
     customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
-    graphQLServerExpress.use(bodyParser.text(
-        {
-            type: '*/*'
-        }
-    ))
+    graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
     graphQLServerExpress.all('/graphql', (request, response) => {
         return customGraphQLServer.handleRequest(request, response)
     })

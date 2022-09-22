@@ -18,30 +18,42 @@ The following table shows which version of [graphql-js][1] library is compatible
 to choose a fitting version according to the [graphql-js][1] version used in your project and by other libraries depending
 on [graphql-js][1].
 
-| graphql-js version | graphql-server Version | Github branch  |
-| ------------- |:-------------:| -----:|
-| ^15.2.0 | 1.x | [legacy-graphql15](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15)|
-| ^16.0.0 | 2.x | [main](https://github.com/dreamit-de/graphql-server)  |
+| graphql-js version | graphql-server version | Github branch  | Development Status |
+| ------------- |:-------------:| :-------------:| :-------------:|
+| ~~^15.2.0~~ | ~~1.x~~ | [~~legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15)| end of life |
+| ^16.0.0 | 2.x | [legacy-server-v2](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2)  |  maintenance |
+| ^16.0.0 | 3.x | [main](https://github.com/dreamit-de/graphql-server)  |  active |
+
 
 ## Features
 
 - Creates GraphQL responses for (GraphQL) requests
-- Can be use with fitting webservers that provide a matching `GraphQLServerRequest` and `GraphQLServerResponse` object
-  (e.g. [Express][2]).
+- Can be use with fitting webservers that provide matching request and response objects matching
+`GraphQLServerRequest` and `GraphQLServerResponse` interfaces (e.g. [Express][2]).
 - Uses out-of-the-box default options to ease use and keep code short
 - Provides hot reloading for schema and options
 - Provides out-of-the-box metrics for GraphQLServer
-- Uses and is compatible with [graphql-js][1] library version 15 (graphqlserver 1.x) and 16 (graphqlserver 2.x) .
+- Uses only 2 peerDependencies: [graphql-js][1] version 16 and [prom-client][3] version 14 (no other production dependencies)
 
 ## Usage
 
 You can create a new instance of `GraphQLServer` with the options necessary for your tasks. The `handleRequest` function of 
 the `GraphQLServer` can be integrated with many fitting webservers.
 
+**Note regarding POST requests:**
+
+graphql-server version 3 tries to extract the request information from the `request.body` field. Some webserver frameworks
+like [Express][2] might need a fitting body parser in order to populate this `body` field.
+- parse body as `string/text` (recommended): graphql-server will handle reading content and parsing it to JSON.  
+- parse body as `object/JSON`: graphql-server will read JSON and try to assign it to matching fields. This might cause FetchErrors if 
+the body contains invalid JSON. We recommend using text parsers instead so graphql-server can respond with a fitting 
+GraphQL error response if JSON is invalid. 
+
 ```typescript
 const graphQLServerPort = 3592
 const graphQLServerExpress = express()
 const customGraphQLServer = new GraphQLServer({schema: someExampleSchema})
+graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
     return customGraphQLServer.handleRequest(req, res)
 })
@@ -71,6 +83,7 @@ import {NoSchemaIntrospectionCustomRule} from 'graphql'
 const graphQLServerPort = 3592
 const graphQLServerExpress = express()
 const customGraphQLServer = new GraphQLServer({schema: someExampleSchema, defaultValidationRules: []})
+graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
     return customGraphQLServer.handleRequest(req, res)
 })
@@ -94,6 +107,7 @@ import {NoSchemaIntrospectionCustomRule} from 'graphql'
 const graphQLServerPort = 3592
 const graphQLServerExpress = express()
 const customGraphQLServer = new GraphQLServer({schema: someExampleSchema, customValidationRules: [NoSchemaIntrospectionCustomRule]})
+graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
     return customGraphQLServer.handleRequest(req, res)
 })
@@ -115,6 +129,7 @@ route is used to trigger a schema update.
 const graphQLServerPort = 3592
 const graphQLServerExpress = express()
 const customGraphQLServer = new GraphQLServer({schema: someExampleSchema})
+graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
     return customGraphQLServer.handleRequest(req, res)
 })
@@ -152,6 +167,7 @@ the `GraphQLServer` instance. In the example below a second route is used to ret
 const graphQLServerPort = 3592
 const graphQLServerExpress = express()
 const customGraphQLServer = new GraphQLServer({schema: someExampleSchema})
+graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
     return customGraphQLServer.handleRequest(req, res)
 })
@@ -172,6 +188,7 @@ const graphQLServerPort = 3592
 const graphQLServerExpress = express()
 graphQLServerExpress.use(cors())
 const customGraphQLServer = new GraphQLServer({schema: someExampleSchema})
+graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
     return customGraphQLServer.handleRequest(req, res)
 })
@@ -182,8 +199,26 @@ console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 ## Webserver framework compatibility
 
 The `GraphQLServer.handleRequest` function works with webservers that provide a fitting request and response object 
-that match `GraphQLServerRequest` and `GraphQLServerResponse` interfaces. As [Express][2] version 2.x  matches both no
+that match `GraphQLServerRequest` and `GraphQLServerResponse` interfaces. As [Express][2] (since version 2.x) matches both no
 further adjustment is necessary. 
+
+**`GraphQLServerRequest` and `GraphQLServerResponse` interfaces**
+
+```typescript
+export interface GraphQLServerRequest {
+  headers: IncomingHttpHeaders,
+  url: string,
+  body?: unknown,
+  method?: string;
+}
+
+export interface GraphQLServerResponse {
+  statusCode: number,
+  setHeader(name: string, value: number | string | ReadonlyArray<string>): this
+  end(chunk: unknown, callback?: () => void): this
+  removeHeader(name: string): void;
+}
+```
 
 If one or both objects do not match `GraphQLServerRequest` and `GraphQLServerResponse` it might still be possible
 to implement these interfaces and map the webserver framework to the graphql-server implementations. An example how to
@@ -264,7 +299,7 @@ the error counter for the given errorName or Error by 1.
   Own Logger can be created by implementing `Logger` interface.
 - **`requestInformationExtractor`**: The `RequestInformationExtractor` used to extract information from the `Request`
   and return a `Promise<GraphQLRequestInfo>`. By default, the `DefaultRequestInformationExtractor` is used that tries to
-  extract the information from the body and URL params of the request. Own Extractor can be created by
+  extract the information from the body (using `request.body` field) and URL params of the request. Own Extractor can be created by
   implementing `RequestInformationExtractor` interface.
 - **`metricsClient`**: The `MetricsClient` used to collect metrics from the GraphQLServer. By default, 
 the `DefaultMetricsClient` is used that collects default NodeJS and three custom metrics using [prom-client][3] library.

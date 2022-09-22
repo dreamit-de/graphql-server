@@ -32,7 +32,7 @@ test('Get fitting error if body type contains invalid type', async() => {
         method: 'POST'
     }
     const response = await requestInformationExtractor.extractInformationFromBody(request)
-    expect(response.error?.graphQLError.message).toBe('POST body contains invalid type boolean.')
+    expect(response.error?.graphQLError.message).toBe('POST body contains invalid type boolean. Only "object" and "string" are supported.')
 })
 
 test('Get fitting error if body contains a Buffer', async() => {
@@ -43,7 +43,7 @@ test('Get fitting error if body contains a Buffer', async() => {
         method: 'doesnotmatter'
     }
     const response = await requestInformationExtractor.extractInformationFromBody(request)
-    expect(response.error?.graphQLError.message).toBe('Cannot handle body when it contains an object buffer!')
+    expect(response.error?.graphQLError.message).toBe('Cannot extract information from body because it contains an object buffer!')
 })
 
 test('Should properly extract variables from url', async() => {
