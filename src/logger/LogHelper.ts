@@ -1,7 +1,9 @@
-import {LogLevel} from './LogLevel'
-import {LogEntry} from './LogEntry'
 import {GraphQLError} from 'graphql'
-import {GraphQLServerRequest} from '..'
+import {
+    GraphQLServerRequest,
+    LogEntry,
+    LogLevel
+} from '..'
 
 export const VARIABLES_IN_MESSAGE_REGEX = new RegExp(/got invalid value (.*); Field/gm)
 

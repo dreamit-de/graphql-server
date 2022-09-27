@@ -26,6 +26,7 @@ export * from './request/ContentType'
 export * from './request/DefaultRequestInformationExtractor'
 export * from './request/RequestInformationExtractor'
 export * from './request/GraphQLServerRequest'
+export * from './request/GraphQLRequestInfo'
 
 export * from './response/DefaultResponseHandler'
 export * from './response/GraphQLServerResponse'

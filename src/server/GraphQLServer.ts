@@ -8,7 +8,6 @@ import {
 } from 'graphql'
 import {
     GraphQLServerOptions,
-    GraphQLErrorWithStatusCode,
     GRAPHQL_ERROR,
     INVALID_SCHEMA_ERROR,
     METHOD_NOT_ALLOWED_ERROR,
@@ -24,13 +23,6 @@ import {
     removeValidationRecommendationsFromErrors,
     increaseFetchOrGraphQLErrorMetric,
 } from '..'
-
-export interface GraphQLRequestInfo {
-    query?: string
-    variables?: Readonly<Record<string, unknown>>
-    operationName?: string
-    error?: GraphQLErrorWithStatusCode
-}
 
 const requestCouldNotBeProcessed = 'Request could not be processed: '
 const defaultOptions = new DefaultGraphQLServerOptions()

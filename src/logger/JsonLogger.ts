@@ -1,9 +1,11 @@
-import {Logger} from './Logger'
 import {Console} from 'node:console'
-import {LogLevel} from './LogLevel'
-import {LogEntry} from './LogEntry'
-import {LogHelper} from './LogHelper'
-import {GraphQLServerRequest} from '..'
+import {
+    GraphQLServerRequest,
+    Logger,
+    LogEntry,
+    LogHelper,
+    LogLevel
+} from '..'
 
 const loggerConsole: Console = new Console(process.stdout, process.stderr, false)
 
