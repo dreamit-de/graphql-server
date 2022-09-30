@@ -3,13 +3,21 @@ on: [push, pull_request]
 
 jobs:
   graphqlserver:
+
     name: Check
+
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 16.x, 18.x ]
+
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3.5.0
         with:
-          node-version: '16.x'
+          node-version: ${{ matrix.node-version }}
       - name: Install dependencies
         run: npm install
       - name: Check for linting issues
