@@ -20,8 +20,7 @@ on [graphql-js][1].
 
 | graphql-js version | graphql-server version | Github branch  | Development Status |
 | ------------- |:-------------:| :-------------:| :-------------:|
-| ~~^15.2.0~~ | ~~1.x~~ | [~~
-legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15)| end of life |
+| ~~^15.2.0~~ | ~~1.x~~ | [~~legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15)| end of life |
 | ^16.0.0 | 2.x | [legacy-server-v2](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2)  |  maintenance |
 | ^16.0.0 | 3.x | [main](https://github.com/dreamit-de/graphql-server)  |  active |
 
