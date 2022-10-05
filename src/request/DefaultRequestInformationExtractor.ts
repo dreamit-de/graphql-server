@@ -16,7 +16,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
 
     async extractInformationFromRequest(request: GraphQLServerRequest)
     : Promise<GraphQLRequestInfo> {
-        const extractedURLParameters = this.extractInformationFromUrlParameters(request.url)
+        const extractedURLParameters = this.extractInformationFromUrlParameters(request.url ?? '')
         const extractedBody = await this.extractInformationFromBody(request)
         return {
             query: extractedURLParameters.query ?? extractedBody.query,

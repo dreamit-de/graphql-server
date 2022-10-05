@@ -40,7 +40,6 @@ test('Get fitting error if body contains a Buffer', async() => {
         headers: {},
         url: 'doesnotmatter',
         body: Buffer.alloc(3) ,
-        method: 'doesnotmatter'
     }
     const response = await requestInformationExtractor.extractInformationFromBody(request)
     expect(response.error?.graphQLError.message).toBe('Cannot extract information from body because it contains an object buffer!')
@@ -54,7 +53,6 @@ test('Should properly extract variables from url', async() => {
         },
         url: '/graphql?query=mutation&variables=findme',
         body: { query: 'doesnotmatter'} ,
-        method: 'doesnotmatter'
     }
     const response = await requestInformationExtractor.extractInformationFromRequest(request)
     expect(response.variables).toBe('findme')
@@ -67,8 +65,19 @@ test('Should properly extract query from body for graphql request', async() => {
             'content-type': 'application/graphql'
         },
         url: 'pengpeng',
-        body: { query: 'findTheQuery'} ,
-        method: 'doesnotmatter'
+        body: { query: 'findTheQuery'}
+    }
+    const response = await requestInformationExtractor.extractInformationFromRequest(request)
+    expect(response.query).toBe('{"query":"findTheQuery"}')
+})
+
+test('Should read body even if url is not set', async() => {
+    const request = {
+        headers: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            'content-type': 'application/graphql'
+        },
+        body: { query: 'findTheQuery'},
     }
     const response = await requestInformationExtractor.extractInformationFromRequest(request)
     expect(response.query).toBe('{"query":"findTheQuery"}')
