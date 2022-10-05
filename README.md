@@ -27,8 +27,7 @@ on [graphql-js][1].
 ## Features
 
 - Creates GraphQL responses for (GraphQL) requests
-- Can be use with fitting webservers that provide matching request and response objects for
-  `GraphQLServerRequest` and `GraphQLServerResponse` interfaces (e.g. [Express][2]).
+- Can be used with many webservers (see [Webserver compatibility](#webserver-compatibility)).
 - Uses out-of-the-box default options to ease use and keep code short
 - Provides hot reloading for schema and options
 - Provides out-of-the-box metrics for GraphQLServer
@@ -206,18 +205,32 @@ graphQLServerExpress.listen({port: graphQLServerPort})
 console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 ```
 
-## Webserver framework compatibility
+## Webserver compatibility
 
 The `GraphQLServer.handleRequest` function works with webservers that provide a fitting request and response object that
-match `GraphQLServerRequest` and `GraphQLServerResponse` interfaces. As [Express][2] (since version 2.x) matches both no
-further adjustment is necessary.
+matches `GraphQLServerRequest` and `GraphQLServerResponse` interface. As [Express][2] (since version 2.x) matches both no
+further adjustment is necessary. If one or both objects do not match `GraphQLServerRequest` and `GraphQLServerResponse` it might still be possible to map the webserver request and response objects to these interfaces.
+
+In the following table a list of webserver frameworks/versions can be found that are able to run `GraphQLServer`. 
+The `Version` column shows the version of the webserver framework we tested `GraphQLServer` version 3 with.  
+If the request and/or response has to be mapped it is noted in the `Mapping` column. There are some code examples on how to adjust the request/response to be able to use `GraphQLServer.handleRequest` with the webserver.
+
+| Framework/Module | Version | Mapping | Example | 
+| ------------- |:-------------:| :-------------:| :-------------:|
+| [AdonisJS][6] | 5.8 | request, response |  [AdonisJS example](https://github.com/sgohlke/adonisjs-example/blob/main/start/routes.ts)  |
+| [Express][2] | >= 2.x | none |  [GraphQLServer test](https://github.com/dreamit-de/graphql-server/blob/main/tests/GraphQLServer.integration.test.ts)  |
+| [fastify][4] | 4.7 | response |  [Fastify example](https://github.com/sgohlke/fastify-example/blob/main/src/index.ts)  |
+| [Koa][5] | 2.13 | response |  [Koa example](https://github.com/sgohlke/koa-example/blob/main/src/index.ts)  |
+| [Next.js][7] | 12.3 | none |  [Next.js example](https://github.com/sgohlke/nextjs-example/blob/main/pages/api/graphql.ts)  |
+| [Nitro][8] | 0.5 | request |  [Nitro example](https://github.com/sgohlke/nitro-example/blob/main/routes/graphql.post.ts)  |
+| [NodeJS http][9] | 16.17 | request |  [NodeJS http example](https://github.com/sgohlke/nodejs-http-example/blob/main/src/index.ts)  |
 
 **`GraphQLServerRequest` and `GraphQLServerResponse` interfaces**
 
 ```typescript
 export interface GraphQLServerRequest {
     headers: IncomingHttpHeaders,
-    url: string,
+    url?: string,
     body?: unknown,
     method?: string;
 }
@@ -229,11 +242,6 @@ export interface GraphQLServerResponse {
     removeHeader(name: string): void;
 }
 ```
-
-If one or both objects do not match `GraphQLServerRequest` and `GraphQLServerResponse` it might still be possible to
-implement these interfaces and map the webserver framework to the graphql-server implementations. An example how to
-support [fastify][4] can be found in
-the [fastify-example](https://github.com/sgohlke/fastify-example/blob/main/src/FastifyGraphQLServer.ts)
 
 ## Available options
 
@@ -353,3 +361,13 @@ graphql-server is under [MIT-License](./LICENSE).
 [3]: https://github.com/siimon/prom-client
 
 [4]: https://www.fastify.io/
+
+[5]: https://koajs.com/
+
+[6]: https://adonisjs.com/
+
+[7]: https://nextjs.org/
+
+[8]: https://nitro.unjs.io/
+
+[9]: https://nodejs.org/dist/latest-v16.x/docs/api/http.html
