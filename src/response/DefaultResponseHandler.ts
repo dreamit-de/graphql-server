@@ -1,5 +1,6 @@
 import {Buffer} from 'node:buffer'
 import {
+    GraphQLErrorWithInfo,
     ResponseHandler,
     ResponseParameters
 } from '..'
@@ -10,21 +11,36 @@ import {GraphQLError} from 'graphql'
  */
 export class DefaultResponseHandler implements ResponseHandler {
     // Error constants
-    methodNotAllowedError =
-        new GraphQLError('GraphQL server only supports GET and POST requests.', {})
-    invalidSchemaError =
-        new GraphQLError('Request cannot be processed. Schema in GraphQL server is invalid.', {})
-    missingQueryParameterError =
-        new GraphQLError(
-            'Request cannot be processed. No query was found in parameters or body.', {}
-        )
-    onlyQueryInGetRequestsError =
-        new GraphQLError('Only "query" operation is allowed in "GET" requests', {})
+    methodNotAllowedError: GraphQLErrorWithInfo = {
+        graphQLError: new GraphQLError('GraphQL server only supports GET and POST requests.', {}),
+        statusCode: 405,
+        customHeaders: { allow: 'GET, POST' }
+    }
 
-    constructor(methodNotAllowedError?: GraphQLError,
-        invalidSchemaError?: GraphQLError,
-        missingQueryParameterError?: GraphQLError,
-        onlyQueryInGetRequestsError?: GraphQLError) {
+    invalidSchemaError: GraphQLErrorWithInfo = {
+        graphQLError: new GraphQLError(
+            'Request cannot be processed. Schema in GraphQL server is invalid.', {}
+        ),
+        statusCode: 500,
+    }
+
+    missingQueryParameterError: GraphQLErrorWithInfo = {
+        graphQLError: new GraphQLError(
+            'Request cannot be processed. No query was found in parameters or body.', {}
+        ),
+        statusCode: 400,
+    }
+
+    onlyQueryInGetRequestsError: GraphQLErrorWithInfo = {
+        graphQLError: new GraphQLError('Only "query" operation is allowed in "GET" requests', {}),
+        statusCode: 405,
+        customHeaders: {allow: 'POST'}
+    }
+
+    constructor(methodNotAllowedError?: GraphQLErrorWithInfo,
+        invalidSchemaError?: GraphQLErrorWithInfo,
+        missingQueryParameterError?: GraphQLErrorWithInfo,
+        onlyQueryInGetRequestsError?: GraphQLErrorWithInfo) {
         if (methodNotAllowedError) {
             this.methodNotAllowedError = methodNotAllowedError
         }
@@ -46,7 +62,6 @@ export class DefaultResponseHandler implements ResponseHandler {
             executionResult,
             logger,
             response,
-            request,
             statusCode,
             formatErrorFunction
         }
@@ -55,7 +70,6 @@ export class DefaultResponseHandler implements ResponseHandler {
             `Preparing response with executionResult ${JSON.stringify(executionResult)}`+
             `, status code ${statusCode} and custom headers ${JSON.stringify(customHeaders)}` +
             `, and context ${context}`,
-            request,
             context
         )
         if (executionResult && executionResult.errors && formatErrorFunction) {
@@ -68,7 +82,6 @@ export class DefaultResponseHandler implements ResponseHandler {
         if (customHeaders) {
             for (const [key, value] of Object.entries(customHeaders)) {
                 logger.logDebugIfEnabled(`Set custom header ${key} to ${value}`,
-                    request,
                     context)
                 response.setHeader(key, String(value))
             }
@@ -76,64 +89,17 @@ export class DefaultResponseHandler implements ResponseHandler {
         response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))
     }
 
-
-    /** Sends a fitting response if the schema used by the GraphQL server is invalid */
-    sendInvalidSchemaResponse(responseParameters: ResponseParameters): void {
-        return this.sendResponse(
-            {
-                response: responseParameters.response,
-                executionResult: {errors: [this.invalidSchemaError]},
-                statusCode: 500,
-                request: responseParameters.request,
-                context: responseParameters.context,
-                logger: responseParameters.logger,
-                formatErrorFunction: responseParameters.formatErrorFunction
-            }
-        )
-    }
-
-    /** Sends a fitting response if there is no query available in the request */
-    sendMissingQueryResponse(responseParameters: ResponseParameters): void {
-        return this.sendResponse(
-            {
-                response: responseParameters.response,
-                executionResult: {errors: [this.missingQueryParameterError]},
-                statusCode: 400,
-                request: responseParameters.request,
-                context: responseParameters.context,
-                logger: responseParameters.logger,
-                formatErrorFunction: responseParameters.formatErrorFunction
-            }
-        )
-    }
-
-    /** Sends a fitting response if a mutation is requested in a GET request */
-    sendMutationNotAllowedForGetResponse(responseParameters: ResponseParameters): void {
-        return this.sendResponse(
-            {
-                response: responseParameters.response,
-                executionResult: {errors: [this.onlyQueryInGetRequestsError]},
-                statusCode: 405,
-                request: responseParameters.request,
-                context: responseParameters.context,
-                logger: responseParameters.logger,
-                customHeaders: {allow: 'POST'},
-                formatErrorFunction: responseParameters.formatErrorFunction
-            }
-        )
-    }
-
     /** Sends a fitting response if a method is not allowed */
-    sendMethodNotAllowedResponse(responseParameters: ResponseParameters): void {
+    sendErrorResponse(error:GraphQLErrorWithInfo, responseParameters: ResponseParameters): void {
         return this.sendResponse(
             {
                 response: responseParameters.response,
-                executionResult: {errors: [this.methodNotAllowedError]},
-                statusCode: 405,
+                executionResult: {errors: [error.graphQLError]},
+                statusCode: error.statusCode,
                 request: responseParameters.request,
                 context: responseParameters.context,
                 logger: responseParameters.logger,
-                customHeaders: { allow: 'GET, POST' },
+                customHeaders: error.customHeaders,
                 formatErrorFunction: responseParameters.formatErrorFunction
             }
         )

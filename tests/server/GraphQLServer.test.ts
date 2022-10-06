@@ -13,10 +13,15 @@ import {
 test('Should create schema on GraphQLServer class creation', () => {
     const graphqlServer = new GraphQLServer({
         schema: initialSchemaWithOnlyDescription,
-        responseHandler: new DefaultResponseHandler(new GraphQLError('doesnotmatter', {}),
-            new GraphQLError('doesnotmatter', {}),
-            new GraphQLError('doesnotmatter', {}),
-            new GraphQLError('doesnotmatter', {}))
+        responseHandler: new DefaultResponseHandler({
+            graphQLError: new GraphQLError('doesnotmatter', {}),
+        }, {
+            graphQLError: new GraphQLError('doesnotmatter', {}),
+        }, {
+            graphQLError: new GraphQLError('doesnotmatter', {}),
+        }, {
+            graphQLError: new GraphQLError('doesnotmatter', {}),
+        })
     })
     const schema = graphqlServer.getSchema()
     expect(schema).toBeDefined()

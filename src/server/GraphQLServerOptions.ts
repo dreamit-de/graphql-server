@@ -39,7 +39,6 @@ export interface GraphQLServerOptions {
     readonly formatErrorFunction?: (error: GraphQLError) => GraphQLFormattedError
     readonly collectErrorMetricsFunction?: (errorName: string,
                                             error?: unknown,
-                                            request?: GraphQLServerRequest,
                                             context?: unknown,
                                             logger?: Logger,
                                             metricsClient?: MetricsClient) => void
@@ -64,9 +63,9 @@ export interface GraphQLServerOptions {
     readonly typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
     readonly executeFunction?: (arguments_: ExecutionArgs)
         => PromiseOrValue<ExecutionResult>
-    readonly extensionFunction?: (request: GraphQLServerRequest,
-                                  requestInformation: GraphQLRequestInfo,
+    readonly extensionFunction?: (requestInformation: GraphQLRequestInfo,
                                   executionResult: ExecutionResult,
-                                  logger?: Logger)
+                                  logger?: Logger,
+                                  context?: unknown)
         => ObjMap<unknown> | undefined
 }

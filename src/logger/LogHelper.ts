@@ -1,6 +1,5 @@
 import {GraphQLError} from 'graphql'
 import {
-    GraphQLServerRequest,
     LogEntry,
     LogLevel
 } from '..'
@@ -13,7 +12,6 @@ export class LogHelper {
         loglevel: LogLevel,
         loggerName: string,
         serviceName: string,
-        _request?: GraphQLServerRequest,
         error?: Error,
         customErrorName?: string,
         context?: unknown): LogEntry {

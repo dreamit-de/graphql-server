@@ -8,7 +8,7 @@ export * from './error/AggregateError'
 export * from './error/ErrorNameConstants'
 export * from './error/DetermineGraphQLOrFetchError'
 export * from './error/DetermineValidationOrIntrospectionDisabledError'
-export * from './error/GraphQLErrorWithStatusCode'
+export * from './error/GraphQLErrorWithInfo'
 export * from './error/RemoveValidationRecommendationsFromErrors'
 
 export * from './logger/JsonLogger'
@@ -29,6 +29,7 @@ export * from './request/GraphQLServerRequest'
 export * from './request/GraphQLRequestInfo'
 
 export * from './response/DefaultResponseHandler'
+export * from './response/GraphQLExecutionResult'
 export * from './response/GraphQLServerResponse'
 export * from './response/ResponseHandler'
 

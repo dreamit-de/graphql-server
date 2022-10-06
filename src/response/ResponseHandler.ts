@@ -1,4 +1,5 @@
 import {
+    GraphQLErrorWithInfo,
     GraphQLServerRequest,
     GraphQLServerResponse,
     Logger
@@ -14,30 +15,21 @@ import {
  * Provides logic to send a server response and handle different error responses
  */
 export interface ResponseHandler {
-    readonly methodNotAllowedError: GraphQLError
-    readonly invalidSchemaError: GraphQLError
-    readonly missingQueryParameterError: GraphQLError
-    readonly onlyQueryInGetRequestsError: GraphQLError
+    readonly methodNotAllowedError: GraphQLErrorWithInfo
+    readonly invalidSchemaError: GraphQLErrorWithInfo
+    readonly missingQueryParameterError: GraphQLErrorWithInfo
+    readonly onlyQueryInGetRequestsError: GraphQLErrorWithInfo
 
     /** Sends a response */
     sendResponse(responseParameters: ResponseParameters): void
 
-    /** Sends a fitting response if the schema used by the GraphQL server is invalid */
-    sendInvalidSchemaResponse(responseParameters: ResponseParameters): void
-
-    /** Sends a fitting response if there is no query available in the request */
-    sendMissingQueryResponse(responseParameters: ResponseParameters): void
-
-    /** Sends a fitting response if a mutation is requested in a GET request */
-    sendMutationNotAllowedForGetResponse(responseParameters: ResponseParameters): void
-
-    /** Sends a fitting response if a method is not allowed */
-    sendMethodNotAllowedResponse(responseParameters: ResponseParameters): void
+    /** Sends an error response */
+    sendErrorResponse(error: GraphQLErrorWithInfo, responseParameters: ResponseParameters): void
 }
 
 export interface ResponseParameters {
     readonly response: GraphQLServerResponse,
-    readonly request: GraphQLServerRequest,
+    readonly request?: GraphQLServerRequest,
     readonly context: unknown,
     readonly logger: Logger
     readonly formatErrorFunction: (error: GraphQLError) => GraphQLFormattedError

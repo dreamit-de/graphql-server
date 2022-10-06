@@ -6,8 +6,3 @@ export interface GraphQLServerRequest {
     body?: unknown,
     method?: string;
 }
-
-export function getRequestInfoForLogging(request?: GraphQLServerRequest): string {
-    return request ? `{ url:"${request.url}", method:"${request.method}",`+
-            ` headers:"${JSON.stringify(request.headers)}" }` : ''
-}

@@ -1,6 +1,5 @@
 import {Console} from 'node:console'
 import {
-    GraphQLServerRequest,
     Logger,
     LogEntry,
     LogHelper,
@@ -34,35 +33,33 @@ export class JsonLogger implements Logger {
         this.debugEnabled = debugEnabled
     }
 
-    debug(logMessage: string, request?: GraphQLServerRequest, context?: unknown): void {
-        this.logMessage(logMessage, LogLevel.debug, request, undefined, undefined, context)
+    debug(logMessage: string, context?: unknown): void {
+        this.logMessage(logMessage, LogLevel.debug, undefined, undefined, context)
     }
 
-    logDebugIfEnabled(message: string, request?: GraphQLServerRequest, context?: unknown): void {
+    logDebugIfEnabled(message: string, context?: unknown): void {
         if (this.debugEnabled) {
-            this.debug(message, request, context)
+            this.debug(message, context)
         }
     }
 
     error(logMessage: string,
         error: Error,
         customErrorName: string,
-        request?: GraphQLServerRequest,
         context?: unknown): void {
-        this.logMessage(logMessage, LogLevel.error, request, error, customErrorName, context)
+        this.logMessage(logMessage, LogLevel.error, error, customErrorName, context)
     }
 
-    info(logMessage: string, request?: GraphQLServerRequest, context?: unknown): void {
-        this.logMessage(logMessage, LogLevel.info, request, undefined, undefined, context)
+    info(logMessage: string, context?: unknown): void {
+        this.logMessage(logMessage, LogLevel.info, undefined, undefined, context)
     }
 
-    warn(logMessage: string, request?: GraphQLServerRequest, context?: unknown): void {
-        this.logMessage(logMessage, LogLevel.warn, request, undefined, undefined, context)
+    warn(logMessage: string, context?: unknown): void {
+        this.logMessage(logMessage, LogLevel.warn, undefined, undefined, context)
     }
 
     logMessage(logMessage: string,
         loglevel: LogLevel,
-        request?: GraphQLServerRequest,
         error?: Error,
         customErrorName?: string,
         context?: unknown): void {
@@ -70,7 +67,6 @@ export class JsonLogger implements Logger {
             loglevel,
             this.loggerName,
             this.serviceName,
-            request,
             error,
             customErrorName,
             context)

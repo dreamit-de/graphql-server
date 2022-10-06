@@ -5,7 +5,6 @@ import {
     TextLogger,
     GraphQLServerRequest,
     GraphQLServerResponse,
-    getRequestInfoForLogging,
     GraphQLRequestInfo,
     Logger,
     RequestInformationExtractor,
@@ -96,23 +95,22 @@ export function defaultContextFunction(request: GraphQLServerRequest,
 /**
  * Default extension function that can be used
  * to fill extensions field of GraphQL response. Can be set in options.
- * @param {GraphQLServerRequest} request - The initial request
  * @param {GraphQLRequestInfo} requestInfo - The extracted requestInfo
  * @param {ExecutionResult} executionResult - The executionResult created by execute function
  * @param {Logger} logger - A logger
+ * @param {unknown} context - The request context
  * @returns {ObjMap<unknown>}
  * A key-value map to be added as extensions in response
  */
-export function defaultExtensions(request: GraphQLServerRequest,
-    requestInfo: GraphQLRequestInfo,
+export function defaultExtensions(requestInfo: GraphQLRequestInfo,
     executionResult: ExecutionResult,
-    logger?: Logger): ObjMap<unknown> | undefined {
+    logger?: Logger,
+    context?: unknown): ObjMap<unknown> | undefined {
     if (logger) {
         logger.logDebugIfEnabled(
-            `Calling defaultExtensions for request ${getRequestInfoForLogging(request)}`+
-            `, requestInfo ${JSON.stringify(requestInfo)}`+
+            `Calling defaultExtensions for requestInfo ${JSON.stringify(requestInfo)}`+
             ` and executionResult ${JSON.stringify(executionResult)}`,
-            request
+            context
         )
     }
 
@@ -123,26 +121,23 @@ export function defaultExtensions(request: GraphQLServerRequest,
  * Default collect error metrics function. Can be set in options.
  * @param {string} errorName - The error name that is used as label in error metrics
  * @param {unknown} error - An optional GraphQL error
- * @param {GraphQLServerRequest} request - The initial request
  * @param {unknown} context - The request context
  * @param {Logger} logger - A logger
  * @param {MetricsClient} metricsClient - The metrics client
  */
 export function defaultCollectErrorMetrics(errorName: string,
     error?: unknown,
-    request?: GraphQLServerRequest,
     context?: unknown,
     logger?: Logger,
     metricsClient?: MetricsClient): void {
     if (logger) {
         logger.logDebugIfEnabled(
-            `Calling defaultCollectErrorMetrics with request ${getRequestInfoForLogging(request)}`+
-            ` and error ${error} and errorName ${errorName}`,
-            request
+            `Calling defaultCollectErrorMetrics with error ${error} and errorName ${errorName}`,
+            context
         )
     }
     if (metricsClient) {
-        metricsClient.increaseErrors(errorName, request, context)
+        metricsClient.increaseErrors(errorName, context)
     }
 
 }

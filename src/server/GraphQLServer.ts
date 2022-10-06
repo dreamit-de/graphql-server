@@ -22,6 +22,9 @@ import {
     DefaultGraphQLServerOptions,
     removeValidationRecommendationsFromErrors,
     increaseFetchOrGraphQLErrorMetric,
+    GraphQLRequestInfo,
+    GraphQLErrorWithInfo,
+    GraphQLExecutionResult,
 } from '..'
 
 const requestCouldNotBeProcessed = 'Request could not be processed: '
@@ -114,7 +117,6 @@ export class GraphQLServer {
                         this.options.collectErrorMetricsFunction(SCHEMA_VALIDATION_ERROR,
                             error,
                             undefined,
-                            undefined,
                             this.options.logger,
                             this.options.metricsClient)
                     }
@@ -149,9 +151,100 @@ export class GraphQLServer {
             logger,
             metricsClient,
             responseHandler,
+            formatErrorFunction,
+        } = this.options
+
+        const context = contextFunction(request, response, logger)
+        metricsClient.increaseRequestThroughput(context)
+        const requestInformation = await this.getRequestInformation(request, context)
+        if ('graphQLError' in requestInformation) {
+            return responseHandler.sendErrorResponse(requestInformation, {
+                request,
+                response,
+                context,
+                logger,
+                formatErrorFunction
+            })
+        }
+
+        const result = await this.executeRequestWithInfo(requestInformation,
+            response,
+            request.method,
+            context)
+
+        if ('graphQLError' in result) {
+            return responseHandler.sendErrorResponse(result, {
+                request,
+                response,
+                context,
+                logger,
+                formatErrorFunction
+            })
+        } else {
+            const graphQLResult = result as GraphQLExecutionResult
+            return responseHandler.sendResponse({
+                executionResult: graphQLResult.executionResult,
+                request,
+                response,
+                context,
+                logger,
+                formatErrorFunction,
+                statusCode: graphQLResult.statusCode,
+                customHeaders: graphQLResult.customHeaders
+            })
+        }
+    }
+
+    protected async getRequestInformation(request: GraphQLServerRequest,
+        context: unknown): Promise<GraphQLRequestInfo | GraphQLErrorWithInfo> {
+        const {
+            logger,
+            metricsClient,
+            responseHandler,
+            collectErrorMetricsFunction,
+            requestInformationExtractor,
+        } = this.options
+
+        // Reject requests that do not use GET and POST methods.
+        if (request.method !== 'GET' && request.method !== 'POST') {
+            logger.error(requestCouldNotBeProcessed,
+                responseHandler.methodNotAllowedError.graphQLError,
+                METHOD_NOT_ALLOWED_ERROR,
+                context)
+            collectErrorMetricsFunction(METHOD_NOT_ALLOWED_ERROR,
+                responseHandler.methodNotAllowedError,
+                context,
+                logger,
+                metricsClient)
+            return responseHandler.methodNotAllowedError
+        }
+
+        logger.info(
+            `Incoming request with url ${request.url} ` +
+            `and content-type ${JSON.stringify(request.headers['content-type'])}`,
+            context
+        )
+
+        // Extract graphql request information (query, variables, operationName) from request
+        const requestInformation =
+            await requestInformationExtractor.extractInformationFromRequest(request)
+        logger.logDebugIfEnabled(
+            `Extracted request information is ${JSON.stringify(requestInformation)}`,
+            context
+        )
+        return requestInformation
+    }
+
+    protected async executeRequestWithInfo(requestInformation: GraphQLRequestInfo,
+        response: GraphQLServerResponse,
+        requestMethod = 'POST',
+        context?: unknown): Promise<GraphQLExecutionResult | GraphQLErrorWithInfo> {
+        const {
+            logger,
+            metricsClient,
+            responseHandler,
             collectErrorMetricsFunction,
             schema,
-            requestInformationExtractor,
             parseFunction,
             validateFunction,
             defaultValidationRules,
@@ -164,118 +257,53 @@ export class GraphQLServer {
             typeResolver,
             extensionFunction,
             reassignAggregateError,
-            formatErrorFunction,
             removeValidationRecommendations
         } = this.options
-        const context = contextFunction(request, response, logger)
-
-        // Increase request throughput
-        metricsClient.increaseRequestThroughput(request, context)
-
-        // Reject requests that do not use GET and POST methods.
-        if (request.method !== 'GET' && request.method !== 'POST') {
-            logger.error(requestCouldNotBeProcessed,
-                responseHandler.methodNotAllowedError,
-                METHOD_NOT_ALLOWED_ERROR,
-                request,
-                context)
-            collectErrorMetricsFunction(METHOD_NOT_ALLOWED_ERROR,
-                responseHandler.methodNotAllowedError,
-                request,
-                context,
-                logger,
-                metricsClient)
-            return responseHandler.sendMethodNotAllowedResponse({
-                request,
-                response,
-                context,
-                logger,
-                formatErrorFunction
-            })
-        }
-
-        logger.info(
-            `Incoming request with url ${request.url} ` +
-            `and content-type ${JSON.stringify(request.headers['content-type'])}`,
-            request,
-            context
-        )
 
         // Reject requests if schema is invalid
         if (!schema || !this.isValidSchema(schema)) {
             metricsClient.setAvailability(0)
             logger.error(requestCouldNotBeProcessed,
-                responseHandler.invalidSchemaError,
+                responseHandler.invalidSchemaError.graphQLError,
                 INVALID_SCHEMA_ERROR,
-                request,
                 context)
             collectErrorMetricsFunction(INVALID_SCHEMA_ERROR,
                 responseHandler.invalidSchemaError,
-                request,
                 context,
                 logger,
                 metricsClient)
-            return responseHandler.sendInvalidSchemaResponse({
-                request,
-                response,
-                context,
-                logger,
-                formatErrorFunction
-            })
+            return responseHandler.invalidSchemaError
         } else {
             metricsClient.setAvailability(1)
         }
 
-        // Extract graphql request information (query, variables, operationName) from request
-        const requestInformation =
-            await requestInformationExtractor.extractInformationFromRequest(request)
-        logger.logDebugIfEnabled(
-            `Extracted request information is ${JSON.stringify(requestInformation)}`,
-            request,
-            context
-        )
         if (!requestInformation.query && requestInformation.error) {
             logger.error(requestCouldNotBeProcessed,
                 requestInformation.error.graphQLError,
                 GRAPHQL_ERROR,
-                request,
                 context)
             collectErrorMetricsFunction(GRAPHQL_ERROR,
                 requestInformation.error,
-                request,
                 context,
                 logger,
                 metricsClient)
-            return responseHandler.sendResponse({
-                request,
-                response,
-                context,
-                logger,
-                formatErrorFunction,
+            return {
                 executionResult: {errors: [requestInformation.error.graphQLError]},
-                statusCode: requestInformation.error.statusCode
-            })
+                statusCode: requestInformation.error.statusCode,
+            }
         }
         // Reject request if no query parameter is provided
         else if (!requestInformation.query) {
             logger.error(requestCouldNotBeProcessed,
-                responseHandler.missingQueryParameterError,
+                responseHandler.missingQueryParameterError.graphQLError,
                 MISSING_QUERY_PARAMETER_ERROR,
-                request,
                 context)
             collectErrorMetricsFunction(MISSING_QUERY_PARAMETER_ERROR,
                 responseHandler.missingQueryParameterError,
-                request,
                 context,
                 logger,
                 metricsClient)
-            return responseHandler.sendMissingQueryResponse({
-                request,
-                response,
-                context,
-                logger,
-                formatErrorFunction
-            })
+            return responseHandler.missingQueryParameterError
         }
 
         // Parse given GraphQL source into a document (parse(query) function)
@@ -287,28 +315,19 @@ export class GraphQLServer {
             logger.error(requestCouldNotBeProcessed,
                 syntaxError as GraphQLError,
                 SYNTAX_ERROR,
-                request,
                 context)
             collectErrorMetricsFunction(SYNTAX_ERROR,
                 syntaxError,
-                request,
                 context,
                 logger,
                 metricsClient)
-
-            return responseHandler.sendResponse({
-                request,
-                response,
-                context,
-                logger,
-                formatErrorFunction,
+            return {
                 executionResult: {errors: [syntaxError as GraphQLError]},
                 statusCode: 400
-            })
+            }
         }
         logger.logDebugIfEnabled(
             `Parsing query into document succeeded with document: ${JSON.stringify(documentAST)}`,
-            request,
             context
         )
 
@@ -324,7 +343,6 @@ export class GraphQLServer {
         if (validationErrors.length > 0) {
             logger.logDebugIfEnabled(
                 `One or more validation errors occurred: ${JSON.stringify(validationErrors)}`,
-                request,
                 context
             )
             for (const validationError of validationErrors) {
@@ -334,27 +352,20 @@ export class GraphQLServer {
                     'the following validation error occurred: ',
                 validationError,
                 errorClassName,
-                request,
                 context)
                 collectErrorMetricsFunction(errorClassName,
                     validationError,
-                    request,
                     context,
                     logger,
                     metricsClient)
             }
-            return responseHandler.sendResponse({
-                request,
-                response,
-                context,
-                logger,
-                formatErrorFunction,
+            return {
                 executionResult: {
                     errors: !removeValidationRecommendations ? validationErrors
                         : removeValidationRecommendationsFromErrors(validationErrors)
                 },
                 statusCode: 400
-            })
+            }
         }
 
         /**
@@ -363,25 +374,17 @@ export class GraphQLServer {
          * Return 405 if that is the case
          */
         const operationAST = getOperationAST(documentAST, requestInformation.operationName)
-        if (request.method === 'GET' && operationAST && operationAST.operation !== 'query') {
+        if (requestMethod === 'GET' && operationAST && operationAST.operation !== 'query') {
             logger.error(requestCouldNotBeProcessed,
-                responseHandler.onlyQueryInGetRequestsError,
+                responseHandler.onlyQueryInGetRequestsError.graphQLError,
                 METHOD_NOT_ALLOWED_ERROR,
-                request,
                 context)
             collectErrorMetricsFunction(METHOD_NOT_ALLOWED_ERROR,
                 responseHandler.onlyQueryInGetRequestsError,
-                request,
                 context,
                 logger,
                 metricsClient)
-            return responseHandler.sendMutationNotAllowedForGetResponse({
-                request,
-                response,
-                context,
-                logger,
-                formatErrorFunction
-            })
+            return responseHandler.onlyQueryInGetRequestsError
         }
 
         /**
@@ -401,10 +404,12 @@ export class GraphQLServer {
                 typeResolver: typeResolver
             })
 
-            const extensionsResult = extensionFunction(request,
+            const extensionsResult = extensionFunction(
                 requestInformation,
                 executionResult,
-                logger)
+                logger,
+                context
+            )
             if (extensionsResult) {
                 executionResult.extensions = extensionsResult
             }
@@ -415,11 +420,9 @@ export class GraphQLServer {
                     if (reassignAggregateError
                         && error.originalError
                         && isAggregateError(error.originalError)) {
-
                         logger.logDebugIfEnabled('Error is AggregateError and ' +
                             'reassignAggregateError feature is enabled. AggregateError ' +
                             'will be reassigned to original errors field.',
-                        request,
                         context)
                         executionResult.errors = error.originalError.errors
                     }
@@ -428,10 +431,8 @@ export class GraphQLServer {
                         'the following error occurred: ',
                     error,
                     determineGraphQLOrFetchError(error),
-                    request,
                     context)
                     increaseFetchOrGraphQLErrorMetric(error,
-                        request,
                         context,
                         logger,
                         metricsClient,
@@ -442,40 +443,27 @@ export class GraphQLServer {
             // Return execution result
             logger.logDebugIfEnabled(
                 `Create response from data ${JSON.stringify(executionResult)}`,
-                request,
                 context
             )
-            return responseHandler.sendResponse({
-                request,
-                response,
-                context,
-                logger,
-                formatErrorFunction,
+            return {
                 executionResult,
                 statusCode: 200
-            })
+            }
         } catch (error: unknown) {
             logger.error('While processing the request ' +
                 'a GraphQL execution error occurred',
-            error as GraphQLError,
-            determineGraphQLOrFetchError(error),
-            request,
-            context)
+                error as GraphQLError,
+                determineGraphQLOrFetchError(error),
+                context)
             increaseFetchOrGraphQLErrorMetric(error,
-                request,
                 context,
                 logger,
                 metricsClient,
                 collectErrorMetricsFunction)
-            return responseHandler.sendResponse({
-                request,
-                response,
-                context,
-                logger,
-                formatErrorFunction,
+            return {
                 executionResult: {errors: [error as GraphQLError]},
                 statusCode: 400
-            })
+            }
         }
     }
 }
