@@ -4,24 +4,32 @@ import {
 } from 'graphql'
 import {
     DefaultResponseHandler,
+    GraphQLExecutionResult,
     GraphQLServer
 } from '../../src'
 import {
-    initialSchemaWithOnlyDescription
+    initialSchemaWithOnlyDescription,
+    userOne,
+    userSchema,
+    userSchemaResolvers,
+    usersQuery,
+    userTwo
 } from '../ExampleSchemas'
+
+const graphQLErrorResponse: GraphQLExecutionResult = {
+    executionResult: {
+        errors:
+            [new GraphQLError('doesnotmatter', {})]
+    },
+}
 
 test('Should create schema on GraphQLServer class creation', () => {
     const graphqlServer = new GraphQLServer({
         schema: initialSchemaWithOnlyDescription,
-        responseHandler: new DefaultResponseHandler({
-            graphQLError: new GraphQLError('doesnotmatter', {}),
-        }, {
-            graphQLError: new GraphQLError('doesnotmatter', {}),
-        }, {
-            graphQLError: new GraphQLError('doesnotmatter', {}),
-        }, {
-            graphQLError: new GraphQLError('doesnotmatter', {}),
-        })
+        responseHandler: new DefaultResponseHandler(graphQLErrorResponse,
+            graphQLErrorResponse,
+            graphQLErrorResponse,
+            graphQLErrorResponse)
     })
     const schema = graphqlServer.getSchema()
     expect(schema).toBeDefined()
@@ -57,6 +65,18 @@ test('Should update schema when given schema is undefined ' +
     graphqlServer.setSchema()
     const schema = graphqlServer.getSchema()
     expect(schema).toBeUndefined()
+})
+
+test('Should execute query without server', async() => {
+    const graphqlServer = new GraphQLServer({
+        schema: userSchema,
+        rootValue: userSchemaResolvers
+    })
+    const result = await graphqlServer.executeRequest({
+        query: usersQuery
+    })
+    expect(result.executionResult.data?.users).toEqual([userOne, userTwo])
+    expect(result.statusCode).toBe(200)
 })
 
 function expectRootQueryNotDefined(graphqlServer: GraphQLServer): void {

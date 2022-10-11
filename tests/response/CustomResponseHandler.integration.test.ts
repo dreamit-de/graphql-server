@@ -41,7 +41,7 @@ test('Should return value from context instead of user data ', async() => {
         logger: new JsonLogger('test-logger', 'customGraphQLServer'),
         responseHandler: new CustomResponseHandler(),
         reassignAggregateError: false,
-        contextFunction: () => {
+        requestResponseContextFunction: () => {
             return {
                 'customText': 'customResponse',
                 'serviceName': 'myRemoteService'
@@ -63,7 +63,7 @@ test('Should return error if context serviceName is different as graphql server 
             rootValue: userSchemaResolvers,
             logger: new TextLogger('test-logger', 'customGraphQLServer', true),
             reassignAggregateError: false,
-            contextFunction: () => {
+            requestResponseContextFunction: () => {
                 return {
                     'serviceName': 'myTestServiceAlternative'
                 }
@@ -105,7 +105,7 @@ function setupGraphQLServer(): Express {
     customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
     graphQLServerExpress.use(bodyParser.json())
     graphQLServerExpress.all('/graphql', (request, response) => {
-        return customGraphQLServer.handleRequest(request, response)
+        return customGraphQLServer.handleRequestAndSendResponse(request, response)
     })
     return graphQLServerExpress
 }

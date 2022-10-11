@@ -35,7 +35,7 @@ test('Should reassign AggregateError to original errors field' +
     })
     graphQLServerExpress.use(bodyParser.json())
     graphQLServerExpress.all('/graphql', (request, response) => {
-        return customGraphQLServer.handleRequest(request, response)
+        return customGraphQLServer.handleRequestAndSendResponse(request, response)
     })
 
     const graphQLServer = graphQLServerExpress.listen({port: GRAPHQL_SERVER_PORT})

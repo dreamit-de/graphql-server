@@ -23,8 +23,8 @@ import {
     removeValidationRecommendationsFromErrors,
     increaseFetchOrGraphQLErrorMetric,
     GraphQLRequestInfo,
-    GraphQLErrorWithInfo,
     GraphQLExecutionResult,
+    getFirstErrorFromExecutionResult,
 } from '..'
 
 const requestCouldNotBeProcessed = 'Request could not be processed: '
@@ -76,7 +76,12 @@ export class GraphQLServer {
                         : newOptions.reassignAggregateError,
                 validateFunction: newOptions.validateFunction || validate,
                 rootValue: newOptions.rootValue,
-                contextFunction: newOptions.contextFunction || defaultOptions.contextFunction,
+                requestResponseContextFunction: newOptions.requestResponseContextFunction
+                    || defaultOptions.requestResponseContextFunction,
+                requestContextFunction: newOptions.requestContextFunction
+                    || defaultOptions.requestContextFunction,
+                loggerContextFunction: newOptions.loggerContextFunction
+                    || defaultOptions.loggerContextFunction,
                 fieldResolver: newOptions.fieldResolver,
                 typeResolver: newOptions.typeResolver,
                 executeFunction: newOptions.executeFunction || defaultOptions.executeFunction,
@@ -144,59 +149,108 @@ export class GraphQLServer {
         return this.options.metricsClient.getMetrics()
     }
 
-    async handleRequest(request: GraphQLServerRequest,
+    async executeRequest(requestInformation: GraphQLRequestInfo): Promise<GraphQLExecutionResult> {
+        const {
+            loggerContextFunction,
+            logger,
+            metricsClient,
+        } = this.options
+
+        const context = loggerContextFunction(logger)
+        metricsClient.increaseRequestThroughput(context)
+        return await this.executeRequestWithInfo(requestInformation, context)
+    }
+
+    async executeRequestAndSendResponse(requestInformation: GraphQLRequestInfo,
+        response: GraphQLServerResponse): Promise<void>  {
+        const {
+            formatErrorFunction,
+            loggerContextFunction,
+            logger,
+            metricsClient,
+            responseHandler
+        } = this.options
+
+        const context = loggerContextFunction(logger)
+        metricsClient.increaseRequestThroughput(context)
+        const result = await this.executeRequestWithInfo(requestInformation,
+            context)
+        return responseHandler.sendResponse({
+            executionResult: result.executionResult,
+            response,
+            context,
+            logger,
+            formatErrorFunction,
+            statusCode: result.statusCode,
+            customHeaders: result.customHeaders
+        })
+    }
+
+    async handleRequest(request: GraphQLServerRequest): Promise<GraphQLExecutionResult> {
+        const {
+            requestContextFunction,
+            logger,
+            metricsClient,
+        } = this.options
+
+        const context = requestContextFunction(request, logger)
+        metricsClient.increaseRequestThroughput(context)
+        const requestInformation = await this.getRequestInformation(request, context)
+        if ('executionResult' in requestInformation) {
+            return {
+                executionResult: requestInformation.executionResult,
+                statusCode: requestInformation.statusCode,
+                customHeaders: requestInformation.customHeaders
+            }
+        }
+        return await this.executeRequestWithInfo(requestInformation,
+            context,
+            request.method)
+    }
+
+    async handleRequestAndSendResponse(request: GraphQLServerRequest,
         response: GraphQLServerResponse): Promise<void> {
         const {
-            contextFunction,
+            requestResponseContextFunction,
             logger,
             metricsClient,
             responseHandler,
             formatErrorFunction,
         } = this.options
 
-        const context = contextFunction(request, response, logger)
+        const context = requestResponseContextFunction(request, response, logger)
         metricsClient.increaseRequestThroughput(context)
         const requestInformation = await this.getRequestInformation(request, context)
-        if ('graphQLError' in requestInformation) {
-            return responseHandler.sendErrorResponse(requestInformation, {
-                request,
-                response,
-                context,
-                logger,
-                formatErrorFunction
-            })
-        }
-
-        const result = await this.executeRequestWithInfo(requestInformation,
-            response,
-            request.method,
-            context)
-
-        if ('graphQLError' in result) {
-            return responseHandler.sendErrorResponse(result, {
-                request,
-                response,
-                context,
-                logger,
-                formatErrorFunction
-            })
-        } else {
-            const graphQLResult = result as GraphQLExecutionResult
+        if ('executionResult' in requestInformation) {
             return responseHandler.sendResponse({
-                executionResult: graphQLResult.executionResult,
+                executionResult: requestInformation.executionResult,
                 request,
                 response,
                 context,
                 logger,
                 formatErrorFunction,
-                statusCode: graphQLResult.statusCode,
-                customHeaders: graphQLResult.customHeaders
+                statusCode: requestInformation.statusCode,
+                customHeaders: requestInformation.customHeaders
             })
         }
+
+        const result = await this.executeRequestWithInfo(requestInformation,
+            context,
+            request.method)
+        return responseHandler.sendResponse({
+            executionResult: result.executionResult,
+            request,
+            response,
+            context,
+            logger,
+            formatErrorFunction,
+            statusCode: result.statusCode,
+            customHeaders: result.customHeaders
+        })
     }
 
     protected async getRequestInformation(request: GraphQLServerRequest,
-        context: unknown): Promise<GraphQLRequestInfo | GraphQLErrorWithInfo> {
+        context: unknown): Promise<GraphQLRequestInfo | GraphQLExecutionResult> {
         const {
             logger,
             metricsClient,
@@ -207,16 +261,17 @@ export class GraphQLServer {
 
         // Reject requests that do not use GET and POST methods.
         if (request.method !== 'GET' && request.method !== 'POST') {
+            const error = getFirstErrorFromExecutionResult(responseHandler.methodNotAllowedResponse)
             logger.error(requestCouldNotBeProcessed,
-                responseHandler.methodNotAllowedError.graphQLError,
+                error,
                 METHOD_NOT_ALLOWED_ERROR,
                 context)
             collectErrorMetricsFunction(METHOD_NOT_ALLOWED_ERROR,
-                responseHandler.methodNotAllowedError,
+                error,
                 context,
                 logger,
                 metricsClient)
-            return responseHandler.methodNotAllowedError
+            return responseHandler.methodNotAllowedResponse
         }
 
         logger.info(
@@ -236,9 +291,8 @@ export class GraphQLServer {
     }
 
     protected async executeRequestWithInfo(requestInformation: GraphQLRequestInfo,
-        response: GraphQLServerResponse,
-        requestMethod = 'POST',
-        context?: unknown): Promise<GraphQLExecutionResult | GraphQLErrorWithInfo> {
+        context?: unknown,
+        requestMethod?: string): Promise<GraphQLExecutionResult> {
         const {
             logger,
             metricsClient,
@@ -263,16 +317,17 @@ export class GraphQLServer {
         // Reject requests if schema is invalid
         if (!schema || !this.isValidSchema(schema)) {
             metricsClient.setAvailability(0)
+            const error = getFirstErrorFromExecutionResult(responseHandler.invalidSchemaResponse)
             logger.error(requestCouldNotBeProcessed,
-                responseHandler.invalidSchemaError.graphQLError,
+                error,
                 INVALID_SCHEMA_ERROR,
                 context)
             collectErrorMetricsFunction(INVALID_SCHEMA_ERROR,
-                responseHandler.invalidSchemaError,
+                error,
                 context,
                 logger,
                 metricsClient)
-            return responseHandler.invalidSchemaError
+            return responseHandler.invalidSchemaResponse
         } else {
             metricsClient.setAvailability(1)
         }
@@ -294,16 +349,18 @@ export class GraphQLServer {
         }
         // Reject request if no query parameter is provided
         else if (!requestInformation.query) {
+            const error =
+                getFirstErrorFromExecutionResult(responseHandler.missingQueryParameterResponse)
             logger.error(requestCouldNotBeProcessed,
-                responseHandler.missingQueryParameterError.graphQLError,
+                error,
                 MISSING_QUERY_PARAMETER_ERROR,
                 context)
             collectErrorMetricsFunction(MISSING_QUERY_PARAMETER_ERROR,
-                responseHandler.missingQueryParameterError,
+                error,
                 context,
                 logger,
                 metricsClient)
-            return responseHandler.missingQueryParameterError
+            return responseHandler.missingQueryParameterResponse
         }
 
         // Parse given GraphQL source into a document (parse(query) function)
@@ -375,16 +432,18 @@ export class GraphQLServer {
          */
         const operationAST = getOperationAST(documentAST, requestInformation.operationName)
         if (requestMethod === 'GET' && operationAST && operationAST.operation !== 'query') {
+            const error =
+                getFirstErrorFromExecutionResult(responseHandler.onlyQueryInGetRequestsResponse)
             logger.error(requestCouldNotBeProcessed,
-                responseHandler.onlyQueryInGetRequestsError.graphQLError,
+                error,
                 METHOD_NOT_ALLOWED_ERROR,
                 context)
             collectErrorMetricsFunction(METHOD_NOT_ALLOWED_ERROR,
-                responseHandler.onlyQueryInGetRequestsError,
+                error,
                 context,
                 logger,
                 metricsClient)
-            return responseHandler.onlyQueryInGetRequestsError
+            return responseHandler.onlyQueryInGetRequestsResponse
         }
 
         /**

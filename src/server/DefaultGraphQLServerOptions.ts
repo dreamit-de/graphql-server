@@ -51,7 +51,9 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     removeValidationRecommendations = true
     reassignAggregateError = false
     validateFunction = validate
-    contextFunction = defaultContextFunction
+    requestResponseContextFunction = defaultRequestResponseContextFunction
+    requestContextFunction = defaultRequestContextFunction
+    loggerContextFunction = defaultLoggerContextFunction
     executeFunction = execute
     extensionFunction = defaultExtensions
     shouldUpdateSchemaFunction = defaultShouldUpdateSchema
@@ -72,24 +74,54 @@ export function defaultFormatErrorFunction(error: GraphQLError): GraphQLFormatte
     return error.toJSON()
 }
 
-
-
 /**
- * Default context error metrics function to store information in context for further use.
+ * Default context function to store information in context for further use.
  * Default behaviour: return request object. Can be set in options.
  * @param {GraphQLServerRequest} request - The initial request
  * @param {GraphQLServerResponse} response - The response to send back
  * @param {Logger} logger - A logger
  */
-export function defaultContextFunction(request: GraphQLServerRequest,
+export function defaultRequestResponseContextFunction(request: GraphQLServerRequest,
     response: GraphQLServerResponse, logger?: Logger): unknown {
     if (logger) {
         logger.logDebugIfEnabled(
-            `Calling defaultContextFunction with request ${request} and response ${response}`,
+            'Calling defaultRequestResponseContextFunction with '+
+            `request ${request} and response ${response}`,
             request
         )
     }
     return request
+}
+
+/**
+ * Default context function to store information in context for further use.
+ * Default behaviour: return request object. Can be set in options.
+ * @param {GraphQLServerRequest} request - The initial request
+ * @param {Logger} logger - A logger
+ */
+export function defaultRequestContextFunction(request: GraphQLServerRequest,
+    logger?: Logger): unknown {
+    if (logger) {
+        logger.logDebugIfEnabled(
+            `Calling defaultRequestContextFunction with request ${request}`,
+            request
+        )
+    }
+    return request
+}
+
+/**
+ * Default context function to store information in context for further use.
+ * Default behaviour: return empty object. Can be set in options.
+ * @param {Logger} logger - A logger
+ */
+export function defaultLoggerContextFunction(logger?: Logger): unknown {
+    if (logger) {
+        logger.logDebugIfEnabled(
+            'Calling defaultLoggerContextFunction',
+        )
+    }
+    return {}
 }
 
 /**

@@ -57,8 +57,12 @@ export interface GraphQLServerOptions {
                         typeInfo?: TypeInfo,
                         ) => ReadonlyArray<GraphQLError>
     readonly rootValue?: unknown | undefined
-    readonly contextFunction?: (request: GraphQLServerRequest,
+    readonly requestResponseContextFunction?: (request: GraphQLServerRequest,
         response: GraphQLServerResponse, logger?: Logger) => unknown
+    readonly requestContextFunction?: (request: GraphQLServerRequest,
+        logger?: Logger) => unknown
+    readonly loggerContextFunction?: (logger?: Logger) => unknown
+
     readonly fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
     readonly typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
     readonly executeFunction?: (arguments_: ExecutionArgs)

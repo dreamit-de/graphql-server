@@ -309,7 +309,7 @@ function setupGraphQLServer(): Express {
     )
     graphQLServerExpress.use(bodyParser.json())
     graphQLServerExpress.all('/graphql', (request, response) => {
-        return customGraphQLServer.handleRequest(request, response)
+        return customGraphQLServer.handleRequestAndSendResponse(request, response)
     })
     graphQLServerExpress.get('/metrics', async(_request, response) => {
         return response.contentType(customGraphQLServer.getMetricsContentType())
