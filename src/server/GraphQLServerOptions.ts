@@ -34,7 +34,7 @@ export interface GraphQLServerOptions {
     readonly requestInformationExtractor?: RequestInformationExtractor
     readonly responseHandler?: ResponseHandler
     readonly metricsClient?: MetricsClient
-    readonly schema?: GraphQLSchema | undefined
+    readonly schema?: GraphQLSchema
     readonly shouldUpdateSchemaFunction?: (schema?: GraphQLSchema) => boolean
     readonly formatErrorFunction?: (error: GraphQLError) => GraphQLFormattedError
     readonly collectErrorMetricsFunction?: (errorName: string,
@@ -56,7 +56,7 @@ export interface GraphQLServerOptions {
                         options?: { maxErrors?: number },
                         typeInfo?: TypeInfo,
                         ) => ReadonlyArray<GraphQLError>
-    readonly rootValue?: unknown | undefined
+    readonly rootValue?: unknown
     readonly requestResponseContextFunction?: (request: GraphQLServerRequest,
         response: GraphQLServerResponse, logger?: Logger) => unknown
     readonly requestContextFunction?: (request: GraphQLServerRequest,

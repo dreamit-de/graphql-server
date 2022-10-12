@@ -2,11 +2,13 @@ import {
     ExecutionResult,
     GraphQLError
 } from 'graphql'
+import {GraphQLRequestInfo} from '..'
 
 export interface GraphQLExecutionResult {
     executionResult: ExecutionResult
     statusCode?: number
-    customHeaders?: Record<string, string>,
+    customHeaders?: Record<string, string>
+    requestInformation?: GraphQLRequestInfo
 }
 
 export function getFirstErrorFromExecutionResult(result: GraphQLExecutionResult)

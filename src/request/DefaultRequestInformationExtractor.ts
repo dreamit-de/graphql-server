@@ -80,9 +80,10 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
 
         const contentType = getContentType(contentTypeFromHeader)
         switch (contentType) {
-        case ContentType.graphql:
+        case ContentType.graphql: {
             return { query: bodyIsString ? body : JSON.stringify(body) }
-        case ContentType.json:
+        }
+        case ContentType.json: {
             if (bodyIsString)  {
                 try {
                     const bodyAsJson = JSON.parse(body)
@@ -109,9 +110,11 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
                     operationName: bodyAsMap.operationName as string
                 }
             }
-        case ContentType.urlencoded:
+        }
+        case ContentType.urlencoded: {
             return this.extractInformationFromUrlParameters(`host?${body}.`)
-        case ContentType.unknown:
+        }
+        case ContentType.unknown: {
             return {
                 error: {
                     graphQLError: new GraphQLError(
@@ -121,6 +124,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
                     ), statusCode: 400
                 }
             }
+        }
         }
     }
 }

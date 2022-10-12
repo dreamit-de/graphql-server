@@ -4,7 +4,6 @@ import {
     GraphQLError,
     GraphQLSchema,
     Source,
-    validate,
 } from 'graphql'
 import {
     GraphQLServerOptions,
@@ -40,57 +39,7 @@ export class GraphQLServer {
 
     setOptions(newOptions?: GraphQLServerOptions): void {
         if (newOptions) {
-            this.options = {
-                logger: newOptions.logger || defaultOptions.logger,
-                requestInformationExtractor:
-                    newOptions.requestInformationExtractor
-                    || defaultOptions.requestInformationExtractor,
-                responseHandler:
-                    newOptions.responseHandler
-                    || defaultOptions.responseHandler,
-                metricsClient: newOptions.metricsClient || defaultOptions.metricsClient,
-                formatErrorFunction: newOptions.formatErrorFunction
-                    || defaultOptions.formatErrorFunction,
-                collectErrorMetricsFunction:
-                    newOptions.collectErrorMetricsFunction
-                    || defaultOptions.collectErrorMetricsFunction,
-                schemaValidationFunction:
-                    newOptions.schemaValidationFunction
-                    || defaultOptions.schemaValidationFunction,
-                parseFunction: newOptions.parseFunction || defaultOptions.parseFunction,
-                defaultValidationRules:
-                    newOptions.defaultValidationRules
-                    || defaultOptions.defaultValidationRules,
-                customValidationRules:
-                    newOptions.customValidationRules
-                    || defaultOptions.customValidationRules,
-                validationTypeInfo: newOptions.validationTypeInfo,
-                validationOptions: newOptions.validationOptions,
-                removeValidationRecommendations:
-                    newOptions.removeValidationRecommendations === undefined
-                        ? true
-                        : newOptions.removeValidationRecommendations,
-                reassignAggregateError:
-                    newOptions.reassignAggregateError === undefined
-                        ? false
-                        : newOptions.reassignAggregateError,
-                validateFunction: newOptions.validateFunction || validate,
-                rootValue: newOptions.rootValue,
-                requestResponseContextFunction: newOptions.requestResponseContextFunction
-                    || defaultOptions.requestResponseContextFunction,
-                requestContextFunction: newOptions.requestContextFunction
-                    || defaultOptions.requestContextFunction,
-                loggerContextFunction: newOptions.loggerContextFunction
-                    || defaultOptions.loggerContextFunction,
-                fieldResolver: newOptions.fieldResolver,
-                typeResolver: newOptions.typeResolver,
-                executeFunction: newOptions.executeFunction || defaultOptions.executeFunction,
-                extensionFunction: newOptions.extensionFunction || defaultOptions.extensionFunction,
-                shouldUpdateSchemaFunction:
-                    newOptions.shouldUpdateSchemaFunction
-                    || defaultOptions.shouldUpdateSchemaFunction,
-
-            }
+            this.options = {...defaultOptions, ...newOptions}
             this.setSchema(newOptions.schema)
         }
     }
@@ -149,6 +98,11 @@ export class GraphQLServer {
         return this.options.metricsClient.getMetrics()
     }
 
+    /**
+     * Executes a given request with requestInformation and returns an execution result
+     * @param {GraphQLRequestInfo} requestInformation - The request information
+     * @returns {GraphQLExecutionResult} The execution result
+     */
     async executeRequest(requestInformation: GraphQLRequestInfo): Promise<GraphQLExecutionResult> {
         const {
             loggerContextFunction,
@@ -161,6 +115,11 @@ export class GraphQLServer {
         return await this.executeRequestWithInfo(requestInformation, context)
     }
 
+    /**
+     * Executes a given request with requestInformation and sends a response
+     * @param {GraphQLRequestInfo} requestInformation - The request information
+     * @param {GraphQLServerResponse} response - The server response
+     */
     async executeRequestAndSendResponse(requestInformation: GraphQLRequestInfo,
         response: GraphQLServerResponse): Promise<void>  {
         const {
@@ -186,6 +145,11 @@ export class GraphQLServer {
         })
     }
 
+    /**
+     * Executes a given request and returns an execution result
+     * @param {GraphQLServerRequest} request - The server request
+     * @returns {GraphQLExecutionResult} The execution result
+     */
     async handleRequest(request: GraphQLServerRequest): Promise<GraphQLExecutionResult> {
         const {
             requestContextFunction,
@@ -208,6 +172,11 @@ export class GraphQLServer {
             request.method)
     }
 
+    /**
+     * Executes a given request and sends a response
+     * @param {GraphQLServerRequest} request - The server request
+     * @param {GraphQLServerResponse} response - The server response
+     */
     async handleRequestAndSendResponse(request: GraphQLServerRequest,
         response: GraphQLServerResponse): Promise<void> {
         const {
@@ -327,7 +296,7 @@ export class GraphQLServer {
                 context,
                 logger,
                 metricsClient)
-            return responseHandler.invalidSchemaResponse
+            return {...responseHandler.invalidSchemaResponse, ...requestInformation}
         } else {
             metricsClient.setAvailability(1)
         }
@@ -345,6 +314,7 @@ export class GraphQLServer {
             return {
                 executionResult: {errors: [requestInformation.error.graphQLError]},
                 statusCode: requestInformation.error.statusCode,
+                requestInformation: requestInformation
             }
         }
         // Reject request if no query parameter is provided
@@ -360,7 +330,7 @@ export class GraphQLServer {
                 context,
                 logger,
                 metricsClient)
-            return responseHandler.missingQueryParameterResponse
+            return {...responseHandler.missingQueryParameterResponse, ...requestInformation}
         }
 
         // Parse given GraphQL source into a document (parse(query) function)
@@ -380,7 +350,8 @@ export class GraphQLServer {
                 metricsClient)
             return {
                 executionResult: {errors: [syntaxError as GraphQLError]},
-                statusCode: 400
+                statusCode: 400,
+                requestInformation: requestInformation,
             }
         }
         logger.logDebugIfEnabled(
@@ -421,7 +392,8 @@ export class GraphQLServer {
                     errors: !removeValidationRecommendations ? validationErrors
                         : removeValidationRecommendationsFromErrors(validationErrors)
                 },
-                statusCode: 400
+                statusCode: 400,
+                requestInformation: requestInformation,
             }
         }
 
@@ -443,7 +415,7 @@ export class GraphQLServer {
                 context,
                 logger,
                 metricsClient)
-            return responseHandler.onlyQueryInGetRequestsResponse
+            return {...responseHandler.onlyQueryInGetRequestsResponse, ...requestInformation}
         }
 
         /**
@@ -506,7 +478,8 @@ export class GraphQLServer {
             )
             return {
                 executionResult,
-                statusCode: 200
+                statusCode: 200,
+                requestInformation: requestInformation,
             }
         } catch (error: unknown) {
             logger.error('While processing the request ' +
@@ -521,7 +494,8 @@ export class GraphQLServer {
                 collectErrorMetricsFunction)
             return {
                 executionResult: {errors: [error as GraphQLError]},
-                statusCode: 400
+                statusCode: 400,
+                requestInformation: requestInformation,
             }
         }
     }

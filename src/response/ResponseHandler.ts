@@ -12,7 +12,7 @@ import {
 
 /**
  * Interface for ResponseHandler.
- * Provides logic to send a server response and handle different error responses
+ * Provides logic to send a server response
  */
 export interface ResponseHandler {
     readonly methodNotAllowedResponse: GraphQLExecutionResult

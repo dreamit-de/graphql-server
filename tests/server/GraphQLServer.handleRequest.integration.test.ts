@@ -33,14 +33,16 @@ test('Should get data response', async() => {
     const response = await fetchResponse(`{"query":"${usersQuery}"}`)
     const responseObject = await response.json()
     expect(responseObject.result.executionResult.data.users).toStrictEqual([userOne, userTwo])
-    expect(responseObject.result.statusCode).toBe(200)
     expect(responseObject.result.executionResult.extensions).toBeUndefined()
+    expect(responseObject.result.statusCode).toBe(200)
+    expect(responseObject.result.requestInformation.query).toBe(usersQuery)
 })
 
 test('Should get data response when using a mutation', async() => {
     const response = await fetchResponse(`{"query":"${logoutMutation}"}`)
     const responseObject = await response.json()
     expect(responseObject.result.executionResult.data.logout.result).toBe('Goodbye!')
+    expect(responseObject.result.requestInformation.query).toBe(logoutMutation)
 })
 
 test('Should get error response if query does not match expected query format', async() => {
@@ -49,6 +51,7 @@ test('Should get error response if query does not match expected query format', 
     expect(responseObject.result.executionResult.errors[0].message).toBe(
         'Syntax Error: Unexpected Name "unknown".'
     )
+    expect(responseObject.result.requestInformation.query).toBe('unknown')
 })
 
 test('Should get error response if invalid method is used', async() => {

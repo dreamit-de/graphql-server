@@ -5,7 +5,7 @@ export enum ContentType {
     urlencoded = 'application/x-www-form-urlencoded'
 }
 
-export function getContentType(contentType: string | undefined): ContentType {
+export function getContentType(contentType?: string): ContentType {
     if (contentType) {
         if (contentType.includes(ContentType.graphql)) {
             return ContentType.graphql

@@ -91,12 +91,15 @@ export const userSchemaResolvers= {
     },
     user(input: { id: string }): User {
         switch (input.id) {
-        case '1':
+        case '1': {
             return userOne
-        case '2':
+        }
+        case '2': {
             return userTwo
-        default:
+        }
+        default: {
             throw new GraphQLError(`User for userid=${input.id} was not found`, {})
+        }
         }
     },
     logout(): LogoutResult {
