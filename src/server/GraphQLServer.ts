@@ -243,12 +243,6 @@ export class GraphQLServer {
             return responseHandler.methodNotAllowedResponse
         }
 
-        logger.info(
-            `Incoming request with url ${request.url} ` +
-            `and content-type ${JSON.stringify(request.headers['content-type'])}`,
-            context
-        )
-
         // Extract graphql request information (query, variables, operationName) from request
         const requestInformation =
             requestInformationExtractor.extractInformationFromRequest(request)
