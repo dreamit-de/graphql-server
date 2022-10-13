@@ -14,10 +14,10 @@ import {Buffer} from 'node:buffer'
  */
 export class DefaultRequestInformationExtractor implements RequestInformationExtractor {
 
-    async extractInformationFromRequest(request: GraphQLServerRequest)
-    : Promise<GraphQLRequestInfo> {
+    extractInformationFromRequest(request: GraphQLServerRequest)
+    : GraphQLRequestInfo {
         const extractedURLParameters = this.extractInformationFromUrlParameters(request.url ?? '')
-        const extractedBody = await this.extractInformationFromBody(request)
+        const extractedBody = this.extractInformationFromBody(request)
         return {
             query: extractedURLParameters.query ?? extractedBody.query,
             variables: extractedURLParameters.variables ?? extractedBody.variables,
@@ -41,8 +41,8 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
     }
 
     /** Extracts information from request body. Based on implementation from express-graphql */
-    async extractInformationFromBody(request: GraphQLServerRequest)
-    : Promise<GraphQLRequestInfo> {
+    extractInformationFromBody(request: GraphQLServerRequest)
+    : GraphQLRequestInfo {
         const { body } = request
         const bodyIsString = typeof body === 'string'
         const bodyIsObject = typeof body === 'object'

@@ -45,13 +45,13 @@ function testFormatErrorFunction(error: GraphQLError): GraphQLError {
     return error
 }
 
-beforeAll(async() => {
+beforeAll(() => {
     graphQLServer = setupGraphQLServer().listen({port: GRAPHQL_SERVER_PORT})
     console.info(`Starting GraphQL server on port ${GRAPHQL_SERVER_PORT}`)
 })
 
-afterAll(async() => {
-    await graphQLServer.close()
+afterAll(() => {
+    graphQLServer.close()
 })
 
 test('Should get data response', async() => {

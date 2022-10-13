@@ -25,13 +25,13 @@ import {Buffer} from 'node:buffer'
 let customGraphQLServer: GraphQLServer
 let graphQLServer: Server
 
-beforeAll(async() => {
+beforeAll(() => {
     graphQLServer = setupGraphQLServer().listen({port: GRAPHQL_SERVER_PORT})
     console.info(`Starting GraphQL server on port ${GRAPHQL_SERVER_PORT}`)
 })
 
-afterAll(async() => {
-    await graphQLServer.close()
+afterAll(() => {
+    graphQLServer.close()
 })
 
 test('Should return value from context instead of user data ', async() => {

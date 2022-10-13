@@ -46,5 +46,5 @@ test('Should reassign AggregateError to original errors field' +
     expect(responseObject.errors[0].message).toBe('The first error!')
     expect(responseObject.errors[1].message).toBe('The second error!')
 
-    await graphQLServer.close()
+    graphQLServer.close()
 })

@@ -28,7 +28,11 @@ import {
 import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue'
 import {ObjMap} from 'graphql/jsutils/ObjMap'
 
-
+/**
+ * Interface for creating new GraphQLServer instances.
+ * Fields are all optional but it is recommended to set the fields necessary to execute the expected
+ * functionality, e.g. schema and rootValue for basic GraphQL request execution.
+ */
 export interface GraphQLServerOptions {
     readonly logger?: Logger
     readonly requestInformationExtractor?: RequestInformationExtractor

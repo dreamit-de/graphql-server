@@ -40,10 +40,10 @@ on [graphql-js][1].
 information or server request depending on the needs. For the most common use case, usage as webserver middleware,
 `handleRequestAndSendResponse` can be used.
 
-| **Request / Response**        | **Return GraphQLExecutionResult** | **Send server response**        |
-| --------------------------- | ----------------------------------- | ------------------------------- |
-| **Use request information** | `executeRequest`                    | `executeRequestAndSendResponse` |
-| **Use server request**      | `handleRequest`                     | `handleRequestAndSendResponse`  |
+| **Request / Response**      | **Return GraphQLExecutionResult**   | **Send server response**              |
+| --------------------------- | ----------------------------------- | ------------------------------------- |
+| **Use request information** | `async executeRequest`              | `async executeRequestAndSendResponse` |
+| **Use server request**      | `async handleRequest`               | `async handleRequestAndSendResponse`  |
 
 ### Use cases
 

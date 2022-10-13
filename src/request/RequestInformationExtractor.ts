@@ -10,5 +10,5 @@ import {
  */
 export interface RequestInformationExtractor {
     extractInformationFromRequest(request: GraphQLServerRequest)
-    : Promise<GraphQLRequestInfo>
+    : GraphQLRequestInfo
 }

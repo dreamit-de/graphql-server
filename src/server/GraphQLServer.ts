@@ -159,7 +159,7 @@ export class GraphQLServer {
 
         const context = requestContextFunction(request, logger)
         metricsClient.increaseRequestThroughput(context)
-        const requestInformation = await this.getRequestInformation(request, context)
+        const requestInformation = this.getRequestInformation(request, context)
         if ('executionResult' in requestInformation) {
             return {
                 executionResult: requestInformation.executionResult,
@@ -189,7 +189,7 @@ export class GraphQLServer {
 
         const context = requestResponseContextFunction(request, response, logger)
         metricsClient.increaseRequestThroughput(context)
-        const requestInformation = await this.getRequestInformation(request, context)
+        const requestInformation = this.getRequestInformation(request, context)
         if ('executionResult' in requestInformation) {
             return responseHandler.sendResponse({
                 executionResult: requestInformation.executionResult,
@@ -218,8 +218,8 @@ export class GraphQLServer {
         })
     }
 
-    protected async getRequestInformation(request: GraphQLServerRequest,
-        context: unknown): Promise<GraphQLRequestInfo | GraphQLExecutionResult> {
+    protected getRequestInformation(request: GraphQLServerRequest,
+        context: unknown): GraphQLRequestInfo | GraphQLExecutionResult {
         const {
             logger,
             metricsClient,
@@ -251,7 +251,7 @@ export class GraphQLServer {
 
         // Extract graphql request information (query, variables, operationName) from request
         const requestInformation =
-            await requestInformationExtractor.extractInformationFromRequest(request)
+            requestInformationExtractor.extractInformationFromRequest(request)
         logger.logDebugIfEnabled(
             `Extracted request information is ${JSON.stringify(requestInformation)}`,
             context
