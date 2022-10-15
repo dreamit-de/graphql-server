@@ -254,7 +254,7 @@ to adjust the request/response to be able to use `GraphQLServer.handleRequest` w
 | [AdonisJS][6] | 5.8 | request, response |  [AdonisJS example](https://github.com/sgohlke/adonisjs-example/blob/main/start/routes.ts)  |
 | [Express][2] | > = 2.x | none |  [GraphQLServer test](https://github.com/dreamit-de/graphql-server/blob/main/tests/GraphQLServer.integration.test.ts)  |
 | [fastify][4] | 4.7 | response |  [Fastify example](https://github.com/sgohlke/fastify-example/blob/main/src/index.ts)  |
-| [hapi][10] | 20.2 | request, handleResponse |  [hapi example](https://github.com/sgohlke/hapi-example/blob/main/src/index.ts)  |
+| [hapi][10] | 20.2 | request, handleRequest |  [hapi example](https://github.com/sgohlke/hapi-example/blob/main/src/index.ts)  |
 | [Koa][5] | 2.13 | response |  [Koa example](https://github.com/sgohlke/koa-example/blob/main/src/index.ts)  |
 | [Next.js][7] | 12.3 | none |  [Next.js example](https://github.com/sgohlke/nextjs-example/blob/main/pages/api/graphql.ts)  |
 | [Nitro][8] | 0.5 | request |  [Nitro example](https://github.com/sgohlke/nitro-example/blob/main/routes/graphql.post.ts)  |
