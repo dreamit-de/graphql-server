@@ -13,7 +13,7 @@ import {
     DefaultResponseHandler,
     GraphQLExecutionResult,
     GraphQLServer
-} from '../../src'
+} from '~/src'
 import {
     initialSchemaWithOnlyDescription,
     userOne,

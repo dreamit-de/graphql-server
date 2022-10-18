@@ -8,7 +8,7 @@ import {
     JsonLogger,
     ResponseParameters,
     TextLogger
-} from '../../src'
+} from '~/src'
 import {
     usersQuery,
     userSchema,

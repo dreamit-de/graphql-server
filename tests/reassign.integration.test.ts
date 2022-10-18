@@ -4,7 +4,7 @@ import express from 'express'
 import {
     GraphQLServer,
     JsonLogger
-} from '../src/'
+} from '~/src'
 
 import {
     usersQuery,

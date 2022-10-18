@@ -4,7 +4,7 @@ import express, {Express} from 'express'
 import {Server} from 'node:http'
 import {
     GraphQLServer
-} from '../../src'
+} from '~/src'
 import {
     usersQuery,
     logoutMutation,

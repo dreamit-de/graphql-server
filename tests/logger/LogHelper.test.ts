@@ -6,7 +6,7 @@ import {
 import {
     LogHelper,
     LogLevel
-} from '../../src'
+} from '~/src'
 
 // Created based upon implementation in node-fetch to avoid importing whole package for this class
 class FetchError extends Error {

@@ -11,7 +11,7 @@ import {
     SCHEMA_VALIDATION_ERROR,
     SYNTAX_ERROR,
     VALIDATION_ERROR
-} from '../../src/'
+} from '~/src'
 import fetch from 'cross-fetch'
 import {
     usersQuery,
