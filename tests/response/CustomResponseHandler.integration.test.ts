@@ -1,48 +1,47 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import bodyParser from 'body-parser'
 import express, {Express} from 'express'
 import {Server} from 'node:http'
 import {
+    DefaultResponseHandler,
     GraphQLServer,
-    GraphQLServerOptions,
-    GraphQLServerRequest,
-    GraphQLServerResponse
-} from '../src/'
+    JsonLogger,
+    ResponseParameters,
+    TextLogger
+} from '~/src'
 import {
     usersQuery,
     userSchema,
     userSchemaResolvers,
     returnErrorQuery,
-} from './ExampleSchemas'
-import {
-    ExecutionResult,
-} from 'graphql'
+} from '../ExampleSchemas'
 import {
     fetchResponse,
     GRAPHQL_SERVER_PORT,
     INITIAL_GRAPHQL_SERVER_OPTIONS,
-    LOGGER
-} from './TestHelpers'
+} from '../TestHelpers'
+import {Buffer} from 'node:buffer'
 
 let customGraphQLServer: GraphQLServer
 let graphQLServer: Server
 
-beforeAll(async() => {
+beforeAll(() => {
     graphQLServer = setupGraphQLServer().listen({port: GRAPHQL_SERVER_PORT})
     console.info(`Starting GraphQL server on port ${GRAPHQL_SERVER_PORT}`)
 })
 
-afterAll(async() => {
-    await graphQLServer.close()
+afterAll(() => {
+    graphQLServer.close()
 })
 
 test('Should return value from context instead of user data ', async() => {
     customGraphQLServer.setOptions({
         schema: userSchema,
         rootValue: userSchemaResolvers,
-        logger: LOGGER,
-        debug: true,
+        logger: new JsonLogger('test-logger', 'customGraphQLServer'),
+        responseHandler: new CustomResponseHandler(),
         reassignAggregateError: false,
-        contextFunction: () => {
+        requestResponseContextFunction: () => {
             return {
                 'customText': 'customResponse',
                 'serviceName': 'myRemoteService'
@@ -62,10 +61,9 @@ test('Should return error if context serviceName is different as graphql server 
         customGraphQLServer.setOptions({
             schema: userSchema,
             rootValue: userSchemaResolvers,
-            logger: LOGGER,
-            debug: true,
+            logger: new TextLogger('test-logger', 'customGraphQLServer', true),
             reassignAggregateError: false,
-            contextFunction: () => {
+            requestResponseContextFunction: () => {
                 return {
                     'serviceName': 'myTestServiceAlternative'
                 }
@@ -79,19 +77,19 @@ test('Should return error if context serviceName is different as graphql server 
         customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
     })
 
-class CustomGraphQLServer extends GraphQLServer {
-    constructor(options: GraphQLServerOptions) {
-        super(options)
-    }
+class CustomResponseHandler extends DefaultResponseHandler {
 
-    sendResponse(response: GraphQLServerResponse,
-        executionResult: ExecutionResult,
-        statusCode: number,
-        customHeaders: Record<string, string>,
-        request: GraphQLServerRequest,
-        context: unknown): void {
-
-        response.statusCode = statusCode
+    sendResponse(responseParameters: ResponseParameters): void {
+        const {
+            context,
+            executionResult,
+            response,
+            statusCode,
+        }
+            = responseParameters
+        if (statusCode) {
+            response.statusCode = statusCode
+        }
         response.setHeader('Content-Type', 'application/json; charset=utf-8')
         const contextRecord = context as Record<string, unknown>
         if (contextRecord && contextRecord.customText) {
@@ -100,14 +98,14 @@ class CustomGraphQLServer extends GraphQLServer {
             response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))
         }
     }
-
 }
 
 function setupGraphQLServer(): Express {
     const graphQLServerExpress = express()
-    customGraphQLServer = new CustomGraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
+    customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
+    graphQLServerExpress.use(bodyParser.json())
     graphQLServerExpress.all('/graphql', (request, response) => {
-        return customGraphQLServer.handleRequest(request, response)
+        return customGraphQLServer.handleRequestAndSendResponse(request, response)
     })
     return graphQLServerExpress
 }

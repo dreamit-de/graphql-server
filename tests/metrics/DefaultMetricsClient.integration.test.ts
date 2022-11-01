@@ -1,3 +1,4 @@
+import bodyParser from 'body-parser'
 import express, {Express} from 'express'
 import {Server} from 'node:http'
 import {
@@ -10,7 +11,7 @@ import {
     SCHEMA_VALIDATION_ERROR,
     SYNTAX_ERROR,
     VALIDATION_ERROR
-} from '../../src/'
+} from '~/src'
 import fetch from 'cross-fetch'
 import {
     usersQuery,
@@ -35,13 +36,13 @@ import {
 let customGraphQLServer: GraphQLServer
 let graphQLServer: Server
 
-beforeAll(async() => {
+beforeAll(() => {
     graphQLServer = setupGraphQLServer().listen({port: GRAPHQL_SERVER_PORT})
     console.info(`Starting GraphQL server on port ${GRAPHQL_SERVER_PORT}`)
 })
 
-afterAll(async() => {
-    await graphQLServer.close()
+afterAll(() => {
+    graphQLServer.close()
 })
 
 test('Should get correct metrics', async() => {
@@ -93,7 +94,6 @@ test('Should get correct metrics', async() => {
         schema: initialSchemaWithOnlyDescription,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         shouldUpdateSchemaFunction: () => true
     })
     metricsResponseBody = await getMetricsResponse()
@@ -256,7 +256,6 @@ test('Should get correct metrics', async() => {
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         executeFunction: () => {
             throw new GraphQLError('FetchError: ' +
                 'An error occurred while connecting to following endpoint', {})
@@ -305,12 +304,12 @@ function setupGraphQLServer(): Express {
             schema: userSchema,
             rootValue: userSchemaResolvers,
             logger: LOGGER,
-            debug: true,
             customValidationRules: [NoSchemaIntrospectionCustomRule]
         }
     )
+    graphQLServerExpress.use(bodyParser.json())
     graphQLServerExpress.all('/graphql', (request, response) => {
-        return customGraphQLServer.handleRequest(request, response)
+        return customGraphQLServer.handleRequestAndSendResponse(request, response)
     })
     graphQLServerExpress.get('/metrics', async(_request, response) => {
         return response.contentType(customGraphQLServer.getMetricsContentType())

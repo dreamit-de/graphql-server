@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import bodyParser from 'body-parser'
 import express, {Express} from 'express'
 import {Server} from 'node:http'
 import {
     GraphQLServer
-} from '../src/'
+} from '~/src'
 import fetch from 'cross-fetch'
 import {
     usersRequest,
@@ -19,8 +20,8 @@ import {
     userVariables,
     introspectionQuery,
     usersQueryWithUnknownField,
-    multipleErrorResponse
-} from './ExampleSchemas'
+    multipleErrorResponse,
+} from '../ExampleSchemas'
 import {
     GraphQLError,
     NoSchemaIntrospectionCustomRule
@@ -31,7 +32,7 @@ import {
     GRAPHQL_SERVER_PORT,
     INITIAL_GRAPHQL_SERVER_OPTIONS,
     LOGGER
-} from './TestHelpers'
+} from '../TestHelpers'
 
 let customGraphQLServer: GraphQLServer
 let graphQLServer: Server
@@ -44,13 +45,13 @@ function testFormatErrorFunction(error: GraphQLError): GraphQLError {
     return error
 }
 
-beforeAll(async() => {
+beforeAll(() => {
     graphQLServer = setupGraphQLServer().listen({port: GRAPHQL_SERVER_PORT})
     console.info(`Starting GraphQL server on port ${GRAPHQL_SERVER_PORT}`)
 })
 
-afterAll(async() => {
-    await graphQLServer.close()
+afterAll(() => {
+    graphQLServer.close()
 })
 
 test('Should get data response', async() => {
@@ -114,7 +115,6 @@ test('Should get unfiltered error response if a' +
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         removeValidationRecommendations: false
     })
     const response = await fetchResponse('{"query":"query users{ users { userIdABC userName } }"}')
@@ -125,53 +125,12 @@ test('Should get unfiltered error response if a' +
     customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
-test('Should get error response if charset could not be processed', async() => {
-    const response = await fetchResponse('{"query":"unknown"}', 'POST',{
-        'Content-Type': 'application/json; charset=utf-4711'
-    })
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('Unsupported charset "UTF-4711".')
-})
-
-test('Should get error response if request contains ' +
-    'gzip encoding but body does not match', async() => {
-    const response = await fetchResponse('{"query":"unknown"}', 'POST',{
-        'Content-Type': 'application/json',
-        'Content-Encoding': 'gzip'
-    })
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe(
-        'Invalid request body: Error: incorrect header check.'
-    )
-})
-
-test('Should get error response if request contains ' +
-    'deflate encoding but body does not match', async() => {
-    const response = await fetchResponse('{"query":"unknown"}', 'POST',{
-        'Content-Type': 'application/json',
-        'Content-Encoding': 'deflate'
-    })
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe(
-        'Invalid request body: Error: incorrect header check.'
-    )
-})
-
-test('Should get error response if request contains unknown encoding', async() => {
-    const response = await fetchResponse('{"query":"unknown"}', 'POST',{
-        'Content-Type': 'application/json',
-        'Content-Encoding': 'rar'
-    })
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('Unsupported content-encoding "rar".')
-})
-
 test('Should get error response if content type is not set', async() => {
     const response = await fetchResponse('{"query":"unknown"}', 'POST',{
         'Content-Type': ''
     })
     const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('Content type could not be parsed.')
+    expect(responseObject.errors[0].message).toBe('POST body contains invalid content type: .')
 })
 
 test('Should get error response when GraphQL context error' +
@@ -181,7 +140,6 @@ test('Should get error response when GraphQL context error' +
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         executeFunction: () => {throw new GraphQLError('A GraphQL context error occurred!', {})}
     })
     const response = await fetchResponse(`{"query":"${usersQuery}"}`)
@@ -203,7 +161,6 @@ test('Should get error response with formatted error results ' +
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         formatErrorFunction: testFormatErrorFunction
     })
     const response = await fetchResponse(`{"query":"${returnErrorQuery}"}`)
@@ -272,7 +229,6 @@ test('Should get error response if invalid schema is used', async() => {
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         schemaValidationFunction: () => [new GraphQLError('Schema is not valid!', {})]
     })
     const response = await fetchResponse('doesnotmatter')
@@ -298,7 +254,6 @@ test('Should get extensions in GraphQL response if extension function is defined
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         removeValidationRecommendations: true,
         extensionFunction: () => extensionTestData
     })
@@ -322,7 +277,6 @@ test('Should get error response if introspection is requested ' +
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         removeValidationRecommendations: true,
         customValidationRules: [NoSchemaIntrospectionCustomRule]
     })
@@ -341,7 +295,6 @@ test('Should get error response if query with unknown field is executed ' +
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         removeValidationRecommendations: true,
         customValidationRules: [NoSchemaIntrospectionCustomRule]
     })
@@ -357,7 +310,6 @@ test('Should get error response if query with unknown field is executed ' +
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         removeValidationRecommendations: true,
         customValidationRules: []
     })
@@ -373,7 +325,6 @@ test('Should get data response if query with unknown field is executed ' +
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         removeValidationRecommendations: true,
         defaultValidationRules: [],
         customValidationRules: []
@@ -390,7 +341,6 @@ test('Should not reassign AggregateError to original errors field' +
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: LOGGER,
-        debug: true,
         reassignAggregateError: false,
         executeFunction: () => (multipleErrorResponse)
     })
@@ -403,8 +353,9 @@ test('Should not reassign AggregateError to original errors field' +
 function setupGraphQLServer(): Express {
     const graphQLServerExpress = express()
     customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
+    graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
     graphQLServerExpress.all('/graphql', (request, response) => {
-        return customGraphQLServer.handleRequest(request, response)
+        return customGraphQLServer.handleRequestAndSendResponse(request, response)
     })
     return graphQLServerExpress
 }

@@ -1,4 +1,3 @@
-import {MetricsClient} from './MetricsClient'
 import prom,
 {
     Counter,
@@ -10,6 +9,7 @@ import {
     INTROSPECTION_DISABLED_ERROR,
     INVALID_SCHEMA_ERROR,
     METHOD_NOT_ALLOWED_ERROR,
+    MetricsClient,
     MISSING_QUERY_PARAMETER_ERROR,
     SCHEMA_VALIDATION_ERROR,
     SYNTAX_ERROR,

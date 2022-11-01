@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import bodyParser from 'body-parser'
 import express from 'express'
 import {
-    GraphQLServer
-} from '../src/'
+    GraphQLServer,
+    JsonLogger
+} from '~/src'
 
 import {
     usersQuery,
@@ -13,7 +15,6 @@ import {
 import {
     fetchResponse,
     GRAPHQL_SERVER_PORT,
-    LOGGER
 } from './TestHelpers'
 import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue'
 import {ExecutionResult} from 'graphql'
@@ -28,13 +29,13 @@ test('Should reassign AggregateError to original errors field' +
     const customGraphQLServer = new GraphQLServer({
         schema: userSchema,
         rootValue: userSchemaResolvers,
-        logger: LOGGER,
-        debug: true,
+        logger: new JsonLogger('test-logger', 'reassign-service', true),
         reassignAggregateError: true,
         executeFunction: ():PromiseOrValue<ExecutionResult> => (multipleErrorResponse)
     })
+    graphQLServerExpress.use(bodyParser.json())
     graphQLServerExpress.all('/graphql', (request, response) => {
-        return customGraphQLServer.handleRequest(request, response)
+        return customGraphQLServer.handleRequestAndSendResponse(request, response)
     })
 
     const graphQLServer = graphQLServerExpress.listen({port: GRAPHQL_SERVER_PORT})
@@ -45,5 +46,5 @@ test('Should reassign AggregateError to original errors field' +
     expect(responseObject.errors[0].message).toBe('The first error!')
     expect(responseObject.errors[1].message).toBe('The second error!')
 
-    await graphQLServer.close()
+    graphQLServer.close()
 })

@@ -4,3 +4,4 @@
 /test-report/
 /coverage/
 /build/
+*.tgz
