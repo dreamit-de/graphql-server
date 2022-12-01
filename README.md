@@ -95,7 +95,7 @@ console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 `GraphQLServer` provides default values and behaviour out of the box. It is recommended to at least provide a `schema`
 so the request won't be rejected because of a missing/invalid schema. When using it with a local schema it is
 recommended to provide a `rootValue` to return a fitting value. Examples for these requests can be found in the
-integration test in the `GraphQLServer.integration.test.ts` class in the `tests` folder.
+integration test in the `GraphQLServer.integration.test.ts` class in the `tests/server` folder.
 
 ## Schema validation and disabling Introspection
 
@@ -252,7 +252,7 @@ to adjust the request/response to be able to use `GraphQLServer.handleRequest` w
 | Framework/Module | Version | Mapping | Example | 
 | ------------- |:-------------:| :-------------:| :-------------:|
 | [AdonisJS][6] | 5.8 | request, response |  [AdonisJS example](https://github.com/sgohlke/adonisjs-example/blob/main/start/routes.ts)  |
-| [Express][2] | > = 2.x | none |  [GraphQLServer test](https://github.com/dreamit-de/graphql-server/blob/main/tests/GraphQLServer.integration.test.ts)  |
+| [Express][2] | > = 2.x | none |  [GraphQLServer test](https://github.com/dreamit-de/graphql-server/blob/main/tests/server/GraphQLServer.integration.test.ts)  |
 | [fastify][4] | 4.7 | response |  [Fastify example](https://github.com/sgohlke/fastify-example/blob/main/src/index.ts)  |
 | [hapi][10] | 20.2 | request, handleRequest |  [hapi example](https://github.com/sgohlke/hapi-example/blob/main/src/index.ts)  |
 | [Koa][5] | 2.13 | response |  [Koa example](https://github.com/sgohlke/koa-example/blob/main/src/index.ts)  |
@@ -282,7 +282,7 @@ export interface GraphQLServerResponse {
 
 `GraphQLServer`, like many GraphQL libraries, uses context functions to create a context object that is available during
 the whole request execution process. This can for example be used to inject information about request headers or adjust
-responses. An example can be found in the `CustomResponseHandler.integration.test.ts` class in the test folder. 
+responses. An example can be found in the `CustomResponseHandler.integration.test.ts` class in the test/server folder. 
 
 The following three context functions are available and used by different core functions depending on if a request or 
 response or both objects are available.
