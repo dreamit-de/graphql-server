@@ -1,5 +1,5 @@
 import {
-    GraphQLRequestInfo, 
+    GraphQLRequestInfo,
     GraphQLErrorWithStatusCode,
     GraphQLServerRequest,
     RequestInformationExtractor
@@ -73,7 +73,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
                 error: {
                     graphQLError: new GraphQLError('Invalid request. ' +
                         'Request header content-type is undefined.', {}),
-                    statusCode: 400 
+                    statusCode: 400
                 }
             }
         }
@@ -99,21 +99,24 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
             if (typeof rawBody === 'string') {
                 // Use the correct body parser based on Content-Type header.
                 switch (typeInfo.type) {
-                case 'application/graphql':
+                case 'application/graphql': {
                     return { query: rawBody }
-                case 'application/json':
+                }
+                case 'application/json': {
                     try {
                         return JSON.parse(rawBody)
                     } catch {
                         return {
                             error: {
                                 graphQLError: new GraphQLError('POST body' +
-                                    ' contains invalid JSON.', {}), statusCode: 400 
+                                    ' contains invalid JSON.', {}), statusCode: 400
                             }
                         }
                     }
-                case 'application/x-www-form-urlencoded':
+                }
+                case 'application/x-www-form-urlencoded': {
                     return this.extractInformationFromUrlParameters(`host?${rawBody}.`)
+                }
                 }
 
                 // If no Content-Type header matches, parse nothing.
@@ -121,7 +124,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
                     error: {
                         graphQLError: new GraphQLError(
                             `POST body contains invalid content type: ${typeInfo.type}.`, {}
-                        ), statusCode: 400 
+                        ), statusCode: 400
                     }
                 }
             } else {
@@ -133,7 +136,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
             return {
                 error: {
                     graphQLError: new GraphQLError('Content type' +
-                        ' could not be parsed.', {}), statusCode: 400 
+                        ' could not be parsed.', {}), statusCode: 400
                 }
             }
         }
@@ -179,12 +182,15 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
         encoding: string,
     ): GraphQLServerRequest | Inflate | Gunzip | GraphQLErrorWithStatusCode {
         switch (encoding) {
-        case 'identity':
+        case 'identity': {
             return request
-        case 'deflate':
+        }
+        case 'deflate': {
             return request.pipe(zlib.createInflate())
-        case 'gzip':
+        }
+        case 'gzip': {
             return request.pipe(zlib.createGunzip())
+        }
         }
         return {
             graphQLError: new GraphQLError(`Unsupported content-encoding "${encoding}".`, {}),
@@ -210,7 +216,7 @@ export class DefaultRequestInformationExtractor implements RequestInformationExt
     handleBufferError(rawError: unknown): GraphQLErrorWithStatusCode {
         if (rawError instanceof MaxBufferError) {
             return {
-                graphQLError: new GraphQLError('Invalid request body: request entity too large.', 
+                graphQLError: new GraphQLError('Invalid request body: request entity too large.',
                     {}),
                 statusCode: 413
             }

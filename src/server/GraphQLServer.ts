@@ -608,15 +608,15 @@ export class GraphQLServer {
     // Removes validation recommendations matching the defined recommendation text
     removeValidationRecommendationsFromErrors(validationErrors: ReadonlyArray<GraphQLError>)
         : ReadonlyArray<GraphQLError> {
-        if (!this.removeValidationRecommendations) {
-            return validationErrors
-        } else {
+        if (this.removeValidationRecommendations) {
             for (const validationError of validationErrors) {
                 if (validationError.message.includes(recommendationText)) {
                     validationError.message = validationError.message.slice(0,
                         Math.max(0, validationError.message.indexOf(recommendationText)))
                 }
             }
+            return validationErrors
+        } else {
             return validationErrors
         }
     }
