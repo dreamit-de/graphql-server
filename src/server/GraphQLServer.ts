@@ -383,8 +383,9 @@ export class GraphQLServer {
             }
             return {
                 executionResult: {
-                    errors: !removeValidationRecommendations ? validationErrors
-                        : removeValidationRecommendationsFromErrors(validationErrors)
+                    errors: removeValidationRecommendations
+                        ? removeValidationRecommendationsFromErrors(validationErrors)
+                        : validationErrors
                 },
                 statusCode: 400,
                 requestInformation: requestInformation,
