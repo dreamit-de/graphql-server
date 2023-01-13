@@ -87,7 +87,7 @@ export function defaultRequestResponseContextFunction(request: GraphQLServerRequ
     _logger?: Logger,
     serverOptions?: GraphQLServerOptions): unknown {
     if (serverOptions && serverOptions.logger) {
-        serverOptions && serverOptions.logger.logDebugIfEnabled(
+        serverOptions.logger.logDebugIfEnabled(
             'Calling defaultRequestResponseContextFunction with '+
             `request ${request} and response ${response}`,
             request
@@ -124,7 +124,7 @@ export function defaultRequestContextFunction(request: GraphQLServerRequest,
 export function defaultLoggerContextFunction(_logger?: Logger,
     serverOptions?: GraphQLServerOptions): unknown {
     if (serverOptions && serverOptions.logger) {
-        serverOptions && serverOptions.logger.logDebugIfEnabled(
+        serverOptions.logger.logDebugIfEnabled(
             'Calling defaultLoggerContextFunction',
         )
     }
