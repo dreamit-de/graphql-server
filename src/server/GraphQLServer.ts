@@ -110,7 +110,7 @@ export class GraphQLServer {
             metricsClient,
         } = this.options
 
-        const context = loggerContextFunction(logger)
+        const context = loggerContextFunction(logger, this.options)
         metricsClient.increaseRequestThroughput(context)
         return await this.executeRequestWithInfo(requestInformation, context)
     }
@@ -130,7 +130,7 @@ export class GraphQLServer {
             responseHandler
         } = this.options
 
-        const context = loggerContextFunction(logger)
+        const context = loggerContextFunction(logger, this.options)
         metricsClient.increaseRequestThroughput(context)
         const result = await this.executeRequestWithInfo(requestInformation,
             context)
@@ -157,7 +157,7 @@ export class GraphQLServer {
             metricsClient,
         } = this.options
 
-        const context = requestContextFunction(request, logger)
+        const context = requestContextFunction(request, logger, this.options)
         metricsClient.increaseRequestThroughput(context)
         const requestInformation = this.getRequestInformation(request, context)
         if ('executionResult' in requestInformation) {
@@ -187,7 +187,7 @@ export class GraphQLServer {
             formatErrorFunction,
         } = this.options
 
-        const context = requestResponseContextFunction(request, response, logger)
+        const context = requestResponseContextFunction(request, response, logger, this.options)
         metricsClient.increaseRequestThroughput(context)
         const requestInformation = this.getRequestInformation(request, context)
         if ('executionResult' in requestInformation) {

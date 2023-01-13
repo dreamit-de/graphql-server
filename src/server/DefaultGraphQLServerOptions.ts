@@ -79,12 +79,15 @@ export function defaultFormatErrorFunction(error: GraphQLError): GraphQLFormatte
  * Default behaviour: return request object. Can be set in options.
  * @param {GraphQLServerRequest} request - The initial request
  * @param {GraphQLServerResponse} response - The response to send back
- * @param {Logger} logger - A logger
+ * @param {Logger} _logger - DEPRECATED: use serverOptions.logger instead
+ * @param {GraphQLServerOptions} serverOptions - The GraphQLServerOptions
  */
 export function defaultRequestResponseContextFunction(request: GraphQLServerRequest,
-    response: GraphQLServerResponse, logger?: Logger): unknown {
-    if (logger) {
-        logger.logDebugIfEnabled(
+    response: GraphQLServerResponse,
+    _logger?: Logger,
+    serverOptions?: GraphQLServerOptions): unknown {
+    if (serverOptions && serverOptions.logger) {
+        serverOptions && serverOptions.logger.logDebugIfEnabled(
             'Calling defaultRequestResponseContextFunction with '+
             `request ${request} and response ${response}`,
             request
@@ -97,12 +100,14 @@ export function defaultRequestResponseContextFunction(request: GraphQLServerRequ
  * Default context function to store information in context for further use.
  * Default behaviour: return request object. Can be set in options.
  * @param {GraphQLServerRequest} request - The initial request
- * @param {Logger} logger - A logger
+ * @param {Logger} _logger - DEPRECATED: use serverOptions.logger instead
+ * @param {GraphQLServerOptions} serverOptions - The GraphQLServerOptions
  */
 export function defaultRequestContextFunction(request: GraphQLServerRequest,
-    logger?: Logger): unknown {
-    if (logger) {
-        logger.logDebugIfEnabled(
+    _logger?: Logger,
+    serverOptions?: GraphQLServerOptions): unknown {
+    if (serverOptions && serverOptions.logger) {
+        serverOptions.logger.logDebugIfEnabled(
             `Calling defaultRequestContextFunction with request ${request}`,
             request
         )
@@ -113,11 +118,13 @@ export function defaultRequestContextFunction(request: GraphQLServerRequest,
 /**
  * Default context function to store information in context for further use.
  * Default behaviour: return empty object. Can be set in options.
- * @param {Logger} logger - A logger
+ * @param {Logger} _logger - DEPRECATED: use serverOptions.logger instead
+ * @param {GraphQLServerOptions} serverOptions - The GraphQLServerOptions
  */
-export function defaultLoggerContextFunction(logger?: Logger): unknown {
-    if (logger) {
-        logger.logDebugIfEnabled(
+export function defaultLoggerContextFunction(_logger?: Logger,
+    serverOptions?: GraphQLServerOptions): unknown {
+    if (serverOptions && serverOptions.logger) {
+        serverOptions && serverOptions.logger.logDebugIfEnabled(
             'Calling defaultLoggerContextFunction',
         )
     }

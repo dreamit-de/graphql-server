@@ -63,7 +63,10 @@ test('Should return error if context serviceName is different as graphql server 
             rootValue: userSchemaResolvers,
             logger: new TextLogger('test-logger', 'customGraphQLServer', true),
             reassignAggregateError: false,
-            requestResponseContextFunction: () => {
+            requestResponseContextFunction: (request, response, logger, serverOptions) => {
+                if (serverOptions && serverOptions.logger) {
+                    serverOptions.logger.info('Calling requestResponseContextFunction in test')
+                }
                 return {
                     'serviceName': 'myTestServiceAlternative'
                 }

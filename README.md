@@ -286,10 +286,14 @@ responses. An example can be found in the `CustomResponseHandler.integration.tes
 
 The following three context functions are available and used by different core functions depending on if a request or 
 response or both objects are available.
-- `requestResponseContextFunction`: Used by `handleRequestAndSendResponse`. Has logger, request and response object
+**Deprecation Warning:**
+For accessing the Logger please use the field `serverOptions.logger` instead of `logger`. The logger parameter might be
+removed in the next major version.
+
+- `requestResponseContextFunction`: Used by `handleRequestAndSendResponse`. Has server options, logger, request and response object
   available.
-- `requestContextFunction`: Used by `handleRequest`. Has logger and request object available .
-- `loggerContextFunction`: Used by `executeRequest` and `executeRequestAndSendResponse`. Only has logger available.
+- `requestContextFunction`: Used by `handleRequest`. Has server options, logger and request object available .
+- `loggerContextFunction`: Used by `executeRequest` and `executeRequestAndSendResponse`. Only has server options and logger available.
 
 ## Available options
 
@@ -354,24 +358,23 @@ the `setOptions` function of the `GraphQLServer` instance.
 
 ### Context functions
 
-- `requestResponseContextFunction`: Used by `handleRequestAndSendResponse`. Has logger, request and response object
-  available.
-- `requestContextFunction`: Used by `handleRequest`. Has logger and request object available .
-- `loggerContextFunction`: Used by `executeRequest` and `executeRequestAndSendResponse`. Only has logger available.
+**Deprecation Warning:**
+For accessing the Logger please use the field `serverOptions.logger` instead of `logger`. The logger parameter might be
+removed in the next major version.
 
-- **`requestResponseContextFunction`**: Given a `GraphQLServerRequest`, `GraphQLServerResponse` and `Logger` this 
-  function is used to create a context value that is used when `executeFunction` is called. 
+- **`requestResponseContextFunction`**: Given a `GraphQLServerRequest`, `GraphQLServerResponse`, `Logger` and
+  `GraphQLServerOptions` this function is used to create a context value that is used when `executeFunction` is called. 
   Default implementation is `defaultRequestResponseContextFunction`. 
   Can be used to extract information from the request and/or response and return them as context. 
   This is often used to extract headers like 'Authorization' and set them in the execute function. 
   `defaultRequestResponseContextFunction` just returns the whole initial `GraphQLServerRequest` object.
-- **`requestContextFunction`**: Given a `GraphQLServerRequest` and `Logger` this function is used
+- **`requestContextFunction`**: Given a `GraphQLServerRequest`, `Logger` and `GraphQLServerOptions` this function is used
   to create a context value that is used when `executeFunction` is called.
   Default implementation is `defaultRequestContextFunction`.
   Can be used to extract information from the request and return them as context.
   This is often used to extract headers like 'Authorization' and set them in the execute function.
   `defaultRequestContextFunction` just returns the whole initial `GraphQLServerRequest` object.
-- **`loggerContextFunction`**: Given a `Logger` this function is used
+- **`loggerContextFunction`**: Given a `Logger` and `GraphQLServerOptions` this function is used
   to create a context value that is used when `executeFunction` is called.
   Default implementation is `defaultLoggerContextFunction`.
   Can be used to during the request execution process to read or write information as context.
