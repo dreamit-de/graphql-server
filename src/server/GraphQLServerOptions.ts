@@ -30,8 +30,8 @@ import {ObjMap} from 'graphql/jsutils/ObjMap'
 
 /**
  * Interface for creating new GraphQLServer instances.
- * Fields are all optional but it is recommended to set the fields necessary to execute the expected
- * functionality, e.g. schema and rootValue for basic GraphQL request execution.
+ * Fields are all optional, but it is recommended to set the fields necessary to execute the
+ * expected functionality, e.g. schema and rootValue for basic GraphQL request execution.
  */
 export interface GraphQLServerOptions {
     readonly logger?: Logger
@@ -62,10 +62,13 @@ export interface GraphQLServerOptions {
                         ) => ReadonlyArray<GraphQLError>
     readonly rootValue?: unknown
     readonly requestResponseContextFunction?: (request: GraphQLServerRequest,
-        response: GraphQLServerResponse, logger?: Logger) => unknown
+        response: GraphQLServerResponse,
+        logger?: Logger,
+        serverOptions?: GraphQLServerOptions) => unknown
     readonly requestContextFunction?: (request: GraphQLServerRequest,
-        logger?: Logger) => unknown
-    readonly loggerContextFunction?: (logger?: Logger) => unknown
+        logger?: Logger, serverOptions?: GraphQLServerOptions) => unknown
+    readonly loggerContextFunction?: (logger?: Logger,
+        serverOptions?: GraphQLServerOptions) => unknown
 
     readonly fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
     readonly typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
