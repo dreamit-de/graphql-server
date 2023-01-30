@@ -12,7 +12,8 @@ import {
     DefaultRequestInformationExtractor,
     DefaultResponseHandler,
     GraphQLExecutionResult,
-    GraphQLServer
+    GraphQLServer,
+    DefaultGraphQLServerOptions
 } from '~/src'
 import {
     initialSchemaWithOnlyDescription,
@@ -92,6 +93,30 @@ test('Should execute query without server', async() => {
     expect(result.executionResult.data?.users).toEqual([userOne, userTwo])
     expect(result.statusCode).toBe(200)
     expect(result.requestInformation?.query).toBe(usersQuery)
+})
+  
+test('Should use FallbackMetricsClient if cpuUsage is not available', async() => {
+    const savedProcess = process
+    
+    // eslint-disable-next-line no-global-assign
+    process = {} as NodeJS.Process
+
+    const defaultOptions = new DefaultGraphQLServerOptions()
+    const newOptions = {
+        schema: userSchema,
+        rootValue: userSchemaResolvers
+    }
+    const graphqlServer = new GraphQLServer({...defaultOptions, ...newOptions})
+    const metrics = await graphqlServer.getMetrics()
+    expect(metrics).toContain(
+        'graphql_server_availability 1'
+    )
+    expect(metrics).not.toContain(
+        'process_cpu_seconds_total 0'
+    )
+
+    // eslint-disable-next-line no-global-assign
+    process = savedProcess
 })
 
 function expectRootQueryNotDefined(graphqlServer: GraphQLServer): void {

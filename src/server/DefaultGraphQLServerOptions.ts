@@ -9,6 +9,7 @@ import {
     Logger,
     RequestInformationExtractor,
     MetricsClient,
+    FallbackMetricsClient,
     DefaultResponseHandler,
     ResponseHandler
 } from '..'
@@ -35,13 +36,12 @@ import {
 export const fallbackTextLogger = new TextLogger('fallback-logger', 'fallback-service')
 export const defaultRequestInformationExtractor = new DefaultRequestInformationExtractor()
 export const defaultResponseHandler = new DefaultResponseHandler()
-export const defaultMetricsClient = new DefaultMetricsClient()
 
 export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     logger: Logger = fallbackTextLogger
     requestInformationExtractor: RequestInformationExtractor = defaultRequestInformationExtractor
     responseHandler: ResponseHandler = defaultResponseHandler
-    metricsClient: MetricsClient = defaultMetricsClient
+    metricsClient: MetricsClient = getDefaultMetricsClient()
     formatErrorFunction = defaultFormatErrorFunction
     collectErrorMetricsFunction = defaultCollectErrorMetrics
     schemaValidationFunction = validateSchema
@@ -63,6 +63,10 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
     typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
     schema?: GraphQLSchema
+}
+
+export function getDefaultMetricsClient(): MetricsClient {
+    return 'cpuUsage' in process ? new DefaultMetricsClient() : new FallbackMetricsClient()
 }
 
 /**
