@@ -34,7 +34,6 @@ export class SimpleMetricsClient implements MetricsClient {
     }
 
     initMetrics(): void {
-        this.clearMetrics()
         this.createRequestThroughputCounter()
         this.createServerAvailabilityGauge()
         this.createServerErrorCounter()
@@ -51,10 +50,6 @@ export class SimpleMetricsClient implements MetricsClient {
 
     createRequestThroughputCounter(): void {
         this.requestThroughput = 0
-    }
-
-    clearMetrics(): void {
-        // To be implemented
     }
 
     /**
@@ -93,21 +88,21 @@ export class SimpleMetricsClient implements MetricsClient {
     }
 
     getErrorCount(errorLabel: string): string {
-        return `graphql_server_errors{errorClass="${errorLabel}"} ` +
+        return `${this.errorsMetricName}{errorClass="${errorLabel}"} ` +
          this.graphQLServerErrorCounter[errorLabel]
     }
 
     async getMetrics(): Promise<string> {
         return new Promise((resolve) => {
             resolve(`
-            # HELP graphql_server_request_throughput Number of incoming requests
-            # TYPE graphql_server_request_throughput counter
-            graphql_server_request_throughput ${this.requestThroughput}
-            # HELP graphql_server_availability GraphQL server availability
-            # TYPE graphql_server_availability gauge
-            graphql_server_availability ${this.graphQLServerAvailabilityGauge}
-            # HELP graphql_server_errors Number of errors per Error class
-            # TYPE graphql_server_errors counter
+            # HELP ${this.requestThroughputMetricName} Number of incoming requests
+            # TYPE ${this.requestThroughputMetricName} counter
+            ${this.requestThroughputMetricName} ${this.requestThroughput}
+            # HELP ${this.availabilityMetricName}  GraphQL server availability
+            # TYPE ${this.availabilityMetricName}  gauge
+            ${this.availabilityMetricName} ${this.graphQLServerAvailabilityGauge}
+            # HELP ${this.errorsMetricName} Number of errors per Error class
+            # TYPE ${this.errorsMetricName} counter
             ${this.getErrorCount(GRAPHQL_ERROR)}
             ${this.getErrorCount(SCHEMA_VALIDATION_ERROR)}
             ${this.getErrorCount(FETCH_ERROR)}
