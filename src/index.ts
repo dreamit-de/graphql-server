@@ -21,6 +21,8 @@ export * from './logger/TextLogger'
 export * from './metrics/DefaultMetricsClient'
 export * from './metrics/IncreaseFetchOrGraphQLErrorMetric'
 export * from './metrics/MetricsClient'
+export * from './metrics/NoMetricsClient'
+export * from './metrics/SimpleMetricsClient'
 
 export * from './request/ContentType'
 export * from './request/DefaultRequestInformationExtractor'
