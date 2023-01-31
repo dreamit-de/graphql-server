@@ -13,7 +13,7 @@ import {
     VALIDATION_ERROR,
     MetricsClient,
     DefaultMetricsClient,
-    FallbackMetricsClient,
+    SimpleMetricsClient,
     GraphQLServerOptions,
     NoMetricsClient
 } from '~/src'
@@ -39,11 +39,10 @@ import {
 
 let customGraphQLServer: GraphQLServer
 let graphQLServer: Server
+let metricsResponseBody: string
 
 beforeAll(() => {
-    graphQLServer = setupGraphQLServer(
-        new DefaultMetricsClient()
-    ).listen({port: GRAPHQL_SERVER_PORT})
+    graphQLServer = setupGraphQLServer().listen({port: GRAPHQL_SERVER_PORT})
     console.info(`Starting GraphQL server on port ${GRAPHQL_SERVER_PORT}`)
 })
 
@@ -57,8 +56,8 @@ test('Should get correct metrics for DefaultMetricsClient', async() => {
     await runMetricsTest(metricsClient, false)
 })
 
-test('Should get correct metrics for FallbackMetricsClient', async() => {
-    const metricsClient = new FallbackMetricsClient()
+test('Should get correct metrics for SimpleMetricsClient', async() => {
+    const metricsClient = new SimpleMetricsClient()
     customGraphQLServer.setOptions(getInitialGraphQLServerOptions(metricsClient))
     await runMetricsTest(metricsClient, false)
 })
@@ -69,16 +68,24 @@ test('Should get no metrics for NoMetricsClient', async() => {
     await runMetricsTest(metricsClient, true)
 })
 
-async function runMetricsTest(metricsClient: MetricsClient, 
+async function runMetricsTest(metricsClient: MetricsClient,
     isNoMetricsClient: boolean): Promise<void> {
 
-    /**
-     * Test:
-     * When called before anything else availability should be 1 and the rest
-     * of the counters and gauges should be 0
-     */
-    let metricsResponseBody = await getMetricsResponse()
+    await testInitialMetrics(isNoMetricsClient)
+    await testInvalidSchemaMetrics(metricsClient, isNoMetricsClient)
+    await testValidResponseMetrics(isNoMetricsClient)
+    await testErrorResponseMetrics(isNoMetricsClient)
+    await testEmptyContentResponseMetrics(isNoMetricsClient)
+    await testFetchErrorResponseMetrics(metricsClient, isNoMetricsClient)
+}
 
+/**
+ * Test:
+ * When called before anything else availability should be 1 and the rest
+ * of the counters and gauges should be 0
+ */
+async function testInitialMetrics(isNoMetricsClient: boolean): Promise<void> {
+    metricsResponseBody = await getMetricsResponse()
     if (isNoMetricsClient) {
         expect(metricsResponseBody).toBe('')
     } else {
@@ -113,13 +120,16 @@ async function runMetricsTest(metricsClient: MetricsClient,
             `graphql_server_errors{errorClass="${SYNTAX_ERROR}"} 0`
         )
     }
+}
 
-    /**
-     * Test:
-     * When schema is invalid, availability should be 0. As only metrics endpoint
-     * is being called, request_throughput should stay at 0,
-     * SchemaValidationError should increase to 1 and GraphQLError counter should stay at 0
-     */
+/**
+ * Test:
+ * When schema is invalid, availability should be 0. As only metrics endpoint
+ * is being called, request_throughput should stay at 0,
+ * SchemaValidationError should increase to 1 and GraphQLError counter should stay at 0
+ */
+async function testInvalidSchemaMetrics(metricsClient: MetricsClient,
+    isNoMetricsClient: boolean): Promise<void> {
     customGraphQLServer.setOptions({
         schema: initialSchemaWithOnlyDescription,
         rootValue: userSchemaResolvers,
@@ -164,19 +174,22 @@ async function runMetricsTest(metricsClient: MetricsClient,
         )
     }
     customGraphQLServer.setOptions(getInitialGraphQLServerOptions(metricsClient))
+}
 
-    /**
-     * Test:
-     * With working schema, availability should be 1.
-     * When sending request with valid data response,
-     * request_throughput should increase to 1.
-     */
+/**
+ * Test:
+ * With working schema, availability should be 1.
+ * When sending request with valid data response,
+ * request_throughput should increase to 1.
+ */
+async function testValidResponseMetrics(isNoMetricsClient: boolean): Promise<void> {
+
     await fetchResponse(`{"query":"${usersQuery}"}`)
     metricsResponseBody = await getMetricsResponse()
 
     if (isNoMetricsClient) {
         expect(metricsResponseBody).toBe('')
-    } else { 
+    } else {
         expect(metricsResponseBody).toContain(
             'graphql_server_availability 1'
         )
@@ -208,12 +221,14 @@ async function runMetricsTest(metricsClient: MetricsClient,
             `graphql_server_errors{errorClass="${SYNTAX_ERROR}"} 0`
         )
     }
+}
 
-    /**
-     * Test:
-     * When sending request that returns GraphQL error,
-     * GraphQLError counter and request throughput should increase by 1
-     */
+/**
+ * Test:
+ * When sending request that returns GraphQL error,
+ * GraphQLError counter and request throughput should increase by 1
+ */
+async function testErrorResponseMetrics(isNoMetricsClient: boolean): Promise<void> {
     await fetchResponse(`{"query":"${returnErrorQuery}"}`)
     metricsResponseBody = await getMetricsResponse()
 
@@ -251,12 +266,14 @@ async function runMetricsTest(metricsClient: MetricsClient,
             `graphql_server_errors{errorClass="${SYNTAX_ERROR}"} 0`
         )
     }
-    
-    /**
-     * Test:
-     * When sending request with empty content type GraphQL error,
-     * GraphQLError counter and request throughput should increase by 1
-     */
+}
+
+/**
+ * Test:
+ * When sending request with empty content type GraphQL error,
+ * GraphQLError counter and request throughput should increase by 1
+ */
+async function testEmptyContentResponseMetrics(isNoMetricsClient: boolean): Promise<void> {
     await fetchResponse('{"query":"unknown"}', 'POST', {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'Content-Type': ''
@@ -295,14 +312,18 @@ async function runMetricsTest(metricsClient: MetricsClient,
         )
         expect(metricsResponseBody).toContain(
             `graphql_server_errors{errorClass="${SYNTAX_ERROR}"} 0`
-        )    
+        )
     }
-    
-    /**
-     * Test:
-     * When forcing a FetchError in execute function,
-     * FetchError counter and request throughput should increase by 1
-     */
+}
+
+/**
+ * Test:
+ * When forcing a FetchError in execute function,
+ * FetchError counter and request throughput should increase by 1
+ */
+async function testFetchErrorResponseMetrics(metricsClient: MetricsClient,
+    isNoMetricsClient: boolean): Promise<void> {
+
     customGraphQLServer.setOptions({
         schema: userSchema,
         rootValue: userSchemaResolvers,
@@ -319,7 +340,7 @@ async function runMetricsTest(metricsClient: MetricsClient,
 
     if (isNoMetricsClient) {
         expect(metricsResponseBody).toBe('')
-    } else { 
+    } else {
         expect(metricsResponseBody).toContain(
             'graphql_server_availability 1'
         )
@@ -353,9 +374,9 @@ async function runMetricsTest(metricsClient: MetricsClient,
     }
 }
 
-function setupGraphQLServer(metricsClient: MetricsClient): Express {
+function setupGraphQLServer(): Express {
     const graphQLServerExpress = express()
-    customGraphQLServer = new GraphQLServer(getInitialGraphQLServerOptions(metricsClient))
+    customGraphQLServer = new GraphQLServer(getInitialGraphQLServerOptions(new NoMetricsClient()))
     graphQLServerExpress.use(bodyParser.json())
     graphQLServerExpress.all('/graphql', (request, response) => {
         return customGraphQLServer.handleRequestAndSendResponse(request, response)

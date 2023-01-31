@@ -18,11 +18,11 @@ The following table shows which version of [graphql-js][1] library is compatible
 choose a fitting version according to the [graphql-js][1] version used in your project and by other libraries depending
 on [graphql-js][1].
 
-| graphql-js version | graphql-server version | Github branch  | Development Status |
-| ------------- |:-------------:| :-------------:| :-------------:|
-| ~~^15.2.0~~ | ~~1.x~~ | [~~legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15)| end of life |
-| ^16.0.0 | 2.x | [legacy-server-v2](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2)  |  maintenance |
-| ^16.0.0 | 3.x | [main](https://github.com/dreamit-de/graphql-server)  |  active |
+| graphql-js version | graphql-server version |                                       Github branch                                        | Development Status |
+|--------------------|:----------------------:|:------------------------------------------------------------------------------------------:|:------------------:|
+| ~~^15.2.0~~        |        ~~1.x~~         | [~~legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15) |    end of life     |
+| ^16.0.0            |          2.x           |   [legacy-server-v2](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2)   |    maintenance     |
+| ^16.0.0            |          3.x           |                    [main](https://github.com/dreamit-de/graphql-server)                    |       active       |
 
 ## Features
 
@@ -40,10 +40,10 @@ on [graphql-js][1].
 information or server request depending on the needs. For the most common use case, usage as webserver middleware,
 `handleRequestAndSendResponse` can be used.
 
-| **Request / Response**      | **Return GraphQLExecutionResult**   | **Send server response**              |
-| --------------------------- | ----------------------------------- | ------------------------------------- |
-| **Use request information** | `async executeRequest`              | `async executeRequestAndSendResponse` |
-| **Use server request**      | `async handleRequest`               | `async handleRequestAndSendResponse`  |
+| **Request / Response**      | **Return GraphQLExecutionResult** | **Send server response**              |
+|-----------------------------|-----------------------------------|---------------------------------------|
+| **Use request information** | `async executeRequest`            | `async executeRequestAndSendResponse` |
+| **Use server request**      | `async handleRequest`             | `async handleRequestAndSendResponse`  |
 
 ### Use cases
 
@@ -181,8 +181,16 @@ console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 
 ## Metrics
 
-The implementation uses [prom-client][3] library to provide default NodeJS metrics as well as three custom metrics for
-the GraphQL server:
+There are 3 builtin `MetricsClient` implementations available.
+
+- **DefaultMetricsClient**: Used as default `MetricsClient` if no specific client is set. Uses [prom-client][3] library 
+  to provide NodeJS metrics like cpu and memory usage as well as GraphQLServer related metrics.
+- **SimpleMetricsClient**: Used as fallback `MetricsClient` if library detects that cpu usage cannot be
+  read. Provides GraphQLServer related metrics without relying on [prom-client][3] library and does not provide NodeJS
+  metrics like cpu and memory usage.
+- **NoMetricsClient**: Does not collect any metrics. Can be used to disable metrics collection/increase performance.
+
+The **DefaultMetricsClient** and **SimpleMetricsClient** provide three custom metrics for the GraphQL server:
 
 - **graphql_server_availability**: Availability gauge with status 0 (unavailable) and 1 (available)
 - **graphql_server_request_throughput**: The number of incoming requests
@@ -246,19 +254,20 @@ it might still be possible to map the webserver request and response objects to 
 
 In the following table a list of webserver frameworks/versions can be found that are able to run `GraphQLServer`.
 The `Version` column shows the version of the webserver framework we tested `GraphQLServer` version 3 with.  
-If the request, response and/or core function has to be mapped it is noted in the `Mapping` column. There are some code examples on how
+If the request, response and/or core function has to be mapped it is noted in the `Mapping` column. There are some code
+examples on how
 to adjust the request/response to be able to use `GraphQLServer.handleRequest` with the webserver.
 
-| Framework/Module | Version | Mapping | Example | 
-| ------------- |:-------------:| :-------------:| :-------------:|
-| [AdonisJS][6] | 5.8 | request, response |  [AdonisJS example](https://github.com/sgohlke/adonisjs-example/blob/main/start/routes.ts)  |
-| [Express][2] | > = 2.x | none |  [GraphQLServer test](https://github.com/dreamit-de/graphql-server/blob/main/tests/server/GraphQLServer.integration.test.ts)  |
-| [fastify][4] | 4.7 | response |  [Fastify example](https://github.com/sgohlke/fastify-example/blob/main/src/index.ts)  |
-| [hapi][10] | 20.2 | request, handleRequest |  [hapi example](https://github.com/sgohlke/hapi-example/blob/main/src/index.ts)  |
-| [Koa][5] | 2.13 | response |  [Koa example](https://github.com/sgohlke/koa-example/blob/main/src/index.ts)  |
-| [Next.js][7] | 12.3 | none |  [Next.js example](https://github.com/sgohlke/nextjs-example/blob/main/pages/api/graphql.ts)  |
-| [Nitro][8] | 0.5 | request |  [Nitro example](https://github.com/sgohlke/nitro-example/blob/main/routes/graphql.post.ts)  |
-| [NodeJS http][9] | 16.17 | request |  [NodeJS http example](https://github.com/sgohlke/nodejs-http-example/blob/main/src/index.ts)  |
+| Framework/Module | Version |        Mapping         |                                                           Example                                                           | 
+|------------------|:-------:|:----------------------:|:---------------------------------------------------------------------------------------------------------------------------:|
+| [AdonisJS][6]    |   5.8   |   request, response    |                  [AdonisJS example](https://github.com/sgohlke/adonisjs-example/blob/main/start/routes.ts)                  |
+| [Express][2]     | > = 2.x |          none          | [GraphQLServer test](https://github.com/dreamit-de/graphql-server/blob/main/tests/server/GraphQLServer.integration.test.ts) |
+| [fastify][4]     |   4.7   |        response        |                    [Fastify example](https://github.com/sgohlke/fastify-example/blob/main/src/index.ts)                     |
+| [hapi][10]       |  20.2   | request, handleRequest |                       [hapi example](https://github.com/sgohlke/hapi-example/blob/main/src/index.ts)                        |
+| [Koa][5]         |  2.13   |        response        |                        [Koa example](https://github.com/sgohlke/koa-example/blob/main/src/index.ts)                         |
+| [Next.js][7]     |  12.3   |          none          |                 [Next.js example](https://github.com/sgohlke/nextjs-example/blob/main/pages/api/graphql.ts)                 |
+| [Nitro][8]       |   0.5   |        request         |                 [Nitro example](https://github.com/sgohlke/nitro-example/blob/main/routes/graphql.post.ts)                  |
+| [NodeJS http][9] |  16.17  |        request         |                [NodeJS http example](https://github.com/sgohlke/nodejs-http-example/blob/main/src/index.ts)                 |
 
 **`GraphQLServerRequest` and `GraphQLServerResponse` interfaces**
 
@@ -282,18 +291,20 @@ export interface GraphQLServerResponse {
 
 `GraphQLServer`, like many GraphQL libraries, uses context functions to create a context object that is available during
 the whole request execution process. This can for example be used to inject information about request headers or adjust
-responses. An example can be found in the `CustomResponseHandler.integration.test.ts` class in the test/server folder. 
+responses. An example can be found in the `CustomResponseHandler.integration.test.ts` class in the test/server folder.
 
-The following three context functions are available and used by different core functions depending on if a request or 
+The following three context functions are available and used by different core functions depending on if a request or
 response or both objects are available.
 **Deprecation Warning:**
 For accessing the Logger please use the field `serverOptions.logger` instead of `logger`. The logger parameter might be
 removed in the next major version.
 
-- `requestResponseContextFunction`: Used by `handleRequestAndSendResponse`. Has server options, logger, request and response object
+- `requestResponseContextFunction`: Used by `handleRequestAndSendResponse`. Has server options, logger, request and
+  response object
   available.
 - `requestContextFunction`: Used by `handleRequest`. Has server options, logger and request object available .
-- `loggerContextFunction`: Used by `executeRequest` and `executeRequestAndSendResponse`. Only has server options and logger available.
+- `loggerContextFunction`: Used by `executeRequest` and `executeRequestAndSendResponse`. Only has server options and
+  logger available.
 
 ## Available options
 
@@ -363,12 +374,13 @@ For accessing the Logger please use the field `serverOptions.logger` instead of 
 removed in the next major version.
 
 - **`requestResponseContextFunction`**: Given a `GraphQLServerRequest`, `GraphQLServerResponse`, `Logger` and
-  `GraphQLServerOptions` this function is used to create a context value that is used when `executeFunction` is called. 
-  Default implementation is `defaultRequestResponseContextFunction`. 
-  Can be used to extract information from the request and/or response and return them as context. 
-  This is often used to extract headers like 'Authorization' and set them in the execute function. 
+  `GraphQLServerOptions` this function is used to create a context value that is used when `executeFunction` is called.
+  Default implementation is `defaultRequestResponseContextFunction`.
+  Can be used to extract information from the request and/or response and return them as context.
+  This is often used to extract headers like 'Authorization' and set them in the execute function.
   `defaultRequestResponseContextFunction` just returns the whole initial `GraphQLServerRequest` object.
-- **`requestContextFunction`**: Given a `GraphQLServerRequest`, `Logger` and `GraphQLServerOptions` this function is used
+- **`requestContextFunction`**: Given a `GraphQLServerRequest`, `Logger` and `GraphQLServerOptions` this function is
+  used
   to create a context value that is used when `executeFunction` is called.
   Default implementation is `defaultRequestContextFunction`.
   Can be used to extract information from the request and return them as context.

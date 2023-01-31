@@ -94,10 +94,10 @@ test('Should execute query without server', async() => {
     expect(result.statusCode).toBe(200)
     expect(result.requestInformation?.query).toBe(usersQuery)
 })
-  
-test('Should use FallbackMetricsClient if cpuUsage is not available', async() => {
+
+test('Should use SimpleMetricsClient as fallback if cpuUsage is not available', async() => {
     const savedProcess = process
-    
+
     // eslint-disable-next-line no-global-assign
     process = {} as NodeJS.Process
 

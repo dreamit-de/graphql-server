@@ -12,10 +12,11 @@ import {
 } from '..'
 
 /**
- * Fallback metrics client. 
- * Mimics behaviour of prom-client but does to collect NodeJS metrics like cpu and memory usage.
+ * Simple metrics client.
+ * Mimics behaviour of prom-client without using the prom-client library.
+ * Does not collect NodeJS metrics like cpu and memory usage.
  */
-export class FallbackMetricsClient implements MetricsClient {
+export class SimpleMetricsClient implements MetricsClient {
     readonly requestThroughputMetricName: string
     readonly availabilityMetricName: string
     readonly errorsMetricName: string
@@ -39,7 +40,7 @@ export class FallbackMetricsClient implements MetricsClient {
         this.createServerErrorCounter()
         this.initErrorCounterLabels()
     }
-    
+
     createServerErrorCounter(): void {
         this.graphQLServerErrorCounter = {}
     }
@@ -60,7 +61,7 @@ export class FallbackMetricsClient implements MetricsClient {
      * Initializes the error counter.
      * When evaluating time series this can help
      * to create an initial time series that can be used for actions like alerting.
-     * Otherwise calculating differences with functions like "increase" with
+     * Otherwise, calculating differences with functions like "increase" with
      * an undefined time series might not work for the first occurrence of an error.
      */
     initErrorCounterLabels(): void {
@@ -76,7 +77,7 @@ export class FallbackMetricsClient implements MetricsClient {
     }
 
     increaseErrors(label: string): void {
-        this.graphQLServerErrorCounter[label]++ 
+        this.graphQLServerErrorCounter[label]++
     }
 
     increaseRequestThroughput(): void {

@@ -9,7 +9,7 @@ import {
     Logger,
     RequestInformationExtractor,
     MetricsClient,
-    FallbackMetricsClient,
+    SimpleMetricsClient,
     DefaultResponseHandler,
     ResponseHandler
 } from '..'
@@ -66,7 +66,9 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
 }
 
 export function getDefaultMetricsClient(): MetricsClient {
-    return 'cpuUsage' in process ? new DefaultMetricsClient() : new FallbackMetricsClient()
+    return 'cpuUsage' in process && typeof process.cpuUsage === 'function'
+        ? new DefaultMetricsClient()
+        : new SimpleMetricsClient()
 }
 
 /**
