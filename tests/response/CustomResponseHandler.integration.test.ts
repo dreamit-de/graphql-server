@@ -7,7 +7,6 @@ import {
     GraphQLServer,
     JsonLogger,
     ResponseParameters,
-    TextLogger
 } from '~/src'
 import {
     usersQuery,
@@ -19,6 +18,7 @@ import {
     fetchResponse,
     GRAPHQL_SERVER_PORT,
     INITIAL_GRAPHQL_SERVER_OPTIONS,
+    NoStacktraceTextLogger,
 } from '../TestHelpers'
 import {Buffer} from 'node:buffer'
 
@@ -61,7 +61,7 @@ test('Should return error if context serviceName is different as graphql server 
         customGraphQLServer.setOptions({
             schema: userSchema,
             rootValue: userSchemaResolvers,
-            logger: new TextLogger('test-logger', 'customGraphQLServer', true),
+            logger: new NoStacktraceTextLogger('test-logger', 'customGraphQLServer', true),
             reassignAggregateError: false,
             requestResponseContextFunction: (request, response, logger, serverOptions) => {
                 if (serverOptions && serverOptions.logger) {

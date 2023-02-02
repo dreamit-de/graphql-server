@@ -2,8 +2,7 @@
 import bodyParser from 'body-parser'
 import express from 'express'
 import {
-    GraphQLServer,
-    JsonLogger
+    GraphQLServer
 } from '~/src'
 
 import {
@@ -15,6 +14,7 @@ import {
 import {
     fetchResponse,
     GRAPHQL_SERVER_PORT,
+    NoStacktraceJsonLogger,
 } from './TestHelpers'
 import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue'
 import {ExecutionResult} from 'graphql'
@@ -29,7 +29,7 @@ test('Should reassign AggregateError to original errors field' +
     const customGraphQLServer = new GraphQLServer({
         schema: userSchema,
         rootValue: userSchemaResolvers,
-        logger: new JsonLogger('test-logger', 'reassign-service', true),
+        logger: new NoStacktraceJsonLogger('nostack-logger', 'reassign-service', true),
         reassignAggregateError: true,
         executeFunction: ():PromiseOrValue<ExecutionResult> => (multipleErrorResponse)
     })

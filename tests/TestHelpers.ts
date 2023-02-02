@@ -1,16 +1,49 @@
 import {
     GraphQLRequestInfo,
     GraphQLServerOptions,
-    JsonLogger
-} from '../src'
+    JsonLogger,
+    LogEntry,
+    LogHelper,
+    LogLevel,
+    TextLogger
+} from '~/src'
 import {
     userSchema,
     userSchemaResolvers
 } from './ExampleSchemas'
 import fetch from 'cross-fetch'
+import {Console} from 'node:console'
+
+export class NoStacktraceJsonLogger extends JsonLogger {
+    loggerConsole: Console = new Console(process.stdout, process.stderr, false)
+    logMessage(logMessage: string,
+        loglevel: LogLevel,
+        error?: Error,
+        customErrorName?: string,
+        context?: unknown): void {
+        const logEntry: LogEntry = LogHelper.createLogEntry(logMessage,
+            loglevel,
+            this.loggerName,
+            this.serviceName,
+            error,
+            customErrorName,
+            context)
+        logEntry.stacktrace = undefined
+        this.loggerConsole.log(JSON.stringify(logEntry))
+    }
+}
+
+export class NoStacktraceTextLogger extends TextLogger {
+    prepareLogOutput(logEntry: LogEntry): string {
+        return `${logEntry.timestamp} [${logEntry.level.toUpperCase()}]`
+            + `${this.loggerName}-${this.serviceName} :`
+            + `${logEntry.message}`
+    }
+}
 
 export const GRAPHQL_SERVER_PORT = 3000
-export const LOGGER = new JsonLogger('test-logger', 'myTestService', false)
+export const LOGGER = new NoStacktraceJsonLogger('nostack-logger', 'myTestService', false)
+export const TEXT_LOGGER = new NoStacktraceTextLogger('nostack-logger', 'myTestService', false)
 export const INITIAL_GRAPHQL_SERVER_OPTIONS: GraphQLServerOptions =
     {schema: userSchema, rootValue: userSchemaResolvers, logger: LOGGER}
 
