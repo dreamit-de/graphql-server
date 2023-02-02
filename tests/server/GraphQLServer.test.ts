@@ -23,6 +23,7 @@ import {
     usersQuery,
     userTwo
 } from '../ExampleSchemas'
+import {TEXT_LOGGER} from '~/tests/TestHelpers'
 
 const graphQLErrorResponse: GraphQLExecutionResult = {
     executionResult: {
@@ -33,6 +34,7 @@ const graphQLErrorResponse: GraphQLExecutionResult = {
 
 test('Should create schema on GraphQLServer class creation', () => {
     const graphqlServer = new GraphQLServer({
+        logger: TEXT_LOGGER,
         schema: initialSchemaWithOnlyDescription,
         responseHandler: new DefaultResponseHandler(graphQLErrorResponse,
             graphQLErrorResponse,
@@ -46,7 +48,10 @@ test('Should create schema on GraphQLServer class creation', () => {
 })
 
 test('Should update schema when calling GraphQLServer updateGraphQLSchema function', () => {
-    const graphqlServer = new GraphQLServer({schema: initialSchemaWithOnlyDescription})
+    const graphqlServer = new GraphQLServer({
+        schema: initialSchemaWithOnlyDescription,
+        logger: TEXT_LOGGER
+    })
     const updatedSchema = new GraphQLSchema({description:'updated'})
     graphqlServer.setSchema(updatedSchema)
     const schema = graphqlServer.getSchema()
@@ -56,7 +61,10 @@ test('Should update schema when calling GraphQLServer updateGraphQLSchema functi
 })
 
 test('Should not update schema when given schema is undefined', () => {
-    const graphqlServer = new GraphQLServer({schema: initialSchemaWithOnlyDescription})
+    const graphqlServer = new GraphQLServer({
+        schema: initialSchemaWithOnlyDescription,
+        logger: TEXT_LOGGER
+    })
     graphqlServer.setSchema()
     const schema = graphqlServer.getSchema()
     expect(schema).toBeDefined()
@@ -67,6 +75,7 @@ test('Should not update schema when given schema is undefined', () => {
 test('Should update schema when given schema is undefined ' +
     'and shouldUpdateSchemaFunction is true', () => {
     const graphqlServer = new GraphQLServer({
+        logger: TEXT_LOGGER,
         schema: initialSchemaWithOnlyDescription
         , shouldUpdateSchemaFunction: (): boolean => true
     })
@@ -79,6 +88,7 @@ test('Should execute query without server', async() => {
     const graphqlServer = new GraphQLServer({
         schema: userSchema,
         rootValue: userSchemaResolvers,
+        logger: TEXT_LOGGER,
         requestInformationExtractor: new DefaultRequestInformationExtractor(),
         metricsClient: new DefaultMetricsClient(),
         collectErrorMetricsFunction: defaultCollectErrorMetrics,
