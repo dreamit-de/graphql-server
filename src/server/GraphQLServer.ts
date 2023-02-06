@@ -37,21 +37,13 @@ export class GraphQLServer {
     protected schemaValidationErrors: ReadonlyArray<GraphQLError> = []
 
     constructor(optionsParameter?: GraphQLServerOptions) {
-        console.log('Calling GraphQLServer constructor')
         this.setOptions(optionsParameter)
     }
 
     setOptions(newOptions?: GraphQLServerOptions): void {
-        console.log('Calling GraphQLServer setOptions')
-        if (newOptions) {
-            console.log('Calling GraphQLServer setOptions newOptions')
-            this.options = {...defaultOptions, ...newOptions}
-            this.setMetricsClient(newOptions.metricsClient)
-            this.setSchema(newOptions.schema)
-        } else {
-            this.options = defaultOptions
-            this.setMetricsClient()
-        }
+        this.options = {...defaultOptions, ...newOptions}
+        this.setMetricsClient(newOptions?.metricsClient)
+        this.setSchema(newOptions?.schema)
     }
 
     /**
@@ -60,6 +52,7 @@ export class GraphQLServer {
      * a new DefaultMetricsClient() will be created.
      * If no client is provided and cpuUsage cannot be read (e.g. with Deno),
      * a new SimpleMetricsClient() will be created.
+     * Note: In the next major release default metric client might change.
      * @param {MetricsClient} metricsClient - The metrics client to use in the GraphQLServer
      */
     setMetricsClient(metricsClient?: MetricsClient): void {
@@ -70,6 +63,7 @@ export class GraphQLServer {
         } else {
             this.options.metricsClient = new SimpleMetricsClient()
         }
+        this.options.metricsClient.setAvailability(this.isValidSchema(this.options.schema) ? 1 : 0)
     }
 
     getSchema(): GraphQLSchema | undefined {
@@ -108,8 +102,6 @@ export class GraphQLServer {
             this.options.logger.warn('Schema update was rejected because condition' +
                 ' set in "shouldUpdateSchema" check was not fulfilled.')
         }
-        this.options.logger.info('Set schema availability'
-            + this.isValidSchema(this.options.schema))
         this.options.metricsClient.setAvailability(this.isValidSchema(this.options.schema) ? 1 : 0)
     }
 
@@ -140,9 +132,7 @@ export class GraphQLServer {
         } = this.options
 
         const context = loggerContextFunction(logger, this.options)
-        logger.info(`Metrics before is ${await metricsClient.getMetrics()}`)
         metricsClient.increaseRequestThroughput(context)
-        logger.info(`Metrics after is ${await metricsClient.getMetrics()}`)
         return await this.executeRequestWithInfo(requestInformation, context)
     }
 

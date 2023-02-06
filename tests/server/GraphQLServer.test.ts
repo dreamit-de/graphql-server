@@ -173,6 +173,14 @@ test('Usage of a second GraphQLServer with MetricsClient that does not use prom-
     )
 })
 
+test('Should set only default options if no options are provided', async() => {
+    const graphqlServer = new GraphQLServer()
+    const metrics = await graphqlServer.getMetrics()
+    expect(metrics).toContain(
+        'graphql_server_availability 0'
+    )
+})
+
 function expectRootQueryNotDefined(graphqlServer: GraphQLServer): void {
     const schemaValidationErrors = graphqlServer.getSchemaValidationErrors()
     expect(schemaValidationErrors?.length).toBe(1)

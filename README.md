@@ -190,6 +190,9 @@ There are 3 builtin `MetricsClient` implementations available.
   metrics like cpu and memory usage.
 - **NoMetricsClient**: Does not collect any metrics. Can be used to disable metrics collection/increase performance.
 
+**Warning!**:
+If you are using **DefaultMetricsClient** you should avoid creating multiple **GraphQLServer** instances that all use the **DefaultMetricsClient**. Because of the usage of a global object in the [prom-client][3] library this might result in unexpected behaviour or malfunction. You can set another metrics client like **SimpleMetricsClient** by calling **GraphQLServer setOptions()** or **GraphQLServer setMetricsClient()**.   
+
 The **DefaultMetricsClient** and **SimpleMetricsClient** provide three custom metrics for the GraphQL server:
 
 - **graphql_server_availability**: Availability gauge with status 0 (unavailable) and 1 (available)
