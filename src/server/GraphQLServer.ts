@@ -24,6 +24,9 @@ import {
     GraphQLRequestInfo,
     GraphQLExecutionResult,
     getFirstErrorFromExecutionResult,
+    MetricsClient,
+    DefaultMetricsClient,
+    SimpleMetricsClient,
 } from '..'
 
 const requestCouldNotBeProcessed = 'Request could not be processed: '
@@ -33,14 +36,39 @@ export class GraphQLServer {
     protected options = new DefaultGraphQLServerOptions()
     protected schemaValidationErrors: ReadonlyArray<GraphQLError> = []
 
-    constructor(options?: GraphQLServerOptions) {
-        this.setOptions(options)
+    constructor(optionsParameter?: GraphQLServerOptions) {
+        console.log('Calling GraphQLServer constructor')
+        this.setOptions(optionsParameter)
     }
 
     setOptions(newOptions?: GraphQLServerOptions): void {
+        console.log('Calling GraphQLServer setOptions')
         if (newOptions) {
+            console.log('Calling GraphQLServer setOptions newOptions')
             this.options = {...defaultOptions, ...newOptions}
+            this.setMetricsClient(newOptions.metricsClient)
             this.setSchema(newOptions.schema)
+        } else {
+            this.options = defaultOptions
+            this.setMetricsClient()
+        }
+    }
+
+    /**
+     * Sets a metrics client for to be used in the GraphQLServer.
+     * If no client is provided and cpuUsage can be read (e.g. with NodeJS)
+     * a new DefaultMetricsClient() will be created.
+     * If no client is provided and cpuUsage cannot be read (e.g. with Deno),
+     * a new SimpleMetricsClient() will be created.
+     * @param {MetricsClient} metricsClient - The metrics client to use in the GraphQLServer
+     */
+    setMetricsClient(metricsClient?: MetricsClient): void {
+        if (metricsClient) {
+            this.options.metricsClient = metricsClient
+        } else if ('cpuUsage' in process && typeof process.cpuUsage === 'function') {
+            this.options.metricsClient = new DefaultMetricsClient()
+        } else {
+            this.options.metricsClient = new SimpleMetricsClient()
         }
     }
 
@@ -80,7 +108,8 @@ export class GraphQLServer {
             this.options.logger.warn('Schema update was rejected because condition' +
                 ' set in "shouldUpdateSchema" check was not fulfilled.')
         }
-
+        this.options.logger.info('Set schema availability'
+            + this.isValidSchema(this.options.schema))
         this.options.metricsClient.setAvailability(this.isValidSchema(this.options.schema) ? 1 : 0)
     }
 
@@ -111,7 +140,9 @@ export class GraphQLServer {
         } = this.options
 
         const context = loggerContextFunction(logger, this.options)
+        logger.info(`Metrics before is ${await metricsClient.getMetrics()}`)
         metricsClient.increaseRequestThroughput(context)
+        logger.info(`Metrics after is ${await metricsClient.getMetrics()}`)
         return await this.executeRequestWithInfo(requestInformation, context)
     }
 
