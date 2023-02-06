@@ -371,7 +371,7 @@ async function testFetchErrorResponseMetrics(metricsClient: MetricsClient,
             `graphql_server_errors{errorClass="${SYNTAX_ERROR}"} 0`
         )
     }
-    // customGraphQLServer.setOptions(getInitialGraphQLServerOptions(metricsClient))
+    customGraphQLServer.setOptions(getInitialGraphQLServerOptions(metricsClient))
 }
 
 function setupGraphQLServer(): Express {
