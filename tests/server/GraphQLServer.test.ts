@@ -131,7 +131,6 @@ test('Should use SimpleMetricsClient as fallback if cpuUsage is not available', 
 
 test('Usage of a second GraphQLServer with MetricsClient that does not use prom-client' +
     ' should not intervene with metrics collection of first server', async() => {
-    console.info('Running new test')
     const graphqlServerMain = new GraphQLServer({
         schema: userSchema,
         rootValue: userSchemaResolvers,

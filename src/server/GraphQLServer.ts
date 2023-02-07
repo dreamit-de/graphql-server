@@ -56,9 +56,9 @@ export class GraphQLServer {
      * @param {MetricsClient} metricsClient - The metrics client to use in the GraphQLServer
      */
     setMetricsClient(metricsClient?: MetricsClient): void {
-       const { cpuUsage } = process
-       this.options.metricsClient = metricsClient || (typeof cpuUsage === 'function') ?
-           new DefaultMetricsClient() : new SimpleMetricsClient()
+        const { cpuUsage } = process
+        this.options.metricsClient = metricsClient ?? ((typeof cpuUsage === 'function') ?
+            new DefaultMetricsClient() : new SimpleMetricsClient())
         this.options.metricsClient.setAvailability(this.isValidSchema(this.options.schema) ? 1 : 0)
     }
 
