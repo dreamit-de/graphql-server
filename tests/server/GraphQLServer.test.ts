@@ -13,7 +13,7 @@ import {
     DefaultResponseHandler,
     GraphQLExecutionResult,
     GraphQLServer,
-    DefaultGraphQLServerOptions
+    SimpleMetricsClient
 } from '~/src'
 import {
     initialSchemaWithOnlyDescription,
@@ -110,13 +110,13 @@ test('Should use SimpleMetricsClient as fallback if cpuUsage is not available', 
 
     // eslint-disable-next-line no-global-assign
     process = {} as NodeJS.Process
+    // Necessary for Jest to measure/evaluate test performance
+    process.hrtime = savedProcess.hrtime
 
-    const defaultOptions = new DefaultGraphQLServerOptions()
-    const newOptions = {
+    const graphqlServer = new GraphQLServer({
         schema: userSchema,
         rootValue: userSchemaResolvers
-    }
-    const graphqlServer = new GraphQLServer({...defaultOptions, ...newOptions})
+    })
     const metrics = await graphqlServer.getMetrics()
     expect(metrics).toContain(
         'graphql_server_availability 1'
@@ -127,6 +127,57 @@ test('Should use SimpleMetricsClient as fallback if cpuUsage is not available', 
 
     // eslint-disable-next-line no-global-assign
     process = savedProcess
+})
+
+test('Usage of a second GraphQLServer with MetricsClient that does not use prom-client' +
+    ' should not intervene with metrics collection of first server', async() => {
+    const graphqlServerMain = new GraphQLServer({
+        schema: userSchema,
+        rootValue: userSchemaResolvers,
+        logger: TEXT_LOGGER,
+    })
+
+    // Execute request on main server twice to get throughput count of 2
+    await graphqlServerMain.executeRequest({
+        query: usersQuery
+    })
+    await graphqlServerMain.executeRequest({
+        query: usersQuery
+    })
+    let metrics = await graphqlServerMain.getMetrics()
+    expect(metrics).toContain(
+        'graphql_server_request_throughput 2'
+    )
+
+    const graphqlServerSecond = new GraphQLServer({
+        schema: userSchema,
+        rootValue: userSchemaResolvers,
+        logger: TEXT_LOGGER,
+        metricsClient: new SimpleMetricsClient()
+    })
+
+    // Execute request on second server once to get throughput count of 1
+    await graphqlServerSecond.executeRequest({
+        query: usersQuery
+    })
+    metrics = await graphqlServerSecond.getMetrics()
+    expect(metrics).toContain(
+        'graphql_server_request_throughput 1'
+    )
+
+    // Metrics on main server should still have throughput count of 2
+    metrics = await graphqlServerMain.getMetrics()
+    expect(metrics).toContain(
+        'graphql_server_request_throughput 2'
+    )
+})
+
+test('Should set only default options if no options are provided', async() => {
+    const graphqlServer = new GraphQLServer()
+    const metrics = await graphqlServer.getMetrics()
+    expect(metrics).toContain(
+        'graphql_server_availability 0'
+    )
 })
 
 function expectRootQueryNotDefined(graphqlServer: GraphQLServer): void {

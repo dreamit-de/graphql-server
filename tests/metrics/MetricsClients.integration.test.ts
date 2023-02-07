@@ -36,7 +36,6 @@ import {
     NoSchemaIntrospectionCustomRule
 } from 'graphql'
 
-
 let customGraphQLServer: GraphQLServer
 let graphQLServer: Server
 let metricsResponseBody: string
@@ -52,19 +51,19 @@ afterAll(() => {
 
 test('Should get correct metrics for DefaultMetricsClient', async() => {
     const metricsClient =  new DefaultMetricsClient()
-    customGraphQLServer.setOptions(getInitialGraphQLServerOptions(metricsClient))
+    customGraphQLServer.setMetricsClient(metricsClient)
     await runMetricsTest(metricsClient, false)
 })
 
 test('Should get correct metrics for SimpleMetricsClient', async() => {
     const metricsClient = new SimpleMetricsClient()
-    customGraphQLServer.setOptions(getInitialGraphQLServerOptions(metricsClient))
+    customGraphQLServer.setMetricsClient(metricsClient)
     await runMetricsTest(metricsClient, false)
 })
 
 test('Should get no metrics for NoMetricsClient', async() => {
     const metricsClient = new NoMetricsClient()
-    customGraphQLServer.setOptions(getInitialGraphQLServerOptions(metricsClient))
+    customGraphQLServer.setMetricsClient(metricsClient)
     await runMetricsTest(metricsClient, true)
 })
 
@@ -372,6 +371,7 @@ async function testFetchErrorResponseMetrics(metricsClient: MetricsClient,
             `graphql_server_errors{errorClass="${SYNTAX_ERROR}"} 0`
         )
     }
+    customGraphQLServer.setOptions(getInitialGraphQLServerOptions(metricsClient))
 }
 
 function setupGraphQLServer(): Express {

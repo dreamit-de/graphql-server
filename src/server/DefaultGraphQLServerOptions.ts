@@ -1,6 +1,5 @@
 import {
     GraphQLServerOptions,
-    DefaultMetricsClient,
     DefaultRequestInformationExtractor,
     TextLogger,
     GraphQLServerRequest,
@@ -41,7 +40,13 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     logger: Logger = fallbackTextLogger
     requestInformationExtractor: RequestInformationExtractor = defaultRequestInformationExtractor
     responseHandler: ResponseHandler = defaultResponseHandler
-    metricsClient: MetricsClient = getDefaultMetricsClient()
+
+    /*
+     * Metrics client to be used as default client. Is initialised with SimpleMetricsClient
+     * here because initialising a MetricsClient that uses prom-client multiple times might result
+     * in unexpected and hard to control behaviour.
+     */
+    metricsClient: MetricsClient = new SimpleMetricsClient()
     formatErrorFunction = defaultFormatErrorFunction
     collectErrorMetricsFunction = defaultCollectErrorMetrics
     schemaValidationFunction = validateSchema
@@ -63,12 +68,6 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
     typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
     schema?: GraphQLSchema
-}
-
-export function getDefaultMetricsClient(): MetricsClient {
-    return 'cpuUsage' in process && typeof process.cpuUsage === 'function'
-        ? new DefaultMetricsClient()
-        : new SimpleMetricsClient()
 }
 
 /**
