@@ -1,24 +1,25 @@
-name: Publish to npm registry
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+
+name: Node.js Package
+
 on:
   release:
     types: [released]
 
 jobs:
-  publish:
+  publish-npm:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3.6.0
+      - uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
-      - run: npm install
-      - run: npm test
-      - run: npm run prepack
-      - id: publish
-        uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_PUBLISH_TOKEN }}
-          access: public
-      - if: steps.publish.outputs.type != 'none'
-        run: |
-          echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
+          node-version: '18.x'
+          registry-url: https://registry.npmjs.org/
+      - run: npm i
+      - run: npm run lint
+      - run: npm run check
+      - run: npm run test
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
