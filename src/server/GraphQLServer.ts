@@ -25,9 +25,9 @@ import {
     GraphQLExecutionResult,
     getFirstErrorFromExecutionResult,
     MetricsClient,
-    DefaultMetricsClient,
     SimpleMetricsClient,
 } from '..'
+import {PromMetricsClient} from '@sgohlke/graphql-prom-metrics'
 
 const requestCouldNotBeProcessed = 'Request could not be processed: '
 const defaultOptions = new DefaultGraphQLServerOptions()
@@ -58,7 +58,7 @@ export class GraphQLServer {
     setMetricsClient(metricsClient?: MetricsClient): void {
         const { cpuUsage } = process
         this.options.metricsClient = metricsClient ?? ((typeof cpuUsage === 'function') ?
-            new DefaultMetricsClient() : new SimpleMetricsClient())
+            new PromMetricsClient() : new SimpleMetricsClient())
         this.options.metricsClient.setAvailability(this.isValidSchema(this.options.schema) ? 1 : 0)
     }
 

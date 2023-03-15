@@ -7,7 +7,6 @@ import {
 import {
     defaultCollectErrorMetrics,
     defaultLoggerContextFunction,
-    DefaultMetricsClient,
     defaultRequestContextFunction,
     DefaultRequestInformationExtractor,
     DefaultResponseHandler,
@@ -24,6 +23,7 @@ import {
     userTwo
 } from '../ExampleSchemas'
 import {TEXT_LOGGER} from '~/tests/TestHelpers'
+import {PromMetricsClient} from '@sgohlke/graphql-prom-metrics'
 
 const graphQLErrorResponse: GraphQLExecutionResult = {
     executionResult: {
@@ -90,7 +90,7 @@ test('Should execute query without server', async() => {
         rootValue: userSchemaResolvers,
         logger: TEXT_LOGGER,
         requestInformationExtractor: new DefaultRequestInformationExtractor(),
-        metricsClient: new DefaultMetricsClient(),
+        metricsClient: new PromMetricsClient(),
         collectErrorMetricsFunction: defaultCollectErrorMetrics,
         parseFunction: parse,
         validateFunction: validate,

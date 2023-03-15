@@ -1,6 +1,6 @@
 {
   "name": "@dreamit/graphql-server",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "description": "A GraphQL server written in NodeJS/Typescript.",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -37,6 +37,6 @@
   },
   "peerDependencies": {
     "graphql": "^16.0.0",
-    "prom-client": "^14.0.1"
+    "@sgohlke/graphql-prom-metrics": "^1.0.2"
   }
 }
