@@ -12,7 +12,6 @@ import {
     SYNTAX_ERROR,
     VALIDATION_ERROR,
     MetricsClient,
-    DefaultMetricsClient,
     SimpleMetricsClient,
     GraphQLServerOptions,
     NoMetricsClient
@@ -47,12 +46,6 @@ beforeAll(() => {
 
 afterAll(() => {
     graphQLServer.close()
-})
-
-test('Should get correct metrics for DefaultMetricsClient', async() => {
-    const metricsClient =  new DefaultMetricsClient()
-    customGraphQLServer.setMetricsClient(metricsClient)
-    await runMetricsTest(metricsClient, false)
 })
 
 test('Should get correct metrics for SimpleMetricsClient', async() => {
