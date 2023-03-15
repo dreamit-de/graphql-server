@@ -18,6 +18,7 @@ export * from './logger/LogHelper'
 export * from './logger/LogLevel'
 export * from './logger/TextLogger'
 
+export * from './metrics/DefaultMetricsClient'
 export * from './metrics/IncreaseFetchOrGraphQLErrorMetric'
 export * from './metrics/MetricsClient'
 export * from './metrics/NoMetricsClient'
