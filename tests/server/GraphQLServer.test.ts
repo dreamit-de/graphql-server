@@ -22,7 +22,6 @@ import {
     userTwo
 } from '../ExampleSchemas'
 import {TEXT_LOGGER} from '~/tests/TestHelpers'
-import {PromMetricsClient} from '@sgohlke/graphql-prom-metrics'
 import {GraphQLExecutionResult} from '@sgohlke/graphql-server-base'
 
 const graphQLErrorResponse: GraphQLExecutionResult = {
@@ -90,7 +89,7 @@ test('Should execute query without server', async() => {
         rootValue: userSchemaResolvers,
         logger: TEXT_LOGGER,
         requestInformationExtractor: new DefaultRequestInformationExtractor(),
-        metricsClient: new PromMetricsClient(),
+        metricsClient: new SimpleMetricsClient(),
         collectErrorMetricsFunction: defaultCollectErrorMetrics,
         parseFunction: parse,
         validateFunction: validate,

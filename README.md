@@ -23,6 +23,7 @@ on them.
 | ~~^15.2.0~~        |        ~~1.x~~         |        ~~n.a.~~        | [~~legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15) |    end of life     |
 | ^16.0.0            |          2.x           |          n.a.          |   [legacy-server-v2](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2)   |    maintenance     |
 | ^16.0.0            |          3.x           |          ^1.0          |                    [main](https://github.com/dreamit-de/graphql-server)                    |       active       |
+| ^16.0.0            |          4.x           |          ^2.0          |   [release-v4](https://github.com/dreamit-de/graphql-server/tree/release-v4)                    |       in development       |
 
 ## Features
 
@@ -31,7 +32,7 @@ on them.
 - Uses out-of-the-box default options to ease use and keep code short
 - Provides hot reloading for schema and options
 - Provides out-of-the-box metrics for GraphQLServer
-- Uses only 3 peerDependencies: [graphql-js][1] version 16, [graphql-prom-metrics][11] version 1 and [graphql-server-base][12] (no other production
+- Uses only 2 peerDependencies: [graphql-js][1] version 16 and [graphql-server-base][12] version 2 (no other production
   dependencies)
 
 ## Core Functions
@@ -183,21 +184,8 @@ console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 
 There are 2 builtin `MetricsClient` implementations available.
 
-- **SimpleMetricsClient**: Used as fallback `MetricsClient` if library detects that cpu usage cannot be
-  read. Provides GraphQLServer related metrics without relying on [prom-client][3] library and does not provide NodeJS
-  metrics like cpu and memory usage.
+- **SimpleMetricsClient**: Used as default `MetricsClient`. Provides GraphQLServer related metrics without but does not provide NodeJS metrics like cpu and memory usage.
 - **NoMetricsClient**: Does not collect any metrics. Can be used to disable metrics collection/increase performance.
-
-As migration help to the `@dreamit/graphql-server` v4 version the default `MetricsClient` uses `PromMetricsClient` 
-from [graphql-prom-metrics][11]
-- **PromMetricsClient**: Used as default `MetricsClient` if no specific client is set. Uses [prom-client][3] library
-  to provide NodeJS metrics like cpu and memory usage as well as GraphQLServer related metrics.
-
-**Warning!**:
-If you are using **PromMetricsClient** you should avoid creating multiple **GraphQLServer** instances that all use 
-the **PromMetricsClient**. Because of the usage of a global object in the [prom-client][3] library this might result 
-in unexpected behavior or malfunction. You can set another metrics client like **SimpleMetricsClient** 
-by calling **GraphQLServer setOptions()** or **GraphQLServer setMetricsClient()**.   
 
 The **SimpleMetricsClient** provides three custom metrics for the GraphQL server:
 
@@ -205,7 +193,7 @@ The **SimpleMetricsClient** provides three custom metrics for the GraphQL server
 - **graphql_server_request_throughput**: The number of incoming requests
 - **graphql_server_errors**: The number of errors that are encountered while running the GraphQLServer. The counter uses
   the *errorName* field as label so errors could be differentiated. At the moment the following labels are available and
-  initialised with 0:
+  initialized with 0:
     - FetchError
     - GraphQLError
     - SchemaValidationError
@@ -419,8 +407,7 @@ removed in the next major version.
   By default, the `DefaultResponseHandler` is used that tries to create and send a response using the functions provided
   by the given `GraphQLServerResponse`. Own ResponseHandler can be created by implementing `ResponseHandler` interface.
 - **`metricsClient`**: The `MetricsClient` used to collect metrics from the GraphQLServer. By default,
-  the `PromMetricsClient` from [graphql-prom-metrics][11] is used that collects default NodeJS and three custom metrics 
-  using [prom-client][3] library. Own MetricsClient can be used by implementing `MetricsClient` interface.
+  the `SimpleMetricsClient` is used that collects three custom metrics. Own MetricsClient can be used by implementing `MetricsClient` interface.
 
 ## Customise and extend GraphQLServer
 
@@ -450,8 +437,6 @@ graphql-server is under [MIT-License](./LICENSE).
 
 [2]: https://expressjs.com/
 
-[3]: https://github.com/siimon/prom-client
-
 [4]: https://www.fastify.io/
 
 [5]: https://koajs.com/
@@ -465,7 +450,5 @@ graphql-server is under [MIT-License](./LICENSE).
 [9]: https://nodejs.org/dist/latest-v16.x/docs/api/http.html
 
 [10]: https://hapi.dev/
-
-[11]: https://github.com/sgohlke/graphql-prom-metrics
 
 [12]: https://github.com/sgohlke/graphql-server-base

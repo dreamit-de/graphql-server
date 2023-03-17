@@ -29,7 +29,6 @@ import {
     getFirstErrorFromExecutionResult,
     SimpleMetricsClient,
 } from '..'
-import {PromMetricsClient} from '@sgohlke/graphql-prom-metrics'
 
 const requestCouldNotBeProcessed = 'Request could not be processed: '
 const defaultOptions = new DefaultGraphQLServerOptions()
@@ -44,23 +43,16 @@ export class GraphQLServer {
 
     setOptions(newOptions?: GraphQLServerOptions): void {
         this.options = {...defaultOptions, ...newOptions}
-        this.setMetricsClient(newOptions?.metricsClient)
+        this.setMetricsClient(newOptions?.metricsClient ?? new SimpleMetricsClient())
         this.setSchema(newOptions?.schema)
     }
 
     /**
      * Sets a metrics client for to be used in the GraphQLServer.
-     * If no client is provided and cpuUsage can be read (e.g. with NodeJS)
-     * a new DefaultMetricsClient() will be created.
-     * If no client is provided and cpuUsage cannot be read (e.g. with Deno),
-     * a new SimpleMetricsClient() will be created.
-     * Note: In the next major release default metric client might change.
      * @param {MetricsClient} metricsClient - The metrics client to use in the GraphQLServer
      */
-    setMetricsClient(metricsClient?: MetricsClient): void {
-        const { cpuUsage } = process
-        this.options.metricsClient = metricsClient ?? ((typeof cpuUsage === 'function') ?
-            new PromMetricsClient() : new SimpleMetricsClient())
+    setMetricsClient(metricsClient: MetricsClient): void {
+        this.options.metricsClient = metricsClient
         this.options.metricsClient.setAvailability(this.isValidSchema(this.options.schema) ? 1 : 0)
     }
 
