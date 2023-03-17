@@ -1,8 +1,8 @@
 import {
+    createLogEntry,
     GraphQLServerOptions,
     JsonLogger,
     LogEntry,
-    LogHelper,
     LogLevel,
     TextLogger
 } from '~/src'
@@ -21,7 +21,7 @@ export class NoStacktraceJsonLogger extends JsonLogger {
         error?: Error,
         customErrorName?: string,
         context?: unknown): void {
-        const logEntry: LogEntry = LogHelper.createLogEntry(logMessage,
+        const logEntry: LogEntry = createLogEntry(logMessage,
             loglevel,
             this.loggerName,
             this.serviceName,

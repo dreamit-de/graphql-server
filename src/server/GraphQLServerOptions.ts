@@ -6,7 +6,6 @@ import {
     GraphQLServerResponse,
 } from '@sgohlke/graphql-server-base'
 import {
-    RequestInformationExtractor,
     ResponseHandler
 } from '..'
 import {
@@ -37,7 +36,7 @@ import {ObjMap} from 'graphql/jsutils/ObjMap'
  */
 export interface GraphQLServerOptions {
     readonly logger?: Logger
-    readonly requestInformationExtractor?: RequestInformationExtractor
+    readonly extractInformationFromRequest?: (request: GraphQLServerRequest) => GraphQLRequestInfo
     readonly responseHandler?: ResponseHandler
     readonly metricsClient?: MetricsClient
     readonly schema?: GraphQLSchema

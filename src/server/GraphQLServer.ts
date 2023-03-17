@@ -236,7 +236,7 @@ export class GraphQLServer {
             metricsClient,
             responseHandler,
             collectErrorMetricsFunction,
-            requestInformationExtractor,
+            extractInformationFromRequest,
         } = this.options
 
         // Reject requests that do not use GET and POST methods.
@@ -256,7 +256,7 @@ export class GraphQLServer {
 
         // Extract graphql request information (query, variables, operationName) from request
         const requestInformation =
-            requestInformationExtractor.extractInformationFromRequest(request)
+            extractInformationFromRequest(request)
         logger.logDebugIfEnabled(
             `Extracted request information is ${JSON.stringify(requestInformation)}`,
             context

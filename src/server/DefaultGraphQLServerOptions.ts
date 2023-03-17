@@ -1,11 +1,10 @@
 import {
+    extractInformationFromRequest,
     GraphQLServerOptions,
-    DefaultRequestInformationExtractor,
     TextLogger,
-    RequestInformationExtractor,
     SimpleMetricsClient,
     DefaultResponseHandler,
-    ResponseHandler
+    ResponseHandler,
 } from '..'
 import {
     execute,
@@ -35,19 +34,13 @@ import {
 } from '@sgohlke/graphql-server-base'
 
 export const fallbackTextLogger = new TextLogger('fallback-logger', 'fallback-service')
-export const defaultRequestInformationExtractor = new DefaultRequestInformationExtractor()
 export const defaultResponseHandler = new DefaultResponseHandler()
 
 export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     logger: Logger = fallbackTextLogger
-    requestInformationExtractor: RequestInformationExtractor = defaultRequestInformationExtractor
+    extractInformationFromRequest: 
+    (request: GraphQLServerRequest) => GraphQLRequestInfo = extractInformationFromRequest
     responseHandler: ResponseHandler = defaultResponseHandler
-
-    /*
-     * Metrics client to be used as default client. Is initialised with SimpleMetricsClient
-     * here because initialising a MetricsClient that uses prom-client multiple times might result
-     * in unexpected and hard to control behaviour.
-     */
     metricsClient: MetricsClient = new SimpleMetricsClient()
     formatErrorFunction = defaultFormatErrorFunction
     collectErrorMetricsFunction = defaultCollectErrorMetrics

@@ -1,8 +1,8 @@
 import {Logger} from '@sgohlke/graphql-server-base'
 import {
+    createLogEntry,
     LogLevel,
     LogEntry,
-    LogHelper,
 } from '..'
 
 /**
@@ -59,7 +59,7 @@ export class TextLogger implements Logger {
         error?: Error,
         customErrorName?: string,
         context?: unknown): void {
-        const logEntry: LogEntry = LogHelper.createLogEntry(logMessage,
+        const logEntry: LogEntry = createLogEntry(logMessage,
             loglevel,
             this.loggerName,
             this.serviceName,

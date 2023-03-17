@@ -1,8 +1,8 @@
 import {Logger} from '@sgohlke/graphql-server-base'
 import {Console} from 'node:console'
 import {
+    createLogEntry,
     LogEntry,
-    LogHelper,
     LogLevel
 } from '..'
 
@@ -63,7 +63,7 @@ export class JsonLogger implements Logger {
         error?: Error,
         customErrorName?: string,
         context?: unknown): void {
-        const logEntry: LogEntry = LogHelper.createLogEntry(logMessage,
+        const logEntry: LogEntry = createLogEntry(logMessage,
             loglevel,
             this.loggerName,
             this.serviceName,

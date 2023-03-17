@@ -8,8 +8,8 @@ import {
     defaultCollectErrorMetrics,
     defaultLoggerContextFunction,
     defaultRequestContextFunction,
-    DefaultRequestInformationExtractor,
     DefaultResponseHandler,
+    extractInformationFromRequest,
     GraphQLServer,
     SimpleMetricsClient
 } from '~/src'
@@ -88,7 +88,7 @@ test('Should execute query without server', async() => {
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: TEXT_LOGGER,
-        requestInformationExtractor: new DefaultRequestInformationExtractor(),
+        extractInformationFromRequest: extractInformationFromRequest,
         metricsClient: new SimpleMetricsClient(),
         collectErrorMetricsFunction: defaultCollectErrorMetrics,
         parseFunction: parse,

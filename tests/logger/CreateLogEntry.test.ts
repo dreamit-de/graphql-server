@@ -4,7 +4,7 @@ import {
     Kind
 } from 'graphql'
 import {
-    LogHelper,
+    createLogEntry,
     LogLevel
 } from '~/src'
 
@@ -74,7 +74,7 @@ test.each`
     ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLErrorWithSensibleStacktrace} | ${graphQLErrorMessage}  | ${'WARN'}        | ${sanitizedMessage}       | ${'customer'} | ${'customer'}
     ${'A GraphQLError message'} | ${LogLevel.error} | ${errorWithSensibleStackInformation}  | ${graphQLErrorMessage}  | ${'ERROR'}       | ${sanitizedMessage}       | ${undefined}  | ${'myTestService'}
 `('expects a correct logEntry is created for given $logMessage , $loglevel and $error ', ({logMessage, loglevel, error, expectedLogMessage, expectedLogLevel, expectedStacktrace, expectedQuery, expectedServiceName}) => {
-    const logEntry = LogHelper.createLogEntry(logMessage, loglevel, 'test-logger', 'myTestService', error)
+    const logEntry = createLogEntry(logMessage, loglevel, 'test-logger', 'myTestService', error)
     expect(logEntry.message).toBe(expectedLogMessage)
     expect(logEntry.level).toBe(expectedLogLevel)
     if (expectedStacktrace) {
@@ -92,7 +92,7 @@ test.each`
 })
 
 test('Should use customErrorName instead or error.name if customErrorName is set', () => {
-    const logEntry = LogHelper.createLogEntry('A GraphQLError message',
+    const logEntry = createLogEntry('A GraphQLError message',
         LogLevel.error,
         'test-logger',
         'myTestService',
@@ -103,7 +103,7 @@ test('Should use customErrorName instead or error.name if customErrorName is set
 
 test('Should use context.serviceName instead of error.extensions.serviceName' +
     ' if context contains serviceName', () => {
-    const logEntry = LogHelper.createLogEntry('A GraphQLError message',
+    const logEntry = createLogEntry('A GraphQLError message',
         LogLevel.error,
         'test-logger',
         'myTestService',

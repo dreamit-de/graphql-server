@@ -9,19 +9,21 @@ export * from './error/DetermineGraphQLOrFetchError'
 export * from './error/DetermineValidationOrIntrospectionDisabledError'
 export * from './error/RemoveValidationRecommendationsFromErrors'
 
+export * from './logger/CreateLogEntry'
+export * from './logger/CreateTimestamp'
 export * from './logger/JsonLogger'
 export * from './logger/LogEntry'
-export * from './logger/LogHelper'
 export * from './logger/LogLevel'
+export * from './logger/SanitizeMessage'
+
 export * from './logger/TextLogger'
 
 export * from './metrics/IncreaseFetchOrGraphQLErrorMetric'
 export * from './metrics/NoMetricsClient'
 export * from './metrics/SimpleMetricsClient'
 
-export * from './request/ContentType'
-export * from './request/DefaultRequestInformationExtractor'
-export * from './request/RequestInformationExtractor'
+export * from './request/GetContentType'
+export * from './request/ExtractInformationFromRequest'
 
 export * from './response/DefaultResponseHandler'
 export * from './response/GraphQLExecutionResult'
