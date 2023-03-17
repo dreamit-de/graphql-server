@@ -1,10 +1,10 @@
 import {Buffer} from 'node:buffer'
 import {
-    GraphQLExecutionResult,
     ResponseHandler,
     ResponseParameters
 } from '..'
 import {GraphQLError} from 'graphql'
+import { GraphQLExecutionResult } from '@sgohlke/graphql-server-base'
 
 /**
  * Default implementation of ResponseHandler interface

@@ -13,16 +13,16 @@ TypeScript declarations are provided within the project.
 
 ## Compatibility
 
-The following table shows which version of [graphql-js][1] library is compatible with which version of
-`@dreamit/graphql-server`. As `@dreamit/graphql-server` defines [graphql-js][1] as peerDependency you might want to
-choose a fitting version according to the [graphql-js][1] version used in your project and by other libraries depending
-on [graphql-js][1].
+The following table shows which version of [graphql-js][1] and [@sgohlke/graphql-server-base][12] are compatible with which version of
+`@dreamit/graphql-server`. As `@dreamit/graphql-server` defines them as peerDependency you might want to
+choose a fitting version used in your project and by other libraries depending
+on them.
 
-| graphql-js version | graphql-server version |                                       Github branch                                        | Development Status |
-|--------------------|:----------------------:|:------------------------------------------------------------------------------------------:|:------------------:|
-| ~~^15.2.0~~        |        ~~1.x~~         | [~~legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15) |    end of life     |
-| ^16.0.0            |          2.x           |   [legacy-server-v2](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2)   |    maintenance     |
-| ^16.0.0            |          3.x           |                    [main](https://github.com/dreamit-de/graphql-server)                    |       active       |
+| graphql-js version | graphql-server version |  graphql-server-base version |                                       Github branch                                        | Development Status |
+|--------------------|:----------------------:|:----------------------:|:------------------------------------------------------------------------------------------:|:------------------:|
+| ~~^15.2.0~~        |        ~~1.x~~         |        ~~n.a.~~        | [~~legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15) |    end of life     |
+| ^16.0.0            |          2.x           |          n.a.          |   [legacy-server-v2](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2)   |    maintenance     |
+| ^16.0.0            |          3.x           |          ^1.0          |                    [main](https://github.com/dreamit-de/graphql-server)                    |       active       |
 
 ## Features
 
@@ -31,7 +31,7 @@ on [graphql-js][1].
 - Uses out-of-the-box default options to ease use and keep code short
 - Provides hot reloading for schema and options
 - Provides out-of-the-box metrics for GraphQLServer
-- Uses only 2 peerDependencies: [graphql-js][1] version 16 and [graphql-prom-metrics][11] version 1 (no other production
+- Uses only 3 peerDependencies: [graphql-js][1] version 16, [graphql-prom-metrics][11] version 1 and [graphql-server-base][12] (no other production
   dependencies)
 
 ## Core Functions
@@ -196,7 +196,7 @@ from [graphql-prom-metrics][11]
 **Warning!**:
 If you are using **PromMetricsClient** you should avoid creating multiple **GraphQLServer** instances that all use 
 the **PromMetricsClient**. Because of the usage of a global object in the [prom-client][3] library this might result 
-in unexpected behaviour or malfunction. You can set another metrics client like **SimpleMetricsClient** 
+in unexpected behavior or malfunction. You can set another metrics client like **SimpleMetricsClient** 
 by calling **GraphQLServer setOptions()** or **GraphQLServer setMetricsClient()**.   
 
 The **SimpleMetricsClient** provides three custom metrics for the GraphQL server:
@@ -467,3 +467,5 @@ graphql-server is under [MIT-License](./LICENSE).
 [10]: https://hapi.dev/
 
 [11]: https://github.com/sgohlke/graphql-prom-metrics
+
+[12]: https://github.com/sgohlke/graphql-server-base

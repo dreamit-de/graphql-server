@@ -9,7 +9,7 @@ import {
     SCHEMA_VALIDATION_ERROR,
     SYNTAX_ERROR,
     VALIDATION_ERROR
-} from '..'
+} from '@sgohlke/graphql-server-base'
 
 /**
  * Simple metrics client.

@@ -3,7 +3,7 @@ import {
     GraphQLServerRequest,
     GraphQLServerResponse,
     Logger
-} from '..'
+} from '@sgohlke/graphql-server-base'
 import {
     ExecutionResult,
     GraphQLError,

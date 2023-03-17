@@ -6,7 +6,6 @@ import {
     Source,
 } from 'graphql'
 import {
-    GraphQLServerOptions,
     GRAPHQL_ERROR,
     INVALID_SCHEMA_ERROR,
     METHOD_NOT_ALLOWED_ERROR,
@@ -15,16 +14,19 @@ import {
     SYNTAX_ERROR,
     GraphQLServerRequest,
     GraphQLServerResponse,
+    GraphQLRequestInfo,
+    GraphQLExecutionResult,
+    MetricsClient,
+}  from '@sgohlke/graphql-server-base'
+import {
+    GraphQLServerOptions,
     isAggregateError,
     determineGraphQLOrFetchError,
     determineValidationOrIntrospectionDisabledError,
     DefaultGraphQLServerOptions,
     removeValidationRecommendationsFromErrors,
     increaseFetchOrGraphQLErrorMetric,
-    GraphQLRequestInfo,
-    GraphQLExecutionResult,
     getFirstErrorFromExecutionResult,
-    MetricsClient,
     SimpleMetricsClient,
 } from '..'
 import {PromMetricsClient} from '@sgohlke/graphql-prom-metrics'

@@ -2,12 +2,7 @@ import {
     GraphQLServerOptions,
     DefaultRequestInformationExtractor,
     TextLogger,
-    GraphQLServerRequest,
-    GraphQLServerResponse,
-    GraphQLRequestInfo,
-    Logger,
     RequestInformationExtractor,
-    MetricsClient,
     SimpleMetricsClient,
     DefaultResponseHandler,
     ResponseHandler
@@ -31,6 +26,13 @@ import {
     GraphQLFieldResolver,
     GraphQLTypeResolver
 } from 'graphql/type/definition'
+import { 
+    GraphQLRequestInfo, 
+    GraphQLServerRequest, 
+    GraphQLServerResponse, 
+    Logger, 
+    MetricsClient 
+} from '@sgohlke/graphql-server-base'
 
 export const fallbackTextLogger = new TextLogger('fallback-logger', 'fallback-service')
 export const defaultRequestInformationExtractor = new DefaultRequestInformationExtractor()

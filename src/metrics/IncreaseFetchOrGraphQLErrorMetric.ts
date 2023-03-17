@@ -1,7 +1,9 @@
+import { 
+    Logger, 
+    MetricsClient 
+} from '@sgohlke/graphql-server-base'
 import {
     determineGraphQLOrFetchError,
-    Logger,
-    MetricsClient
 } from '..'
 
 /**

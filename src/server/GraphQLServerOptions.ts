@@ -1,10 +1,12 @@
 import {
     Logger,
-    RequestInformationExtractor,
     GraphQLRequestInfo,
     MetricsClient,
     GraphQLServerRequest,
     GraphQLServerResponse,
+} from '@sgohlke/graphql-server-base'
+import {
+    RequestInformationExtractor,
     ResponseHandler
 } from '..'
 import {

@@ -1,6 +1,6 @@
+import {Logger} from '@sgohlke/graphql-server-base'
 import {Console} from 'node:console'
 import {
-    Logger,
     LogEntry,
     LogHelper,
     LogLevel

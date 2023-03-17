@@ -1,5 +1,5 @@
+import {Logger} from '@sgohlke/graphql-server-base'
 import {
-    Logger,
     LogLevel,
     LogEntry,
     LogHelper,

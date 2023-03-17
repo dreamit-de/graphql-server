@@ -10,7 +10,6 @@ import {
     defaultRequestContextFunction,
     DefaultRequestInformationExtractor,
     DefaultResponseHandler,
-    GraphQLExecutionResult,
     GraphQLServer,
     SimpleMetricsClient
 } from '~/src'
@@ -24,6 +23,7 @@ import {
 } from '../ExampleSchemas'
 import {TEXT_LOGGER} from '~/tests/TestHelpers'
 import {PromMetricsClient} from '@sgohlke/graphql-prom-metrics'
+import {GraphQLExecutionResult} from '@sgohlke/graphql-server-base'
 
 const graphQLErrorResponse: GraphQLExecutionResult = {
     executionResult: {
