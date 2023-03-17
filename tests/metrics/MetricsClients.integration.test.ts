@@ -2,7 +2,6 @@ import bodyParser from 'body-parser'
 import express, {Express} from 'express'
 import {Server} from 'node:http'
 import {
-    GraphQLServer,
     FETCH_ERROR,
     GRAPHQL_ERROR,
     INVALID_SCHEMA_ERROR,
@@ -12,6 +11,9 @@ import {
     SYNTAX_ERROR,
     VALIDATION_ERROR,
     MetricsClient,
+} from '@sgohlke/graphql-server-base'
+import {
+    GraphQLServer,
     SimpleMetricsClient,
     GraphQLServerOptions,
     NoMetricsClient
@@ -29,7 +31,6 @@ import {
     GRAPHQL_SERVER_PORT,
     LOGGER
 } from '../TestHelpers'
-
 import {
     GraphQLError,
     NoSchemaIntrospectionCustomRule

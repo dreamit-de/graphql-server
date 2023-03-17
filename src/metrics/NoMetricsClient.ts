@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { MetricsClient } from '..'
+import { MetricsClient } from '@sgohlke/graphql-server-base'
 
 /**
  * Metrics client that does not collect any metrics.

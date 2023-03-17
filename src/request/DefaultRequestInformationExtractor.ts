@@ -1,13 +1,15 @@
 import {
-    ContentType,
     getContentType,
-    GraphQLRequestInfo,
-    GraphQLServerRequest,
     RequestInformationExtractor
 } from '..'
 import {URLSearchParams} from 'node:url'
 import {GraphQLError} from 'graphql'
 import {Buffer} from 'node:buffer'
+import { 
+    ContentType, 
+    GraphQLRequestInfo, 
+    GraphQLServerRequest 
+} from '@sgohlke/graphql-server-base'
 
 /**
  * Default implementation of RequestInformationExtractor interface

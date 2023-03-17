@@ -1,7 +1,7 @@
 import {
     INTROSPECTION_DISABLED_ERROR,
     VALIDATION_ERROR
-} from '..'
+} from '@sgohlke/graphql-server-base'
 
 /**
  * Determines if an error is a ValidationError or

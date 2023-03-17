@@ -1,5 +1,4 @@
 import {
-    GraphQLRequestInfo,
     GraphQLServerOptions,
     JsonLogger,
     LogEntry,
@@ -13,6 +12,7 @@ import {
 } from './ExampleSchemas'
 import fetch from 'cross-fetch'
 import {Console} from 'node:console'
+import { GraphQLRequestInfo } from '@sgohlke/graphql-server-base'
 
 export class NoStacktraceJsonLogger extends JsonLogger {
     loggerConsole: Console = new Console(process.stdout, process.stderr, false)
