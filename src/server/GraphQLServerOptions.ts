@@ -4,10 +4,9 @@ import {
     MetricsClient,
     GraphQLServerRequest,
     GraphQLServerResponse,
+    GraphQLExecutionResult,
+    ResponseParameters
 } from '@sgohlke/graphql-server-base'
-import {
-    ResponseHandler
-} from '..'
 import {
     DocumentNode,
     ExecutionArgs,
@@ -37,7 +36,7 @@ import {ObjMap} from 'graphql/jsutils/ObjMap'
 export interface GraphQLServerOptions {
     readonly logger?: Logger
     readonly extractInformationFromRequest?: (request: GraphQLServerRequest) => GraphQLRequestInfo
-    readonly responseHandler?: ResponseHandler
+    readonly sendResponse?: (responseParameters: ResponseParameters) => void
     readonly metricsClient?: MetricsClient
     readonly schema?: GraphQLSchema
     readonly shouldUpdateSchemaFunction?: (schema?: GraphQLSchema) => boolean
@@ -80,4 +79,8 @@ export interface GraphQLServerOptions {
                                   logger?: Logger,
                                   context?: unknown)
         => ObjMap<unknown> | undefined
+    readonly methodNotAllowedResponse?: (method?: string) => GraphQLExecutionResult
+    readonly invalidSchemaResponse?: GraphQLExecutionResult
+    readonly missingQueryParameterResponse?: GraphQLExecutionResult
+    readonly onlyQueryInGetRequestsResponse?: (operation?: string) => GraphQLExecutionResult
 }

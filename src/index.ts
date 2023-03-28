@@ -25,9 +25,8 @@ export * from './metrics/SimpleMetricsClient'
 export * from './request/GetContentType'
 export * from './request/ExtractInformationFromRequest'
 
-export * from './response/DefaultResponseHandler'
+export * from './response/SendResponse'
 export * from './response/GraphQLExecutionResult'
-export * from './response/ResponseHandler'
 
 export * from './server/DefaultGraphQLServerOptions'
 export * from './server/GraphQLServer'

@@ -3,10 +3,8 @@ import bodyParser from 'body-parser'
 import express, {Express} from 'express'
 import {Server} from 'node:http'
 import {
-    DefaultResponseHandler,
     GraphQLServer,
     JsonLogger,
-    ResponseParameters,
 } from '~/src'
 import {
     usersQuery,
@@ -21,6 +19,7 @@ import {
     NoStacktraceTextLogger,
 } from '../TestHelpers'
 import {Buffer} from 'node:buffer'
+import { ResponseParameters } from '@sgohlke/graphql-server-base'
 
 let customGraphQLServer: GraphQLServer
 let graphQLServer: Server
@@ -39,7 +38,7 @@ test('Should return value from context instead of user data ', async() => {
         schema: userSchema,
         rootValue: userSchemaResolvers,
         logger: new JsonLogger('test-logger', 'customGraphQLServer'),
-        responseHandler: new CustomResponseHandler(),
+        sendResponse: customSendResponse,
         reassignAggregateError: false,
         requestResponseContextFunction: () => {
             return {
@@ -80,28 +79,26 @@ test('Should return error if context serviceName is different as graphql server 
         customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
     })
 
-class CustomResponseHandler extends DefaultResponseHandler {
-
-    sendResponse(responseParameters: ResponseParameters): void {
-        const {
-            context,
-            executionResult,
-            response,
-            statusCode,
-        }
+function customSendResponse(responseParameters: ResponseParameters): void {
+    const {
+        context,
+        executionResult,
+        response,
+        statusCode,
+    }
             = responseParameters
-        if (statusCode) {
-            response.statusCode = statusCode
-        }
-        response.setHeader('Content-Type', 'application/json; charset=utf-8')
-        const contextRecord = context as Record<string, unknown>
-        if (contextRecord && contextRecord.customText) {
-            response.end(Buffer.from(JSON.stringify(contextRecord.customText), 'utf8'))
-        } else {
-            response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))
-        }
+    if (statusCode) {
+        response.statusCode = statusCode
+    }
+    response.setHeader('Content-Type', 'application/json; charset=utf-8')
+    const contextRecord = context as Record<string, unknown>
+    if (contextRecord && contextRecord.customText) {
+        response.end(Buffer.from(JSON.stringify(contextRecord.customText), 'utf8'))
+    } else {
+        response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))
     }
 }
+
 
 function setupGraphQLServer(): Express {
     const graphQLServerExpress = express()

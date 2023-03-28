@@ -7,8 +7,9 @@ import {
 import {
     defaultCollectErrorMetrics,
     defaultLoggerContextFunction,
+    defaultMethodNotAllowedResponse,
+    defaultOnlyQueryInGetRequestsResponse,
     defaultRequestContextFunction,
-    DefaultResponseHandler,
     extractInformationFromRequest,
     GraphQLServer,
     SimpleMetricsClient
@@ -35,10 +36,10 @@ test('Should create schema on GraphQLServer class creation', () => {
     const graphqlServer = new GraphQLServer({
         logger: TEXT_LOGGER,
         schema: initialSchemaWithOnlyDescription,
-        responseHandler: new DefaultResponseHandler(graphQLErrorResponse,
-            graphQLErrorResponse,
-            graphQLErrorResponse,
-            graphQLErrorResponse)
+        onlyQueryInGetRequestsResponse: defaultOnlyQueryInGetRequestsResponse,
+        missingQueryParameterResponse: graphQLErrorResponse,
+        invalidSchemaResponse: graphQLErrorResponse,
+        methodNotAllowedResponse: defaultMethodNotAllowedResponse
     })
     const schema = graphqlServer.getSchema()
     expect(schema).toBeDefined()

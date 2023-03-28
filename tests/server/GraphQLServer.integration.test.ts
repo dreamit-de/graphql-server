@@ -183,7 +183,7 @@ test('Should get error response when using mutation in a GET request', async() =
     generateGetParametersFromGraphQLRequestInfo(loginRequest))
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe(
-        'Only "query" operation is allowed in "GET" requests'
+        'Only "query" operation is allowed in "GET" requests. Got: "mutation"'
     )
 })
 
@@ -243,7 +243,7 @@ test('Should get error response if invalid method is used', async() => {
     const response = await fetchResponse('doesnotmatter', 'PUT')
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe(
-        'GraphQL server only supports GET and POST requests.'
+        'GraphQL server only supports GET and POST requests. Got PUT'
     )
     const allowResponseHeader = response.headers.get('Allow')
     expect(allowResponseHeader).toBe('GET, POST')

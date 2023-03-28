@@ -3,8 +3,6 @@ import {
     GraphQLServerOptions,
     TextLogger,
     SimpleMetricsClient,
-    DefaultResponseHandler,
-    ResponseHandler,
 } from '..'
 import {
     execute,
@@ -26,21 +24,42 @@ import {
     GraphQLTypeResolver
 } from 'graphql/type/definition'
 import { 
+    GraphQLExecutionResult,
     GraphQLRequestInfo, 
     GraphQLServerRequest, 
     GraphQLServerResponse, 
     Logger, 
-    MetricsClient 
+    MetricsClient, 
+    ResponseParameters
 } from '@sgohlke/graphql-server-base'
+import { sendResponse } from '@/response/SendResponse'
 
 export const fallbackTextLogger = new TextLogger('fallback-logger', 'fallback-service')
-export const defaultResponseHandler = new DefaultResponseHandler()
+export const invalidSchemaResponse: GraphQLExecutionResult = {
+    executionResult: {
+        errors:
+            [new GraphQLError(
+                'Request cannot be processed. Schema in GraphQL server is invalid.', {}
+            )]
+    },
+    statusCode: 500,
+}
+
+export const missingQueryParameterResponse: GraphQLExecutionResult = {
+    executionResult: {
+        errors:
+            [new GraphQLError(
+                'Request cannot be processed. No query was found in parameters or body.', {}
+            )]
+    },
+    statusCode: 400,
+}
 
 export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     logger: Logger = fallbackTextLogger
     extractInformationFromRequest: 
     (request: GraphQLServerRequest) => GraphQLRequestInfo = extractInformationFromRequest
-    responseHandler: ResponseHandler = defaultResponseHandler
+    sendResponse: (responseParameters: ResponseParameters) => void = sendResponse
     metricsClient: MetricsClient = new SimpleMetricsClient()
     formatErrorFunction = defaultFormatErrorFunction
     collectErrorMetricsFunction = defaultCollectErrorMetrics
@@ -62,7 +81,11 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     rootValue?: unknown
     fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
     typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
-    schema?: GraphQLSchema
+    schema?: GraphQLSchema 
+    invalidSchemaResponse = invalidSchemaResponse
+    missingQueryParameterResponse = missingQueryParameterResponse
+    methodNotAllowedResponse = defaultMethodNotAllowedResponse
+    onlyQueryInGetRequestsResponse = defaultOnlyQueryInGetRequestsResponse
 }
 
 /**
@@ -189,4 +212,42 @@ export function defaultCollectErrorMetrics(errorName: string,
  */
 export function defaultShouldUpdateSchema(schema?: GraphQLSchema): boolean {
     return !!schema
+}
+
+/**
+ * Return a default error message if used method is not allowed by GraphQLServer
+ * @param {string} method - The actual used method
+ * @returns {GraphQLExecutionResult} A MethodNotAllowed response
+ */
+export function defaultMethodNotAllowedResponse(method?: string): GraphQLExecutionResult {
+    return {
+        executionResult: {
+            errors:
+                [
+                    new GraphQLError('GraphQL server only supports GET and POST requests.'
+                    + ` Got ${method}`
+                    , {})
+                ]
+        },
+        statusCode: 405,
+        customHeaders: { allow: 'GET, POST' }
+    }
+}
+
+/**
+ * Return a default error message if an unsupported operation is used in GET requests.
+ * Default: Only supported operation is "query"
+ * @param {string} operation - The actual used operation
+ * @returns {GraphQLExecutionResult} A OnlyQueryInGetRequestsResponse response
+ */
+export function defaultOnlyQueryInGetRequestsResponse(operation?: string): GraphQLExecutionResult {
+    return {
+        executionResult: {
+            errors:
+                [new GraphQLError('Only "query" operation is allowed in "GET" requests.'+
+                ` Got: "${operation}"`, {})]
+        },
+        statusCode: 405,
+        customHeaders: {allow: 'POST'}
+    }
 }

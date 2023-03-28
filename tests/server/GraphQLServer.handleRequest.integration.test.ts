@@ -58,7 +58,7 @@ test('Should get error response if invalid method is used', async() => {
     const response = await fetchResponse('doesnotmatter', 'PUT')
     const responseObject = await response.json()
     expect(responseObject.result.executionResult.errors[0].message).toBe(
-        'GraphQL server only supports GET and POST requests.'
+        'GraphQL server only supports GET and POST requests. Got PUT'
     )
     const allowResponseHeader = responseObject.result.customHeaders.allow
     expect(allowResponseHeader).toBe('GET, POST')

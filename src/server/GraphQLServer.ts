@@ -138,14 +138,14 @@ export class GraphQLServer {
             loggerContextFunction,
             logger,
             metricsClient,
-            responseHandler
+            sendResponse
         } = this.options
 
         const context = loggerContextFunction(logger, this.options)
         metricsClient.increaseRequestThroughput(context)
         const result = await this.executeRequestWithInfo(requestInformation,
             context)
-        return responseHandler.sendResponse({
+        return sendResponse({
             executionResult: result.executionResult,
             response,
             context,
@@ -194,7 +194,7 @@ export class GraphQLServer {
             requestResponseContextFunction,
             logger,
             metricsClient,
-            responseHandler,
+            sendResponse,
             formatErrorFunction,
         } = this.options
 
@@ -202,7 +202,7 @@ export class GraphQLServer {
         metricsClient.increaseRequestThroughput(context)
         const requestInformation = this.getRequestInformation(request, context)
         if ('executionResult' in requestInformation) {
-            return responseHandler.sendResponse({
+            return sendResponse({
                 executionResult: requestInformation.executionResult,
                 request,
                 response,
@@ -217,7 +217,7 @@ export class GraphQLServer {
         const result = await this.executeRequestWithInfo(requestInformation,
             context,
             request.method)
-        return responseHandler.sendResponse({
+        return sendResponse({
             executionResult: result.executionResult,
             request,
             response,
@@ -234,14 +234,15 @@ export class GraphQLServer {
         const {
             logger,
             metricsClient,
-            responseHandler,
+            methodNotAllowedResponse,
             collectErrorMetricsFunction,
             extractInformationFromRequest,
         } = this.options
 
         // Reject requests that do not use GET and POST methods.
         if (request.method !== 'GET' && request.method !== 'POST') {
-            const error = getFirstErrorFromExecutionResult(responseHandler.methodNotAllowedResponse)
+            const response = methodNotAllowedResponse(request.method)
+            const error = getFirstErrorFromExecutionResult(response)
             logger.error(requestCouldNotBeProcessed,
                 error,
                 METHOD_NOT_ALLOWED_ERROR,
@@ -251,7 +252,7 @@ export class GraphQLServer {
                 context,
                 logger,
                 metricsClient)
-            return responseHandler.methodNotAllowedResponse
+            return response
         }
 
         // Extract graphql request information (query, variables, operationName) from request
@@ -270,7 +271,9 @@ export class GraphQLServer {
         const {
             logger,
             metricsClient,
-            responseHandler,
+            invalidSchemaResponse,
+            missingQueryParameterResponse,
+            onlyQueryInGetRequestsResponse,
             collectErrorMetricsFunction,
             schema,
             parseFunction,
@@ -291,7 +294,7 @@ export class GraphQLServer {
         // Reject requests if schema is invalid
         if (!schema || !this.isValidSchema(schema)) {
             metricsClient.setAvailability(0)
-            const error = getFirstErrorFromExecutionResult(responseHandler.invalidSchemaResponse)
+            const error = getFirstErrorFromExecutionResult(invalidSchemaResponse)
             logger.error(requestCouldNotBeProcessed,
                 error,
                 INVALID_SCHEMA_ERROR,
@@ -301,7 +304,7 @@ export class GraphQLServer {
                 context,
                 logger,
                 metricsClient)
-            return {...responseHandler.invalidSchemaResponse, ...requestInformation}
+            return {...invalidSchemaResponse, ...requestInformation}
         } else {
             metricsClient.setAvailability(1)
         }
@@ -325,7 +328,7 @@ export class GraphQLServer {
         // Reject request if no query parameter is provided
         else if (!requestInformation.query) {
             const error =
-                getFirstErrorFromExecutionResult(responseHandler.missingQueryParameterResponse)
+                getFirstErrorFromExecutionResult(missingQueryParameterResponse)
             logger.error(requestCouldNotBeProcessed,
                 error,
                 MISSING_QUERY_PARAMETER_ERROR,
@@ -335,7 +338,7 @@ export class GraphQLServer {
                 context,
                 logger,
                 metricsClient)
-            return {...responseHandler.missingQueryParameterResponse, ...requestInformation}
+            return {...missingQueryParameterResponse, ...requestInformation}
         }
 
         // Parse given GraphQL source into a document (parse(query) function)
@@ -410,8 +413,9 @@ export class GraphQLServer {
          */
         const operationAST = getOperationAST(documentAST, requestInformation.operationName)
         if (requestMethod === 'GET' && operationAST && operationAST.operation !== 'query') {
+            const response = onlyQueryInGetRequestsResponse(operationAST.operation)
             const error =
-                getFirstErrorFromExecutionResult(responseHandler.onlyQueryInGetRequestsResponse)
+                getFirstErrorFromExecutionResult(response)
             logger.error(requestCouldNotBeProcessed,
                 error,
                 METHOD_NOT_ALLOWED_ERROR,
@@ -421,7 +425,7 @@ export class GraphQLServer {
                 context,
                 logger,
                 metricsClient)
-            return {...responseHandler.onlyQueryInGetRequestsResponse, ...requestInformation}
+            return {...response, ...requestInformation}
         }
 
         /**
