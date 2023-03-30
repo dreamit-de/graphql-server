@@ -23,7 +23,7 @@ export function increaseFetchOrGraphQLErrorMetric(error: unknown,
         context?: unknown,
         logger?: Logger,
         metricsClient?: MetricsClient) => void): void {
-    logger.logDebugIfEnabled(
+    logger.debug(
         'Calling increaseFetchOrGraphQLErrorMetric'+
         ` with error ${error} and errorIsFetch ${error instanceof Error }`,
         context

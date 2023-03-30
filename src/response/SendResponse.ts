@@ -15,7 +15,7 @@ export function sendResponse(responseParameters: ResponseParameters): void {
         formatErrorFunction
     }
             = responseParameters
-    logger.logDebugIfEnabled(
+    logger.debug(
         `Preparing response with executionResult ${JSON.stringify(executionResult)}`+
             `, status code ${statusCode} and custom headers ${JSON.stringify(customHeaders)}` +
             `, and context ${context}`,
@@ -30,7 +30,7 @@ export function sendResponse(responseParameters: ResponseParameters): void {
     response.setHeader('Content-Type', 'application/json; charset=utf-8')
     if (customHeaders) {
         for (const [key, value] of Object.entries(customHeaders)) {
-            logger.logDebugIfEnabled(`Set custom header ${key} to ${value}`,
+            logger.debug(`Set custom header ${key} to ${value}`,
                 context)
             response.setHeader(key, String(value))
         }

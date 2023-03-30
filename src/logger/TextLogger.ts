@@ -30,12 +30,8 @@ export class TextLogger implements Logger {
     }
 
     debug(logMessage: string, context?: unknown): void {
-        this.logMessage(logMessage, LogLevel.debug,  undefined, undefined, context)
-    }
-
-    logDebugIfEnabled(message: string, context?: unknown): void {
         if (this.debugEnabled) {
-            this.debug(message, context)
+            this.logMessage(logMessage, LogLevel.debug,  undefined, undefined, context)
         }
     }
 

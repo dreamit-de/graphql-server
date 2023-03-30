@@ -2,6 +2,7 @@ import {
     extractInformationFromRequest,
     GraphQLServerOptions,
     TextLogger,
+    sendResponse,
     SimpleMetricsClient,
 } from '..'
 import {
@@ -32,7 +33,6 @@ import {
     MetricsClient, 
     ResponseParameters
 } from '@sgohlke/graphql-server-base'
-import { sendResponse } from '@/response/SendResponse'
 
 export const fallbackTextLogger = new TextLogger('fallback-logger', 'fallback-service')
 export const invalidSchemaResponse: GraphQLExecutionResult = {
@@ -110,7 +110,7 @@ export function defaultRequestResponseContextFunction(request: GraphQLServerRequ
     _logger?: Logger,
     serverOptions?: GraphQLServerOptions): unknown {
     if (serverOptions && serverOptions.logger) {
-        serverOptions.logger.logDebugIfEnabled(
+        serverOptions.logger.debug(
             'Calling defaultRequestResponseContextFunction with '+
             `request ${request} and response ${response}`,
             request
@@ -130,7 +130,7 @@ export function defaultRequestContextFunction(request: GraphQLServerRequest,
     _logger?: Logger,
     serverOptions?: GraphQLServerOptions): unknown {
     if (serverOptions && serverOptions.logger) {
-        serverOptions.logger.logDebugIfEnabled(
+        serverOptions.logger.debug(
             `Calling defaultRequestContextFunction with request ${request}`,
             request
         )
@@ -147,7 +147,7 @@ export function defaultRequestContextFunction(request: GraphQLServerRequest,
 export function defaultLoggerContextFunction(_logger?: Logger,
     serverOptions?: GraphQLServerOptions): unknown {
     if (serverOptions && serverOptions.logger) {
-        serverOptions.logger.logDebugIfEnabled(
+        serverOptions.logger.debug(
             'Calling defaultLoggerContextFunction',
         )
     }
@@ -169,7 +169,7 @@ export function defaultExtensions(requestInfo: GraphQLRequestInfo,
     logger?: Logger,
     context?: unknown): ObjMap<unknown> | undefined {
     if (logger) {
-        logger.logDebugIfEnabled(
+        logger.debug(
             `Calling defaultExtensions for requestInfo ${JSON.stringify(requestInfo)}`+
             ` and executionResult ${JSON.stringify(executionResult)}`,
             context
@@ -193,7 +193,7 @@ export function defaultCollectErrorMetrics(errorName: string,
     logger?: Logger,
     metricsClient?: MetricsClient): void {
     if (logger) {
-        logger.logDebugIfEnabled(
+        logger.debug(
             `Calling defaultCollectErrorMetrics with error ${error} and errorName ${errorName}`,
             context
         )

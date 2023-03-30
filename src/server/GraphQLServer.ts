@@ -66,7 +66,7 @@ export class GraphQLServer {
 
     setSchema(schema?: GraphQLSchema): void {
         this.options.logger.info('Trying to set graphql schema')
-        this.options.logger.logDebugIfEnabled(`Schema is  ${JSON.stringify(schema)}`)
+        this.options.logger.debug(`Schema is  ${JSON.stringify(schema)}`)
         if (this.options.shouldUpdateSchemaFunction(schema)) {
             this.options.schema = schema
             // Validate schema
@@ -258,7 +258,7 @@ export class GraphQLServer {
         // Extract graphql request information (query, variables, operationName) from request
         const requestInformation =
             extractInformationFromRequest(request)
-        logger.logDebugIfEnabled(
+        logger.debug(
             `Extracted request information is ${JSON.stringify(requestInformation)}`,
             context
         )
@@ -362,7 +362,7 @@ export class GraphQLServer {
                 requestInformation: requestInformation,
             }
         }
-        logger.logDebugIfEnabled(
+        logger.debug(
             `Parsing query into document succeeded with document: ${JSON.stringify(documentAST)}`,
             context
         )
@@ -377,7 +377,7 @@ export class GraphQLServer {
             validationOptions,
             validationTypeInfo)
         if (validationErrors.length > 0) {
-            logger.logDebugIfEnabled(
+            logger.debug(
                 `One or more validation errors occurred: ${JSON.stringify(validationErrors)}`,
                 context
             )
@@ -461,7 +461,7 @@ export class GraphQLServer {
                     if (reassignAggregateError
                         && error.originalError
                         && isAggregateError(error.originalError)) {
-                        logger.logDebugIfEnabled('Error is AggregateError and ' +
+                        logger.debug('Error is AggregateError and ' +
                             'reassignAggregateError feature is enabled. AggregateError ' +
                             'will be reassigned to original errors field.',
                         context)
@@ -482,7 +482,7 @@ export class GraphQLServer {
             }
 
             // Return execution result
-            logger.logDebugIfEnabled(
+            logger.debug(
                 `Create response from data ${JSON.stringify(executionResult)}`,
                 context
             )
