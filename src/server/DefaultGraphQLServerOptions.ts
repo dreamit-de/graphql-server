@@ -70,9 +70,7 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     removeValidationRecommendations = true
     reassignAggregateError = false
     validateFunction = validate
-    requestResponseContextFunction = defaultRequestResponseContextFunction
-    requestContextFunction = defaultRequestContextFunction
-    loggerContextFunction = defaultLoggerContextFunction
+    contextFunction = defaultContextFunction
     executeFunction = execute
     extensionFunction = defaultExtensions
     shouldUpdateSchemaFunction = defaultShouldUpdateSchema
@@ -105,8 +103,8 @@ export function defaultFormatErrorFunction(error: GraphQLError): GraphQLFormatte
  * @param {Logger} _logger - DEPRECATED: use serverOptions.logger instead
  * @param {GraphQLServerOptions} serverOptions - The GraphQLServerOptions
  */
-export function defaultRequestResponseContextFunction(request: GraphQLServerRequest,
-    response: GraphQLServerResponse,
+export function defaultContextFunction(request?: GraphQLServerRequest,
+    response?: GraphQLServerResponse,
     _logger?: Logger,
     serverOptions?: GraphQLServerOptions): unknown {
     if (serverOptions && serverOptions.logger) {
@@ -117,41 +115,6 @@ export function defaultRequestResponseContextFunction(request: GraphQLServerRequ
         )
     }
     return request
-}
-
-/**
- * Default context function to store information in context for further use.
- * Default behaviour: return request object. Can be set in options.
- * @param {GraphQLServerRequest} request - The initial request
- * @param {Logger} _logger - DEPRECATED: use serverOptions.logger instead
- * @param {GraphQLServerOptions} serverOptions - The GraphQLServerOptions
- */
-export function defaultRequestContextFunction(request: GraphQLServerRequest,
-    _logger?: Logger,
-    serverOptions?: GraphQLServerOptions): unknown {
-    if (serverOptions && serverOptions.logger) {
-        serverOptions.logger.debug(
-            `Calling defaultRequestContextFunction with request ${request}`,
-            request
-        )
-    }
-    return request
-}
-
-/**
- * Default context function to store information in context for further use.
- * Default behaviour: return empty object. Can be set in options.
- * @param {Logger} _logger - DEPRECATED: use serverOptions.logger instead
- * @param {GraphQLServerOptions} serverOptions - The GraphQLServerOptions
- */
-export function defaultLoggerContextFunction(_logger?: Logger,
-    serverOptions?: GraphQLServerOptions): unknown {
-    if (serverOptions && serverOptions.logger) {
-        serverOptions.logger.debug(
-            'Calling defaultLoggerContextFunction',
-        )
-    }
-    return {}
 }
 
 /**

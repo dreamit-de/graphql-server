@@ -6,10 +6,9 @@ import {
 } from 'graphql'
 import {
     defaultCollectErrorMetrics,
-    defaultLoggerContextFunction,
+    defaultContextFunction,
     defaultMethodNotAllowedResponse,
     defaultOnlyQueryInGetRequestsResponse,
-    defaultRequestContextFunction,
     extractInformationFromRequest,
     GraphQLServer,
     SimpleMetricsClient
@@ -94,10 +93,9 @@ test('Should execute query without server', async() => {
         collectErrorMetricsFunction: defaultCollectErrorMetrics,
         parseFunction: parse,
         validateFunction: validate,
-        requestContextFunction: defaultRequestContextFunction,
-        loggerContextFunction: defaultLoggerContextFunction,
+        contextFunction: defaultContextFunction,
     })
-    const result = await graphqlServer.executeRequest({
+    const result = await graphqlServer.handleRequest({
         query: usersQuery
     })
     expect(result.executionResult.data?.users).toEqual([userOne, userTwo])
@@ -138,10 +136,10 @@ test('Usage of a second GraphQLServer with MetricsClient that does not use prom-
     })
 
     // Execute request on main server twice to get throughput count of 2
-    await graphqlServerMain.executeRequest({
+    await graphqlServerMain.handleRequest({
         query: usersQuery
     })
-    await graphqlServerMain.executeRequest({
+    await graphqlServerMain.handleRequest({
         query: usersQuery
     })
     let metrics = await graphqlServerMain.getMetrics()
@@ -157,7 +155,7 @@ test('Usage of a second GraphQLServer with MetricsClient that does not use prom-
     })
 
     // Execute request on second server once to get throughput count of 1
-    await graphqlServerSecond.executeRequest({
+    await graphqlServerSecond.handleRequest({
         query: usersQuery
     })
     metrics = await graphqlServerSecond.getMetrics()

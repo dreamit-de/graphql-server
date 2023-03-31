@@ -355,7 +355,7 @@ function setupGraphQLServer(): Express {
     customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
     graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
     graphQLServerExpress.all('/graphql', (request, response) => {
-        return customGraphQLServer.handleRequestAndSendResponse(request, response)
+        return customGraphQLServer.handleRequest(request, response)
     })
     return graphQLServerExpress
 }

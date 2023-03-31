@@ -62,7 +62,7 @@ function setupGraphQLServer(): Express {
         } catch {
             query = ''
         }
-        return await customGraphQLServer.executeRequestAndSendResponse({
+        return await customGraphQLServer.handleRequest({
             query: query
         }, response)
     })

@@ -16,6 +16,7 @@ import {
     GraphQLServerResponse,
     GraphQLRequestInfo,
     GraphQLExecutionResult,
+    isGraphQLServerRequest,
     MetricsClient,
 }  from '@sgohlke/graphql-server-base'
 import {
@@ -110,123 +111,67 @@ export class GraphQLServer {
     }
 
     /**
-     * Executes a given request with requestInformation and returns an execution result
-     * @param {GraphQLRequestInfo} requestInformation - The request information
+     * Executes a given request and returns an execution result
+     * @param {GraphQLServerRequest | GraphQLRequestInfo} request - 
+     * The server request or request information
+     * @param {GraphQLServerResponse} response - If set sends a response, else not
      * @returns {GraphQLExecutionResult} The execution result
      */
-    async executeRequest(requestInformation: GraphQLRequestInfo): Promise<GraphQLExecutionResult> {
+    async handleRequest(request: GraphQLServerRequest | GraphQLRequestInfo, 
+        response?: GraphQLServerResponse): Promise<GraphQLExecutionResult> {
         const {
-            loggerContextFunction,
-            logger,
-            metricsClient,
-        } = this.options
-
-        const context = loggerContextFunction(logger, this.options)
-        metricsClient.increaseRequestThroughput(context)
-        return await this.executeRequestWithInfo(requestInformation, context)
-    }
-
-    /**
-     * Executes a given request with requestInformation and sends a response
-     * @param {GraphQLRequestInfo} requestInformation - The request information
-     * @param {GraphQLServerResponse} response - The server response
-     */
-    async executeRequestAndSendResponse(requestInformation: GraphQLRequestInfo,
-        response: GraphQLServerResponse): Promise<void>  {
-        const {
+            contextFunction,
             formatErrorFunction,
-            loggerContextFunction,
             logger,
             metricsClient,
             sendResponse
         } = this.options
 
-        const context = loggerContextFunction(logger, this.options)
+        const context = contextFunction(isGraphQLServerRequest(request) ? request : undefined, 
+            response, 
+            logger, 
+            this.options)
         metricsClient.increaseRequestThroughput(context)
-        const result = await this.executeRequestWithInfo(requestInformation,
-            context)
-        return sendResponse({
-            executionResult: result.executionResult,
-            response,
-            context,
-            logger,
-            formatErrorFunction,
-            statusCode: result.statusCode,
-            customHeaders: result.customHeaders
-        })
-    }
-
-    /**
-     * Executes a given request and returns an execution result
-     * @param {GraphQLServerRequest} request - The server request
-     * @returns {GraphQLExecutionResult} The execution result
-     */
-    async handleRequest(request: GraphQLServerRequest): Promise<GraphQLExecutionResult> {
-        const {
-            requestContextFunction,
-            logger,
-            metricsClient,
-        } = this.options
-
-        const context = requestContextFunction(request, logger, this.options)
-        metricsClient.increaseRequestThroughput(context)
-        const requestInformation = this.getRequestInformation(request, context)
+        const requestInformation = isGraphQLServerRequest(request)
+            ? this.getRequestInformation(request, context) 
+            : request
         if ('executionResult' in requestInformation) {
-            return {
+            const result = {
                 executionResult: requestInformation.executionResult,
                 statusCode: requestInformation.statusCode,
                 customHeaders: requestInformation.customHeaders
             }
-        }
-        return await this.executeRequestWithInfo(requestInformation,
-            context,
-            request.method)
-    }
-
-    /**
-     * Executes a given request and sends a response
-     * @param {GraphQLServerRequest} request - The server request
-     * @param {GraphQLServerResponse} response - The server response
-     */
-    async handleRequestAndSendResponse(request: GraphQLServerRequest,
-        response: GraphQLServerResponse): Promise<void> {
-        const {
-            requestResponseContextFunction,
-            logger,
-            metricsClient,
-            sendResponse,
-            formatErrorFunction,
-        } = this.options
-
-        const context = requestResponseContextFunction(request, response, logger, this.options)
-        metricsClient.increaseRequestThroughput(context)
-        const requestInformation = this.getRequestInformation(request, context)
-        if ('executionResult' in requestInformation) {
-            return sendResponse({
-                executionResult: requestInformation.executionResult,
-                request,
-                response,
-                context,
-                logger,
-                formatErrorFunction,
-                statusCode: requestInformation.statusCode,
-                customHeaders: requestInformation.customHeaders
-            })
+            if (response && isGraphQLServerRequest(request)) {
+                sendResponse({
+                    executionResult: requestInformation.executionResult,
+                    request,
+                    response,
+                    context,
+                    logger,
+                    formatErrorFunction,
+                    statusCode: requestInformation.statusCode,
+                    customHeaders: requestInformation.customHeaders
+                })
+            }
+            return result
         }
 
         const result = await this.executeRequestWithInfo(requestInformation,
             context,
-            request.method)
-        return sendResponse({
-            executionResult: result.executionResult,
-            request,
-            response,
-            context,
-            logger,
-            formatErrorFunction,
-            statusCode: result.statusCode,
-            customHeaders: result.customHeaders
-        })
+            isGraphQLServerRequest(request) ? request.method : undefined)
+        if (response) {
+            sendResponse({
+                executionResult: result.executionResult,
+                request: isGraphQLServerRequest(request)? request : undefined,
+                response,
+                context,
+                logger,
+                formatErrorFunction,
+                statusCode: result.statusCode,
+                customHeaders: result.customHeaders
+            })  
+        }
+        return result  
     }
 
     protected getRequestInformation(request: GraphQLServerRequest,
