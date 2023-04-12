@@ -3,6 +3,7 @@ import {Console} from 'node:console'
 import {
     createLogEntry,
     LogEntry,
+    LogEntryInput,
     LogLevel
 } from '..'
 
@@ -35,7 +36,7 @@ export class JsonLogger implements Logger {
 
     debug(logMessage: string, context?: unknown): void {
         if (this.debugEnabled) {
-            this.logMessage(logMessage, LogLevel.debug, undefined, undefined, context)
+            this.logMessage({logMessage, loglevel: LogLevel.debug, context})
         }
     }
 
@@ -43,29 +44,35 @@ export class JsonLogger implements Logger {
         error: Error,
         customErrorName: string,
         context?: unknown): void {
-        this.logMessage(logMessage, LogLevel.error, error, customErrorName, context)
+        this.logMessage({logMessage, loglevel: LogLevel.error, error, customErrorName, context})
     }
 
     info(logMessage: string, context?: unknown): void {
-        this.logMessage(logMessage, LogLevel.info, undefined, undefined, context)
+        this.logMessage({logMessage, loglevel: LogLevel.info, context})
     }
 
     warn(logMessage: string, context?: unknown): void {
-        this.logMessage(logMessage, LogLevel.warn, undefined, undefined, context)
+        this.logMessage({logMessage, loglevel: LogLevel.warn, context})
     }
 
-    logMessage(logMessage: string,
-        loglevel: LogLevel,
-        error?: Error,
-        customErrorName?: string,
-        context?: unknown): void {
-        const logEntry: LogEntry = createLogEntry(logMessage,
+    logMessage(logEntryInput: LogEntryInput): void {
+        const {
+            logMessage,
             loglevel,
-            this.loggerName,
-            this.serviceName,
             error,
             customErrorName,
-            context)
+            context
+        } = logEntryInput
+
+        const logEntry: LogEntry = createLogEntry({
+            logMessage,
+            loglevel,
+            loggerName: this.loggerName,
+            serviceName: this.serviceName,
+            error,
+            customErrorName,
+            context
+        })
         loggerConsole.log(JSON.stringify(logEntry))
     }
 }

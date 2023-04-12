@@ -3,6 +3,7 @@ import {
     GraphQLServerOptions,
     JsonLogger,
     LogEntry,
+    LogEntryInput,
     LogLevel,
     TextLogger
 } from '~/src'
@@ -16,18 +17,24 @@ import { GraphQLRequestInfo } from '@sgohlke/graphql-server-base'
 
 export class NoStacktraceJsonLogger extends JsonLogger {
     loggerConsole: Console = new Console(process.stdout, process.stderr, false)
-    logMessage(logMessage: string,
-        loglevel: LogLevel,
-        error?: Error,
-        customErrorName?: string,
-        context?: unknown): void {
-        const logEntry: LogEntry = createLogEntry(logMessage,
+    logMessage(logEntryInput: LogEntryInput): void {
+        const {
+            logMessage,
             loglevel,
-            this.loggerName,
-            this.serviceName,
             error,
             customErrorName,
-            context)
+            context
+        } = logEntryInput
+
+        const logEntry: LogEntry = createLogEntry({
+            logMessage,
+            loglevel,
+            loggerName: this.loggerName,
+            serviceName: this.serviceName,
+            error,
+            customErrorName,
+            context
+        })
         logEntry.stacktrace = undefined
         this.loggerConsole.log(JSON.stringify(logEntry))
     }

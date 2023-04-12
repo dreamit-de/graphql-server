@@ -13,9 +13,9 @@ export * from './logger/CreateLogEntry'
 export * from './logger/CreateTimestamp'
 export * from './logger/JsonLogger'
 export * from './logger/LogEntry'
+export * from './logger/LogEntryInput'
 export * from './logger/LogLevel'
 export * from './logger/SanitizeMessage'
-
 export * from './logger/TextLogger'
 
 export * from './metrics/IncreaseFetchOrGraphQLErrorMetric'

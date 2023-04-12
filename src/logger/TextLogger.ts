@@ -3,6 +3,7 @@ import {
     createLogEntry,
     LogLevel,
     LogEntry,
+    LogEntryInput,
 } from '..'
 
 /**
@@ -31,7 +32,7 @@ export class TextLogger implements Logger {
 
     debug(logMessage: string, context?: unknown): void {
         if (this.debugEnabled) {
-            this.logMessage(logMessage, LogLevel.debug,  undefined, undefined, context)
+            this.logMessage({logMessage, loglevel: LogLevel.debug, context})
         }
     }
 
@@ -39,31 +40,37 @@ export class TextLogger implements Logger {
         error: Error,
         customErrorName: string,
         context?: unknown): void {
-        this.logMessage(logMessage, LogLevel.error, error, customErrorName, context)
+        this.logMessage({logMessage, loglevel: LogLevel.error, error, customErrorName, context})
     }
 
     info(logMessage: string, context?: unknown): void {
-        this.logMessage(logMessage, LogLevel.info, undefined, undefined, context)
+        this.logMessage({logMessage, loglevel: LogLevel.info, context})
     }
 
     warn(logMessage: string, context?: unknown): void {
-        this.logMessage(logMessage, LogLevel.warn,  undefined, undefined, context)
+        this.logMessage({logMessage, loglevel: LogLevel.warn, context})
     }
 
-    logMessage(logMessage: string,
-        loglevel: LogLevel,
-        error?: Error,
-        customErrorName?: string,
-        context?: unknown): void {
-        const logEntry: LogEntry = createLogEntry(logMessage,
-            loglevel,
-            this.loggerName,
-            this.serviceName,
+    logMessage(logEntryInput: LogEntryInput): void {
+        const {
+            logMessage,
+            loglevel: loglevel,
             error,
             customErrorName,
-            context)
+            context
+        } = logEntryInput
+
+        const logEntry: LogEntry = createLogEntry({
+            logMessage,
+            loglevel: loglevel,
+            loggerName: this.loggerName,
+            serviceName: this.serviceName,
+            error,
+            customErrorName,
+            context
+        })
         const logOutput = this.prepareLogOutput(logEntry, context)
-        console.log(`${loglevel.toUpperCase()} - ${logOutput}`)
+        console.log(`${loglevel?.toUpperCase()} - ${logOutput}`)
     }
 
     /**

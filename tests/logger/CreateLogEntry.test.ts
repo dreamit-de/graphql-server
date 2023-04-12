@@ -74,7 +74,7 @@ test.each`
     ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLErrorWithSensibleStacktrace} | ${graphQLErrorMessage}  | ${'WARN'}        | ${sanitizedMessage}       | ${'customer'} | ${'customer'}
     ${'A GraphQLError message'} | ${LogLevel.error} | ${errorWithSensibleStackInformation}  | ${graphQLErrorMessage}  | ${'ERROR'}       | ${sanitizedMessage}       | ${undefined}  | ${'myTestService'}
 `('expects a correct logEntry is created for given $logMessage , $loglevel and $error ', ({logMessage, loglevel, error, expectedLogMessage, expectedLogLevel, expectedStacktrace, expectedQuery, expectedServiceName}) => {
-    const logEntry = createLogEntry(logMessage, loglevel, 'test-logger', 'myTestService', error)
+    const logEntry = createLogEntry({logMessage, loglevel, loggerName: 'test-logger', serviceName: 'myTestService', error})
     expect(logEntry.message).toBe(expectedLogMessage)
     expect(logEntry.level).toBe(expectedLogLevel)
     if (expectedStacktrace) {
@@ -92,23 +92,37 @@ test.each`
 })
 
 test('Should use customErrorName instead or error.name if customErrorName is set', () => {
-    const logEntry = createLogEntry('A GraphQLError message',
-        LogLevel.error,
-        'test-logger',
-        'myTestService',
-        graphQLError,
-        'MyCustomError')
+    const logEntry = createLogEntry({
+        logMessage: 'A GraphQLError message',
+        loglevel: LogLevel.error,
+        loggerName: 'test-logger',
+        serviceName: 'myTestService',
+        error: graphQLError,
+        customErrorName: 'MyCustomError'
+    })
     expect(logEntry.errorName).toBe('MyCustomError')
 })
 
 test('Should use context.serviceName instead of error.extensions.serviceName' +
     ' if context contains serviceName', () => {
-    const logEntry = createLogEntry('A GraphQLError message',
-        LogLevel.error,
-        'test-logger',
-        'myTestService',
-        errorWithSensibleStackInformation,
-        'MyCustomError',
-        { serviceName: 'myRemoteService' })
+    const logEntry = createLogEntry({
+        logMessage: 'A GraphQLError message',
+        loglevel: LogLevel.error,
+        loggerName: 'test-logger',
+        serviceName: 'myTestService',
+        error: errorWithSensibleStackInformation,
+        customErrorName: 'MyCustomError',
+        context: { serviceName: 'myRemoteService' }
+    })
     expect(logEntry.serviceName).toBe('myRemoteService')
+})
+
+test('Should use fallback values for loggerName, serviceName and level if they are not set', () => {
+    const logEntry = createLogEntry({
+        logMessage: 'A GraphQLError message',
+    })
+    expect(logEntry.message).toBe('A GraphQLError message')
+    expect(logEntry.level).toBe(LogLevel.info)
+    expect(logEntry.logger).toBe('fallback-logger')
+    expect(logEntry.serviceName).toBe('fallback-service')
 })

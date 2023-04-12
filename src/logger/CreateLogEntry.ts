@@ -2,23 +2,28 @@ import {GraphQLError} from 'graphql'
 import {
     createTimestamp,
     LogEntry,
+    LogEntryInput,
     LogLevel,
     sanitizeMessage
 } from '..'
 
-export function createLogEntry(logMessage: string,
-    loglevel: LogLevel,
-    loggerName: string,
-    serviceName: string,
-    error?: Error,
-    customErrorName?: string,
-    context?: unknown): LogEntry {
+export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
+    const {
+        loggerName,
+        logMessage,
+        loglevel,
+        serviceName,
+        context,
+        error,
+        customErrorName
+    } = logEntryInput
+
     const logEntry: LogEntry = {
-        logger: loggerName,
+        logger: loggerName ?? 'fallback-logger',
         timestamp: createTimestamp(),
         message: sanitizeMessage(logMessage),
-        level: loglevel,
-        serviceName: serviceName
+        level: loglevel ?? LogLevel.info,
+        serviceName: serviceName ?? 'fallback-service'
     }
 
     // If there is a serviceName in the context, use it as serviceName for the LogEntry
