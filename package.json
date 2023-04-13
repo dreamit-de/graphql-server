@@ -37,6 +37,6 @@
   "peerDependencies": {
     "graphql": "^16.0.0",
     "@sgohlke/graphql-prom-metrics": "^1.0.2",
-    "@sgohlke/graphql-server-base": "1.0.0"
+    "@sgohlke/graphql-server-base": "^1.0.1"
   }
 }
