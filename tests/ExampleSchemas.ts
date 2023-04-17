@@ -1,12 +1,12 @@
-import {GraphQLRequestInfo} from '@sgohlke/graphql-server-base'
 import {
-    buildSchema,
     GraphQLError,
-    GraphQLSchema
+    GraphQLSchema,
+    buildSchema
 } from 'graphql'
 import {
     AggregateError,
-} from '../src'
+} from '~/src'
+import {GraphQLRequestInfo} from '@sgohlke/graphql-server-base'
 
 // Contains example schemas and data that can be used across tests
 
@@ -35,20 +35,20 @@ export const logoutMutation = 'mutation logout{ logout { result } }'
 export const introspectionQuery = 'query introspection{ __schema { queryType { name } } }'
 
 export const usersRequest: GraphQLRequestInfo = {
-    query: usersQuery,
     operationName: 'users',
+    query: usersQuery,
 }
 
 export const loginRequest: GraphQLRequestInfo = {
-    query: loginMutation,
-    operationName: 'login'
+    operationName: 'login',
+    query: loginMutation
 }
 export const usersRequestWithoutOperationName: GraphQLRequestInfo = {
     query: usersRequest.query,
 }
 export const usersRequestWithoutVariables: GraphQLRequestInfo = {
-    query: usersRequest.query,
-    operationName: usersRequest.operationName
+    operationName: usersRequest.operationName,
+    query: usersRequest.query
 }
 
 export const userSchema = buildSchema(`
@@ -83,11 +83,11 @@ export const userSchema = buildSchema(`
 `)
 
 export const userSchemaResolvers= {
+    logout(): LogoutResult {
+        return {result: 'Goodbye!'}
+    },
     returnError(): User {
         throw new GraphQLError('Something went wrong!', {})
-    },
-    users(): User[] {
-        return [userOne, userTwo]
     },
     user(input: { id: string }): User {
         switch (input.id) {
@@ -102,8 +102,8 @@ export const userSchemaResolvers= {
         }
         }
     },
-    logout(): LogoutResult {
-        return {result: 'Goodbye!'}
+    users(): User[] {
+        return [userOne, userTwo]
     }
 }
 
@@ -112,12 +112,12 @@ export const multipleErrorResponse = {
         {
             originalError:
                 {
-                    name: 'AggregateError',
-                    message:'The first error!, The second error!',
                     errors: [
                         new GraphQLError('The first error!', {}),
                         new GraphQLError('The second error!', {})
-                    ]
+                    ],
+                    message: 'The first error!, The second error!',
+                    name: 'AggregateError'
                 } as AggregateError
         })]
 }

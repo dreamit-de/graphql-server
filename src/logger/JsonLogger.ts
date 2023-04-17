@@ -1,11 +1,11 @@
-import {Logger} from '@sgohlke/graphql-server-base'
-import {Console} from 'node:console'
 import {
-    createLogEntry,
     LogEntry,
     LogEntryInput,
-    LogLevel
+    LogLevel,
+    createLogEntry
 } from '..'
+import {Console} from 'node:console'
+import {Logger} from '@sgohlke/graphql-server-base'
 
 const loggerConsole: Console = new Console(process.stdout, process.stderr, false)
 
@@ -36,7 +36,7 @@ export class JsonLogger implements Logger {
 
     debug(logMessage: string, context?: unknown): void {
         if (this.debugEnabled) {
-            this.logMessage({logMessage, loglevel: LogLevel.debug, context})
+            this.logMessage({context, logMessage, loglevel: LogLevel.debug})
         }
     }
 
@@ -44,15 +44,15 @@ export class JsonLogger implements Logger {
         error: Error,
         customErrorName: string,
         context?: unknown): void {
-        this.logMessage({logMessage, loglevel: LogLevel.error, error, customErrorName, context})
+        this.logMessage({context, customErrorName, error, logMessage, loglevel: LogLevel.error})
     }
 
     info(logMessage: string, context?: unknown): void {
-        this.logMessage({logMessage, loglevel: LogLevel.info, context})
+        this.logMessage({context, logMessage, loglevel: LogLevel.info})
     }
 
     warn(logMessage: string, context?: unknown): void {
-        this.logMessage({logMessage, loglevel: LogLevel.warn, context})
+        this.logMessage({context, logMessage, loglevel: LogLevel.warn})
     }
 
     logMessage(logEntryInput: LogEntryInput): void {
@@ -65,13 +65,13 @@ export class JsonLogger implements Logger {
         } = logEntryInput
 
         const logEntry: LogEntry = createLogEntry({
-            logMessage,
-            loglevel,
-            loggerName: this.loggerName,
-            serviceName: this.serviceName,
-            error,
+            context,
             customErrorName,
-            context
+            error,
+            logMessage,
+            loggerName: this.loggerName,
+            loglevel,
+            serviceName: this.serviceName,
         })
         loggerConsole.log(JSON.stringify(logEntry))
     }

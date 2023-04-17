@@ -22,11 +22,11 @@ export * from './metrics/IncreaseFetchOrGraphQLErrorMetric'
 export * from './metrics/NoMetricsClient'
 export * from './metrics/SimpleMetricsClient'
 
-export * from './request/GetContentType'
 export * from './request/ExtractInformationFromRequest'
+export * from './request/GetContentType'
 
-export * from './response/SendResponse'
 export * from './response/GraphQLExecutionResult'
+export * from './response/SendResponse'
 
 export * from './server/DefaultGraphQLServerOptions'
 export * from './server/GraphQLServer'

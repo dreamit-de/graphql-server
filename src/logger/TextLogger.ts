@@ -1,10 +1,10 @@
-import {Logger} from '@sgohlke/graphql-server-base'
 import {
-    createLogEntry,
-    LogLevel,
     LogEntry,
     LogEntryInput,
+    LogLevel,
+    createLogEntry,
 } from '..'
+import {Logger} from '@sgohlke/graphql-server-base'
 
 /**
  * Logger implementation that outputs log entries as text to console.
@@ -32,7 +32,11 @@ export class TextLogger implements Logger {
 
     debug(logMessage: string, context?: unknown): void {
         if (this.debugEnabled) {
-            this.logMessage({logMessage, loglevel: LogLevel.debug, context})
+            this.logMessage({
+                context,
+                logMessage,
+                loglevel: LogLevel.debug
+            })
         }
     }
 
@@ -40,15 +44,29 @@ export class TextLogger implements Logger {
         error: Error,
         customErrorName: string,
         context?: unknown): void {
-        this.logMessage({logMessage, loglevel: LogLevel.error, error, customErrorName, context})
+        this.logMessage({
+            context,
+            customErrorName,
+            error,
+            logMessage,
+            loglevel: LogLevel.error
+        })
     }
 
     info(logMessage: string, context?: unknown): void {
-        this.logMessage({logMessage, loglevel: LogLevel.info, context})
+        this.logMessage({
+            context,
+            logMessage,
+            loglevel: LogLevel.info
+        })
     }
 
     warn(logMessage: string, context?: unknown): void {
-        this.logMessage({logMessage, loglevel: LogLevel.warn, context})
+        this.logMessage({
+            context,
+            logMessage,
+            loglevel: LogLevel.warn
+        })
     }
 
     logMessage(logEntryInput: LogEntryInput): void {
@@ -61,13 +79,13 @@ export class TextLogger implements Logger {
         } = logEntryInput
 
         const logEntry: LogEntry = createLogEntry({
-            logMessage,
-            loglevel: loglevel,
-            loggerName: this.loggerName,
-            serviceName: this.serviceName,
-            error,
+            context,
             customErrorName,
-            context
+            error,
+            logMessage,
+            loggerName: this.loggerName,
+            loglevel: loglevel,
+            serviceName: this.serviceName
         })
         const logOutput = this.prepareLogOutput(logEntry, context)
         console.log(`${loglevel?.toUpperCase()} - ${logOutput}`)

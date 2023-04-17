@@ -1,22 +1,22 @@
-import {getContentType} from '..'
-import {URLSearchParams} from 'node:url'
-import {GraphQLError} from 'graphql'
-import {Buffer} from 'node:buffer'
-import { 
-    ContentType, 
-    GraphQLRequestInfo, 
-    GraphQLServerRequest 
+import {
+    ContentType,
+    GraphQLRequestInfo,
+    GraphQLServerRequest
 } from '@sgohlke/graphql-server-base'
+import {Buffer} from 'node:buffer'
+import {GraphQLError} from 'graphql'
+import {URLSearchParams} from 'node:url'
+import {getContentType} from '..'
 
 export function extractInformationFromRequest(request: GraphQLServerRequest)
     : GraphQLRequestInfo {
     const extractedURLParameters = extractInformationFromUrlParameters(request.url ?? '')
     const extractedBody = extractInformationFromBody(request)
     return {
-        query: extractedURLParameters.query ?? extractedBody.query,
-        variables: extractedURLParameters.variables ?? extractedBody.variables,
+        error: extractedBody.error,
         operationName: extractedURLParameters.operationName ?? extractedBody.operationName,
-        error: extractedBody.error
+        query: extractedURLParameters.query ?? extractedBody.query,
+        variables: extractedURLParameters.variables ?? extractedBody.variables
     }
 }
 
@@ -28,9 +28,9 @@ export function extractInformationFromUrlParameters(url: string): GraphQLRequest
             | null || undefined
     const extractedOperationName= urlParameters.get('operationName') ?? undefined
     return {
+        operationName: extractedOperationName,
         query: extractedQuery,
         variables: extractedVariables,
-        operationName: extractedOperationName,
     }
 }
 
@@ -82,10 +82,10 @@ export function extractInformationFromBody(request: GraphQLServerRequest)
             try {
                 const bodyAsJson = JSON.parse(body)
                 return {
+                    operationName: bodyAsJson.operationName,
                     query: bodyAsJson.query,
                     variables: bodyAsJson.variables as Readonly<Record<string, unknown>>
-                            | null || undefined,
-                    operationName: bodyAsJson.operationName
+                        | null || undefined
                 }
             } catch {
                 return {
@@ -98,10 +98,10 @@ export function extractInformationFromBody(request: GraphQLServerRequest)
         } else {
             const bodyAsMap = body as Record<string, unknown>
             return {
+                operationName: bodyAsMap.operationName as string,
                 query: bodyAsMap.query as string,
                 variables: bodyAsMap.variables as Readonly<Record<string, unknown>>
-                        | null || undefined,
-                operationName: bodyAsMap.operationName as string
+                    | null || undefined
             }
         }
     }

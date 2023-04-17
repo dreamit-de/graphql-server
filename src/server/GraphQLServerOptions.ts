@@ -1,13 +1,4 @@
 import {
-    Logger,
-    GraphQLRequestInfo,
-    MetricsClient,
-    GraphQLServerRequest,
-    GraphQLServerResponse,
-    GraphQLExecutionResult,
-    ResponseParameters
-} from '@sgohlke/graphql-server-base'
-import {
     DocumentNode,
     ExecutionArgs,
     ExecutionResult,
@@ -17,16 +8,24 @@ import {
     ParseOptions,
     Source
 } from 'graphql'
-
-import {ValidationRule} from 'graphql/validation/ValidationContext'
-import {TypeInfo} from 'graphql/utilities/TypeInfo'
-import {Maybe} from 'graphql/jsutils/Maybe'
+import {
+    GraphQLExecutionResult,
+    GraphQLRequestInfo,
+    GraphQLServerRequest,
+    GraphQLServerResponse,
+    Logger,
+    MetricsClient,
+    ResponseParameters
+} from '@sgohlke/graphql-server-base'
 import {
     GraphQLFieldResolver,
     GraphQLTypeResolver
 } from 'graphql/type/definition'
-import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue'
+import {Maybe} from 'graphql/jsutils/Maybe'
 import {ObjMap} from 'graphql/jsutils/ObjMap'
+import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue'
+import {TypeInfo} from 'graphql/utilities/TypeInfo'
+import {ValidationRule} from 'graphql/validation/ValidationContext'
 
 /**
  * Interface for creating new GraphQLServer instances.
@@ -41,11 +40,10 @@ export interface GraphQLServerOptions {
     readonly schema?: GraphQLSchema
     readonly shouldUpdateSchemaFunction?: (schema?: GraphQLSchema) => boolean
     readonly formatErrorFunction?: (error: GraphQLError) => GraphQLFormattedError
-    readonly collectErrorMetricsFunction?: (errorName: string,
-                                            error?: unknown,
-                                            context?: unknown,
-                                            logger?: Logger,
-                                            metricsClient?: MetricsClient) => void
+    readonly collectErrorMetricsFunction?: (errorParameters: {errorName: string,
+                                            error: unknown,
+                                            serverOptions: GraphQLServerOptions,
+                                            context?: unknown}) => void
     readonly schemaValidationFunction?: (schema: GraphQLSchema) => ReadonlyArray<GraphQLError>
     readonly parseFunction?: (source: string | Source, options?: ParseOptions) => DocumentNode
     readonly defaultValidationRules?:  ReadonlyArray<ValidationRule>
@@ -61,19 +59,22 @@ export interface GraphQLServerOptions {
                         typeInfo?: TypeInfo,
                         ) => ReadonlyArray<GraphQLError>
     readonly rootValue?: unknown
-    readonly contextFunction?: (request?: GraphQLServerRequest,
+    readonly contextFunction?: (contextParameters: {
+        serverOptions: GraphQLServerOptions,
+        request?: GraphQLServerRequest,
         response?: GraphQLServerResponse,
-        logger?: Logger,
-        serverOptions?: GraphQLServerOptions) => unknown
+    }) => unknown
     readonly fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
     readonly typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
     readonly executeFunction?: (arguments_: ExecutionArgs)
         => PromiseOrValue<ExecutionResult>
-    readonly extensionFunction?: (requestInformation: GraphQLRequestInfo,
-                                  executionResult: ExecutionResult,
-                                  logger?: Logger,
-                                  context?: unknown)
-        => ObjMap<unknown> | undefined
+    readonly extensionFunction?: (
+        extensionParameters: {
+            requestInformation: GraphQLRequestInfo,
+            executionResult: ExecutionResult,
+            serverOptions: GraphQLServerOptions,
+            context?: unknown
+        }) => ObjMap<unknown> | undefined
     readonly methodNotAllowedResponse?: (method?: string) => GraphQLExecutionResult
     readonly invalidSchemaResponse?: GraphQLExecutionResult
     readonly missingQueryParameterResponse?: GraphQLExecutionResult

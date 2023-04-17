@@ -1,21 +1,19 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import bodyParser from 'body-parser'
+import {
+    GRAPHQL_SERVER_PORT,
+    INITIAL_GRAPHQL_SERVER_OPTIONS,
+    fetchResponse,
+} from '../TestHelpers'
 import express, {Express} from 'express'
-import {Server} from 'node:http'
 import {
-    GraphQLServer
-} from '~/src'
-import {
-    usersQuery,
     logoutMutation,
     userOne,
     userTwo,
+    usersQuery,
 } from '../ExampleSchemas'
-import {
-    fetchResponse,
-    GRAPHQL_SERVER_PORT,
-    INITIAL_GRAPHQL_SERVER_OPTIONS,
-} from '../TestHelpers'
+import {GraphQLServer} from '~/src'
+import {Server} from 'node:http'
+import bodyParser from 'body-parser'
 
 let customGraphQLServer: GraphQLServer
 let graphQLServer: Server

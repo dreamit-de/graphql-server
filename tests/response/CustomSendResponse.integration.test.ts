@@ -1,25 +1,28 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import bodyParser from 'body-parser'
-import express, {Express} from 'express'
-import {Server} from 'node:http'
+
+import {
+    GRAPHQL_SERVER_PORT,
+    INITIAL_GRAPHQL_SERVER_OPTIONS,
+    NoStacktraceTextLogger,
+    fetchResponse,
+} from '../TestHelpers'
 import {
     GraphQLServer,
     JsonLogger,
 } from '~/src'
+import express, {Express} from 'express'
 import {
-    usersQuery,
+    returnErrorQuery,
     userSchema,
     userSchemaResolvers,
-    returnErrorQuery,
+    usersQuery,
 } from '../ExampleSchemas'
-import {
-    fetchResponse,
-    GRAPHQL_SERVER_PORT,
-    INITIAL_GRAPHQL_SERVER_OPTIONS,
-    NoStacktraceTextLogger,
-} from '../TestHelpers'
+
+
 import {Buffer} from 'node:buffer'
 import { ResponseParameters } from '@sgohlke/graphql-server-base'
+import {Server} from 'node:http'
+import bodyParser from 'body-parser'
 
 let customGraphQLServer: GraphQLServer
 let graphQLServer: Server
@@ -35,17 +38,17 @@ afterAll(() => {
 
 test('Should return value from context instead of user data ', async() => {
     customGraphQLServer.setOptions({
-        schema: userSchema,
-        rootValue: userSchemaResolvers,
-        logger: new JsonLogger('test-logger', 'customGraphQLServer'),
-        sendResponse: customSendResponse,
-        reassignAggregateError: false,
         contextFunction: () => {
             return {
                 'customText': 'customResponse',
                 'serviceName': 'myRemoteService'
             }
-        }
+        },
+        logger: new JsonLogger('test-logger', 'customGraphQLServer'),
+        reassignAggregateError: false,
+        rootValue: userSchemaResolvers,
+        schema: userSchema,
+        sendResponse: customSendResponse
     })
     const response = await fetchResponse(`{"query":"${usersQuery}"}`)
     const responseObject = await response.json()
@@ -58,18 +61,18 @@ test('Should return value from context instead of user data ', async() => {
 test('Should return error if context serviceName is different as graphql server serviceName',
     async() => {
         customGraphQLServer.setOptions({
-            schema: userSchema,
-            rootValue: userSchemaResolvers,
-            logger: new NoStacktraceTextLogger('test-logger', 'customGraphQLServer', true),
-            reassignAggregateError: false,
-            contextFunction: (request, response, logger, serverOptions) => {
-                if (serverOptions && serverOptions.logger) {
+            contextFunction: ({serverOptions}) => {
+                if (serverOptions.logger) {
                     serverOptions.logger.info('Calling requestResponseContextFunction in test')
                 }
                 return {
                     'serviceName': 'myTestServiceAlternative'
                 }
-            }
+            },
+            logger: new NoStacktraceTextLogger('test-logger', 'customGraphQLServer', true),
+            reassignAggregateError: false,
+            rootValue: userSchemaResolvers,
+            schema: userSchema
         })
         const response = await fetchResponse(`{"query":"${returnErrorQuery}"}`)
         const responseObject = await response.json()

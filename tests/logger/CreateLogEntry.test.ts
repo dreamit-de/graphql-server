@@ -4,8 +4,8 @@ import {
     Kind
 } from 'graphql'
 import {
-    createLogEntry,
-    LogLevel
+    LogLevel,
+    createLogEntry
 } from '~/src'
 
 // Created based upon implementation in node-fetch to avoid importing whole package for this class
@@ -27,29 +27,59 @@ const graphQLError: GraphQLError = new GraphQLError('`CustomerPayload` is an ext
     extensions:  {exception: 'A stacktrace', query: customerQuery, serviceName: 'customer'}
 })
 const graphQLErrorWithVariables: GraphQLError = new GraphQLError(messageWithVariables, {extensions:  {exception: 'A stacktrace', query: customerQuery, serviceName: 'myTestService'}})
-const graphQLErrorWithSourceBody = new GraphQLError('`CustomerPayload` is an extension type',{
+const graphQLErrorWithSourceBody = new GraphQLError('`CustomerPayload` is an extension type', {
+    extensions: {
+        exception: 'A stacktrace',
+        serviceName: 'customer'
+    },
     source: {
         get [Symbol.toStringTag](): string {
             return this[Symbol.toStringTag]
         },
-        locationOffset: {line: 1, column: 1},
-        name: 'doesnotmatter',
-        body: customerQuery
-    },
-    extensions: {exception: 'A stacktrace', serviceName: 'customer'}
+        body: customerQuery,
+        locationOffset: {
+            column: 1,
+            line: 1
+        },
+        name: 'doesnotmatter'
+    }
 })
 
 const graphQLErrorWithAstNode = new GraphQLError('`CustomerPayload` is an extension type', {
-    nodes: {kind: Kind.NAMED_TYPE, loc: undefined, name: { kind: Kind.NAME, value: 'customer'}},
-    extensions: {exception: 'A stacktrace', serviceName: 'customer'}
+    extensions: {
+        exception: 'A stacktrace',
+        serviceName: 'customer'
+    },
+    nodes: {
+        kind: Kind.NAMED_TYPE,
+        loc: undefined,
+        name: {
+            kind: Kind.NAME,
+            value: 'customer'
+        }
+    }
 })
 
 const graphQLErrorWithSensibleStacktrace = new GraphQLError('`CustomerPayload` is an extension type', {
-    nodes: {kind: Kind.NAMED_TYPE, loc: undefined, name: { kind: Kind.NAME, value: 'customer'}},
-    extensions: {exception: messageWithVariables, serviceName: 'customer'}
+    extensions: {
+        exception: messageWithVariables,
+        serviceName: 'customer'
+    },
+    nodes: {
+        kind: Kind.NAMED_TYPE,
+        loc: undefined,
+        name: {
+            kind: Kind.NAME,
+            value: 'customer'
+        }
+    }
 })
 
-const errorWithSensibleStackInformation: Error = {name: 'SensibleError', message: '`CustomerPayload` is an extension type', stack: messageWithVariables }
+const errorWithSensibleStackInformation: Error = {
+    message: '`CustomerPayload` is an extension type',
+    name: 'SensibleError',
+    stack: messageWithVariables
+}
 
 const fetchError = new FetchError('An error occurred while connecting to following endpoint',
     'system')
@@ -74,7 +104,14 @@ test.each`
     ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLErrorWithSensibleStacktrace} | ${graphQLErrorMessage}  | ${'WARN'}        | ${sanitizedMessage}       | ${'customer'} | ${'customer'}
     ${'A GraphQLError message'} | ${LogLevel.error} | ${errorWithSensibleStackInformation}  | ${graphQLErrorMessage}  | ${'ERROR'}       | ${sanitizedMessage}       | ${undefined}  | ${'myTestService'}
 `('expects a correct logEntry is created for given $logMessage , $loglevel and $error ', ({logMessage, loglevel, error, expectedLogMessage, expectedLogLevel, expectedStacktrace, expectedQuery, expectedServiceName}) => {
-    const logEntry = createLogEntry({logMessage, loglevel, loggerName: 'test-logger', serviceName: 'myTestService', error})
+    const logEntry = createLogEntry({
+        context: undefined,
+        error,
+        logMessage,
+        loggerName: 'test-logger',
+        loglevel,
+        serviceName: 'myTestService'
+    })
     expect(logEntry.message).toBe(expectedLogMessage)
     expect(logEntry.level).toBe(expectedLogLevel)
     if (expectedStacktrace) {
@@ -93,12 +130,13 @@ test.each`
 
 test('Should use customErrorName instead or error.name if customErrorName is set', () => {
     const logEntry = createLogEntry({
-        logMessage: 'A GraphQLError message',
-        loglevel: LogLevel.error,
-        loggerName: 'test-logger',
-        serviceName: 'myTestService',
+        context: undefined,
+        customErrorName: 'MyCustomError',
         error: graphQLError,
-        customErrorName: 'MyCustomError'
+        logMessage: 'A GraphQLError message',
+        loggerName: 'test-logger',
+        loglevel: LogLevel.error,
+        serviceName: 'myTestService'
     })
     expect(logEntry.errorName).toBe('MyCustomError')
 })
@@ -106,19 +144,20 @@ test('Should use customErrorName instead or error.name if customErrorName is set
 test('Should use context.serviceName instead of error.extensions.serviceName' +
     ' if context contains serviceName', () => {
     const logEntry = createLogEntry({
-        logMessage: 'A GraphQLError message',
-        loglevel: LogLevel.error,
-        loggerName: 'test-logger',
-        serviceName: 'myTestService',
-        error: errorWithSensibleStackInformation,
+        context: {serviceName: 'myRemoteService'},
         customErrorName: 'MyCustomError',
-        context: { serviceName: 'myRemoteService' }
+        error: errorWithSensibleStackInformation,
+        logMessage: 'A GraphQLError message',
+        loggerName: 'test-logger',
+        loglevel: LogLevel.error,
+        serviceName: 'myTestService'
     })
     expect(logEntry.serviceName).toBe('myRemoteService')
 })
 
 test('Should use fallback values for loggerName, serviceName and level if they are not set', () => {
     const logEntry = createLogEntry({
+        context: undefined,
         logMessage: 'A GraphQLError message',
     })
     expect(logEntry.message).toBe('A GraphQLError message')

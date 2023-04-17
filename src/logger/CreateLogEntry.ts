@@ -1,11 +1,11 @@
-import {GraphQLError} from 'graphql'
 import {
-    createTimestamp,
     LogEntry,
     LogEntryInput,
     LogLevel,
+    createTimestamp,
     sanitizeMessage
 } from '..'
+import {GraphQLError} from 'graphql'
 
 export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
     const {
@@ -19,11 +19,11 @@ export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
     } = logEntryInput
 
     const logEntry: LogEntry = {
-        logger: loggerName ?? 'fallback-logger',
-        timestamp: createTimestamp(),
-        message: sanitizeMessage(logMessage),
         level: loglevel ?? LogLevel.info,
-        serviceName: serviceName ?? 'fallback-service'
+        logger: loggerName ?? 'fallback-logger',
+        message: sanitizeMessage(logMessage),
+        serviceName: serviceName ?? 'fallback-service',
+        timestamp: createTimestamp(),
     }
 
     // If there is a serviceName in the context, use it as serviceName for the LogEntry
