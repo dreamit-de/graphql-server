@@ -18,12 +18,12 @@ The following table shows which version of [graphql-js][1] and [@sgohlke/graphql
 choose a fitting version used in your project and by other libraries depending
 on them.
 
-| graphql-js version | graphql-server version |  graphql-server-base version |                                       Github branch                                        | Development Status |
-|--------------------|:----------------------:|:----------------------:|:------------------------------------------------------------------------------------------:|:------------------:|
-| ~~^15.2.0~~        |        ~~1.x~~         |        ~~n.a.~~        | [~~legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15) |    end of life     |
-| ^16.0.0            |          2.x           |          n.a.          |   [legacy-server-v2](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2)   |    maintenance     |
-| ^16.0.0            |          3.x           |          ^1.0          |                    [main](https://github.com/dreamit-de/graphql-server)                    |       active       |
-| ^16.0.0            |          4.x           |          ^2.0          |   [release-v4](https://github.com/dreamit-de/graphql-server/tree/release-v4)                    |       in development       |
+| graphql-js version | graphql-server version |  graphql-server-base version |                                       Github branch                                        |   Development Status   |
+|--------------------|:----------------------:|:----------------------:|:------------------------------------------------------------------------------------------:|:----------------------:|
+| ~~^15.2.0~~        |        ~~1.x~~         |        ~~n.a.~~        | [~~legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15) |      end of life       |
+| ~~^16.0.0~~        |        ~~2.x~~         |        ~~n.a.~~        | [~~legacy-server-v2~~](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2) |      end of life       |
+| ^16.0.0            |          3.x           |        ^1.0.1          |   [legacy-server-v3](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v3)   |      maintenance       |
+| ^16.0.0            |          4.x           |          ^2.0          |                    [main](https://github.com/dreamit-de/graphql-server)                    |         active         |
 
 ## Features
 
@@ -35,45 +35,54 @@ on them.
 - Uses only 2 peerDependencies: [graphql-js][1] version 16 and [graphql-server-base][12] version 2 (no other production
   dependencies)
 
-## Core Functions
+## Handling and executing requests
 
-`GraphQLServer` provides four core functions that can be used to create a result or send a response with a given request
-information or server request depending on the needs. For the most common use case, usage as webserver middleware,
-`handleRequestAndSendResponse` can be used.
+`GraphQLServer` provides the function `handleRequest` to handle and execute requests.
+Depending on the provided parameters different actions will be executed in order to send or return the `ExecutionResult`
+- request: If the request is a `GraphQLServerRequest` the `extractInformationFromRequest` function will be used to 
+  extract information from the request (url and/or body) and be available as `GraphQLRequestInfo`. If the request already 
+  is a `GraphQLRequestInfo` this information will be used without extracting information from the server request.
+- response: If a response is provided (i.e. not undefined), a response will be sent using `sendResponse` function and
+  the `GraphQLExecutionResult` will be returned. If response is undefined, no response will be sent and
+  the `GraphQLExecutionResult` will be returned.
 
-| **Request / Response**      | **Return GraphQLExecutionResult** | **Send server response**              |
-|-----------------------------|-----------------------------------|---------------------------------------|
-| **Use request information** | `async executeRequest`            | `async executeRequestAndSendResponse` |
-| **Use server request**      | `async handleRequest`             | `async handleRequestAndSendResponse`  |
+```typescript
+class GraphQLServer {
+  async handleRequest(request: GraphQLServerRequest | GraphQLRequestInfo,
+          response?: GraphQLServerResponse): Promise<GraphQLExecutionResult> {}
+}
+```
 
 ### Use cases
 
-The core functions can be used for many use cases. The following part lists some use cases with a short description. It
-is possible to use more than one core function with a single `GraphQLServer` instance, e.g. when using a webserver with
-websockets or messaging.
+The `handleRequest` function can be used for many use cases. The following part lists some use cases with a short 
+description. It is possible to use `handleRequest` with different parameters with a single `GraphQLServer` instance,
+e.g. when using a webserver with websockets or messaging.
 
-- `handleRequestAndSendResponse`: Use as webserver middleware. Create an instance of `GraphQLServer` and use the request
-  and response provided by the webserver as parameters for this function. You might need to wrap one or both values,
+- `handleRequest` with `GraphQLServerRequest` and `GraphQLServerResponse`: Use as webserver middleware. 
+  Create an instance of `GraphQLServer` and use the request
+  and response provided by the webserver as parameters. You might need to wrap one or both values,
   see [Webserver compatibility](#webserver-compatibility)
-- `executeRequest`: Use for flexible GraphQL execution, e.g. for websockets or messaging. Create an instance
-  of `GraphQLServer` and given a `GraphQLRequestInfo` the request can be executed and the returned
+- `handleRequest` with `GraphQLRequestInfo`: Use for flexible GraphQL execution, e.g. for websockets or messaging. 
+  Create an instance of `GraphQLServer` and given a `GraphQLRequestInfo` the request can be executed and the returned
   `GraphQLExecutionResult` can be used for multiple purposes like sending a message or responding to a websocket
   request.
-- `handleRequest`: Use as alternative webserver middleware or if custom actions should be done before sending back a
-  response. Create an instance of `GraphQLServer` and use the request provided by the webserver as parameter for this
-  function. You might need request values, see [Webserver compatibility](#webserver-compatibility). The returned
-  `GraphQLExecutionResult` can be used to execute custom logic with the result and/or prepare or send a response.
-- `executeRequestAndSendResponse`: Use if a `GraphQLRequestInfo` is available and a response should be sent from this
-  request.
+- `handleRequest` with `GraphQLServerRequest`: Use as alternative webserver middleware or if custom actions should be 
+  done before sending back a response. Create an instance of `GraphQLServer` and use the request provided by the 
+  webserver as parameter for this function. You might need request values, 
+  see [Webserver compatibility](#webserver-compatibility). The returned `GraphQLExecutionResult` can be used to execute 
+  custom logic with the result and/or prepare or send a response.
+- `handleRequest` with `GraphQLRequestInfo` and `GraphQLServerResponse`: Use if a `GraphQLRequestInfo` is available and 
+  a response should be sent from this request.
 
 ## Usage as webserver middleware
 
 You can create a new instance of `GraphQLServer` with the options necessary for your tasks. The
-`handleRequestAndSendResponse` function of the `GraphQLServer` can be integrated with many fitting webservers.
+`handleRequest` function of the `GraphQLServer` can be integrated with many fitting webservers.
 
 **Note regarding POST requests:**
 
-graphql-server version 3 tries to extract the request information from the `request.body` field. Some webserver
+graphql-server version 3 and higher try to extract the request information from the `request.body` field. Some webserver
 frameworks like [Express][2] might need a fitting body parser in order to populate this `body` field.
 
 - parse body as `string/text` (recommended): graphql-server will handle reading content and parsing it to JSON.
@@ -87,7 +96,7 @@ const graphQLServerExpress = express()
 const customGraphQLServer = new GraphQLServer({schema: someExampleSchema})
 graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
-    return customGraphQLServer.handleRequestAndSendResponse(req, res)
+    return customGraphQLServer.handleRequest(req, res)
 })
 graphQLServerExpress.listen({port: graphQLServerPort})
 console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
@@ -119,7 +128,7 @@ const customGraphQLServer = new GraphQLServer({
 })
 graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
-    return customGraphQLServer.handleRequestAndSendResponse(req, res)
+    return customGraphQLServer.handleRequest(req, res)
 })
 graphQLServerExpress.listen({port: graphQLServerPort})
 console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
@@ -146,7 +155,7 @@ const customGraphQLServer = new GraphQLServer({
 })
 graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
-    return customGraphQLServer.handleRequestAndSendResponse(req, res)
+    return customGraphQLServer.handleRequest(req, res)
 })
 graphQLServerExpress.listen({port: graphQLServerPort})
 console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
@@ -168,7 +177,7 @@ const graphQLServerExpress = express()
 const customGraphQLServer = new GraphQLServer({schema: someExampleSchema})
 graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
-    return customGraphQLServer.handleRequestAndSendResponse(req, res)
+    return customGraphQLServer.handleRequest(req, res)
 })
 graphQLServerExpress.all('/updateme', (req, res) => {
     const updatedSchema = someMagicHappened()
@@ -213,7 +222,7 @@ const graphQLServerExpress = express()
 const customGraphQLServer = new GraphQLServer({schema: someExampleSchema})
 graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
-    return customGraphQLServer.handleRequestAndSendResponse(req, res)
+    return customGraphQLServer.handleRequest(req, res)
 })
 graphQLServerExpress.get('/metrics', async(req, res) => {
     return res.contentType(customGraphQLServer.getMetricsContentType())
@@ -235,7 +244,7 @@ graphQLServerExpress.use(cors())
 const customGraphQLServer = new GraphQLServer({schema: someExampleSchema})
 graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
-    return customGraphQLServer.handleRequestAndSendResponse(req, res)
+    return customGraphQLServer.handleRequest(req, res)
 })
 graphQLServerExpress.listen({port: graphQLServerPort})
 console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
@@ -243,30 +252,34 @@ console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 
 ## Webserver compatibility
 
-The `GraphQLServer.handleRequestAndSendResponse` function works with webservers that provide a fitting request and
+The `handleRequest` function works with webservers that provide a fitting request and
 response object that matches `GraphQLServerRequest` and `GraphQLServerResponse` interface. As [Express][2] (since
 version 2.x) matches both no further adjustment is necessary. If one or both objects do not match `GraphQLServerRequest`
 and `GraphQLServerResponse`
 it might still be possible to map the webserver request and response objects to these interfaces.
 
 In the following table a list of webserver frameworks/versions can be found that are able to run `GraphQLServer`.
-The `Version` column shows the version of the webserver framework we tested `GraphQLServer` version 3 with.  
-If the request, response and/or core function has to be mapped it is noted in the `Mapping` column. There are some code
-examples on how
-to adjust the request/response to be able to use `GraphQLServer.handleRequest` with the webserver.
+The `Version` column shows the version of the webserver framework we tested `GraphQLServer` version 4 with.  
+If the request and/or response has to be mapped it is noted in the `Mapping` column. There is a code
+examples on how to use `handleRequest` without providing a `GraphQLServerResponse` and sending the response with the 
+functionality provided by the webserver.
 
-| Framework/Module | Version |        Mapping         |                                                           Example                                                           | 
-|------------------|:-------:|:----------------------:|:---------------------------------------------------------------------------------------------------------------------------:|
-| [AdonisJS][6]    |   5.8   |   request, response    |                  [AdonisJS example](https://github.com/sgohlke/adonisjs-example/blob/main/start/routes.ts)                  |
-| [Express][2]     | > = 2.x |          none          | [GraphQLServer test](https://github.com/dreamit-de/graphql-server/blob/main/tests/server/GraphQLServer.integration.test.ts) |
-| [fastify][4]     |   4.7   |        response        |                    [Fastify example](https://github.com/sgohlke/fastify-example/blob/main/src/index.ts)                     |
-| [hapi][10]       |  20.2   | request, handleRequest |                       [hapi example](https://github.com/sgohlke/hapi-example/blob/main/src/index.ts)                        |
-| [Koa][5]         |  2.13   |        response        |                        [Koa example](https://github.com/sgohlke/koa-example/blob/main/src/index.ts)                         |
-| [Next.js][7]     |  12.3   |          none          |                 [Next.js example](https://github.com/sgohlke/nextjs-example/blob/main/pages/api/graphql.ts)                 |
-| [Nitro][8]       |   0.5   |        request         |                 [Nitro example](https://github.com/sgohlke/nitro-example/blob/main/routes/graphql.post.ts)                  |
-| [NodeJS http][9] |  16.17  |        request         |                [NodeJS http example](https://github.com/sgohlke/nodejs-http-example/blob/main/src/index.ts)                 |
+| Framework/Module | Version |       Mapping        |                                                           Example                                                           | 
+|------------------|:-------:|:--------------------:|:---------------------------------------------------------------------------------------------------------------------------:|
+| [AdonisJS][6]    |   5.8   |  request, response   |                  [AdonisJS example](https://github.com/sgohlke/adonisjs-example/blob/main/start/routes.ts)                  |
+| [Express][2]     | > = 2.x |         none         | [GraphQLServer test](https://github.com/dreamit-de/graphql-server/blob/main/tests/server/GraphQLServer.integration.test.ts) |
+| [fastify][4]     |   4.7   |       response       |                    [Fastify example](https://github.com/sgohlke/fastify-example/blob/main/src/index.ts)                     |
+| [hapi][10]       |  20.2   | request, no response |                       [hapi example](https://github.com/sgohlke/hapi-example/blob/main/src/index.ts)                        |
+| [Koa][5]         |  2.13   |       response       |                        [Koa example](https://github.com/sgohlke/koa-example/blob/main/src/index.ts)                         |
+| [Next.js][7]     |  12.3   |         none         |                 [Next.js example](https://github.com/sgohlke/nextjs-example/blob/main/pages/api/graphql.ts)                 |
+| [Nitro][8]       |   0.5   |       request        |                 [Nitro example](https://github.com/sgohlke/nitro-example/blob/main/routes/graphql.post.ts)                  |
+| [NodeJS http][9] |  16.17  |       request        |                [NodeJS http example](https://github.com/sgohlke/nodejs-http-example/blob/main/src/index.ts)                 |
 
 **`GraphQLServerRequest` and `GraphQLServerResponse` interfaces**
+
+The `GraphQLServerRequest` and `GraphQLServerResponse` are available in the [@sgohlke/graphql-server-base][12] module.
+This allows extensions such as custom `Logger` or `MetricsClient` implementations to implement these interfaces without
+defining `@dreamit/graphql-server` as dependency.
 
 ```typescript
 export interface GraphQLServerRequest {
@@ -284,33 +297,26 @@ export interface GraphQLServerResponse {
 }
 ```
 
-## Working with context functions
+## Working with context function
 
-`GraphQLServer`, like many GraphQL libraries, uses context functions to create a context object that is available during
-the whole request execution process. This can for example be used to inject information about request headers or adjust
-responses. An example can be found in the `CustomResponseHandler.integration.test.ts` class in the test/server folder.
+`GraphQLServer`, like many GraphQL libraries, uses a context function to create a context object that is available
+during the whole request execution process. This can for example be used to inject information about request headers 
+or adjust responses. An example can be found in the `CustomSendResponse.integration.test.ts` class in the test/server folder.
 
-The following three context functions are available and used by different core functions depending on if a request or
-response or both objects are available.
-**Deprecation Warning:**
-For accessing the Logger please use the field `serverOptions.logger` instead of `logger`. The logger parameter might be
-removed in the next major version.
-
-- `requestResponseContextFunction`: Used by `handleRequestAndSendResponse`. Has server options, logger, request and
-  response object
-  available.
-- `requestContextFunction`: Used by `handleRequest`. Has server options, logger and request object available .
-- `loggerContextFunction`: Used by `executeRequest` and `executeRequestAndSendResponse`. Only has server options and
-  logger available.
+```typescript
+export interface GraphQLServerOptions {
+  readonly contextFunction?: (contextParameters: {
+    serverOptions: GraphQLServerOptions,
+    request?: GraphQLServerRequest,
+    response?: GraphQLServerResponse,
+  }) => unknown
+}
+```
 
 ## Available options
 
 The `GraphQLServer` accepts the following options. Note that all options are optional and can be overwritten by calling
 the `setOptions` function of the `GraphQLServer` instance.
-
-### Application behaviour
-
-- **`debug`**: If `true` additional log output will be created.
 
 ### GraphQL related options
 
