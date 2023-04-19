@@ -8,9 +8,13 @@ export const VARIABLES_IN_MESSAGE_REGEX = new RegExp(/got invalid value (.*); Fi
  * be overwritten with the text REMOVED BY SANITIZER
  */
 export function sanitizeMessage(logMessage: string): string {
-    let foundVariable
-    if (logMessage && (foundVariable = VARIABLES_IN_MESSAGE_REGEX.exec(logMessage))) {
-        return logMessage.replace(foundVariable[1], 'REMOVED BY SANITIZER')
-    }
-    return logMessage
+    const foundVariable = VARIABLES_IN_MESSAGE_REGEX.exec(logMessage)
+    if (!foundVariable) return logMessage
+
+    /**
+     * RegExp.exec stores the full found match in foundVariable[0] and the found group
+     * in foundVariable[1]. As we only want to replace the group, i.e. the full variable input, we
+     * use foundVariable[1] to be replaced with 'REMOVED BY SANITIZER'
+     */
+    return logMessage.replace(foundVariable[1], 'REMOVED BY SANITIZER')
 }
