@@ -359,7 +359,7 @@ the `setOptions` function of the `GraphQLServer` instance.
   given schema, values and resolvers. Returns a Promise or value of an `ExecutionResult`. By default `execute`
   from [graphql-js][1] library is called.
 - **`extensionFunction`**: Extension function that can be used to add additional information to the `extensions` field
-  of the response. Given a `Request`, `GraphQLRequestInfo` and `ExecutionResult` it should return undefined or an ObjMap
+  of the response. Given a `GraphQLRequestInfo`, `ExecutionResult`, `GraphQLServerOptions` and context  it should return undefined or an ObjMap
   of key-value-pairs that are added to the`extensions` field. By default `defaultExtensions`
   is used and returns undefined.
 - **`reassignAggregateError`**: If `true` and the `ExecutionResult` created by the `executeFunction` contains
@@ -370,34 +370,23 @@ the `setOptions` function of the `GraphQLServer` instance.
   another application creates `AggregateErrors` while the initiator of the request (e.g. a Frontend app) does not expect
   or know how to handle `AggregateErrors`.
 
-### Context functions
+### Context function
 
-**Deprecation Warning:**
-For accessing the Logger please use the field `serverOptions.logger` instead of `logger`. The logger parameter might be
-removed in the next major version.
-
-- **`requestResponseContextFunction`**: Given a `GraphQLServerRequest`, `GraphQLServerResponse`, `Logger` and
-  `GraphQLServerOptions` this function is used to create a context value that is used when `executeFunction` is called.
-  Default implementation is `defaultRequestResponseContextFunction`.
+- **`contextFunction`**: Given `GraphQLServerOptions`, `GraphQLServerRequest` and `GraphQLServerResponse` this function is used to create a context value that is available in the whole request flow.
+  Default implementation is `defaultContextFunction` that returns the given `GraphQLServerRequest`.
   Can be used to extract information from the request and/or response and return them as context.
   This is often used to extract headers like 'Authorization' and set them in the execute function.
-  `defaultRequestResponseContextFunction` just returns the whole initial `GraphQLServerRequest` object.
-- **`requestContextFunction`**: Given a `GraphQLServerRequest`, `Logger` and `GraphQLServerOptions` this function is
-  used
-  to create a context value that is used when `executeFunction` is called.
-  Default implementation is `defaultRequestContextFunction`.
-  Can be used to extract information from the request and return them as context.
-  This is often used to extract headers like 'Authorization' and set them in the execute function.
-  `defaultRequestContextFunction` just returns the whole initial `GraphQLServerRequest` object.
-- **`loggerContextFunction`**: Given a `Logger` and `GraphQLServerOptions` this function is used
-  to create a context value that is used when `executeFunction` is called.
-  Default implementation is `defaultLoggerContextFunction`.
-  Can be used to during the request execution process to read or write information as context.
-  `defaultLoggerContextFunction` just returns an empty `{}` object.
+  
+### Error responses
+- **`methodNotAllowedResponse:`**: Function given a method as `string` returns an error that the used method is not allowed by `GraphQLServer`.
+- **`invalidSchemaResponse:`**: Default error that is returned with set schema is invalid.
+- **`missingQueryParameterResponse:`**: Default error that is returned if no query is available in the `GraphQLRequestInfo`.
+- **`onlyQueryInGetRequestsResponse:`**: Function given an operation as `string` returns an error that the used operation is not allowed for `GET` requests.
+
 
 ### Metrics options
 
-- **`collectErrorMetricsFunction:`**: Given an error name as string, `Error`, request and request context this function
+- **`collectErrorMetricsFunction:`**: Given an error name as string, error as `unknown`, `GraphQLServerOptions` and context as `unknown` this function
   can be used to trigger collecting error metrics. Default implementation is `defaultCollectErrorMetrics` that increase
   the error counter for the given errorName or Error by 1.
 
@@ -405,19 +394,18 @@ removed in the next major version.
 
 - **`logger`**: Logger to be used in the GraphQL server. `TextLogger` and `JsonLogger` are available in the module. Own
   Logger can be created by implementing `Logger` interface.
-- **`requestInformationExtractor`**: The `RequestInformationExtractor` used to extract information from the `Request`
-  and return a `Promise<GraphQLRequestInfo>`. By default, the `DefaultRequestInformationExtractor` is used that tries to
-  extract the information from the body (using `request.body` field) and URL params of the request. Own Extractor can be
-  created by implementing `RequestInformationExtractor` interface.
-- **`responseHandler`**: The `ResponseHandler` used to send a fitting response being either a `data` or `error`response.
-  By default, the `DefaultResponseHandler` is used that tries to create and send a response using the functions provided
-  by the given `GraphQLServerResponse`. Own ResponseHandler can be created by implementing `ResponseHandler` interface.
+- **`extractInformationFromRequest`**: Function that can be used to extract information from the `GraphQLServerRequest`
+  and return a `Promise<GraphQLRequestInfo>`. By default, the `extractInformationFromRequest` function is used that tries to
+  extract the information from the body (using `request.body` field) and URL params of the request.
+- **`sendResponse`**: Function used to send a fitting response being either a `data` or `error` response.
+  By default, the `sendResponse` is used that tries to create and send a response using the functions provided
+  by the given `GraphQLServerResponse`.
 - **`metricsClient`**: The `MetricsClient` used to collect metrics from the GraphQLServer. By default,
   the `SimpleMetricsClient` is used that collects three custom metrics. Own MetricsClient can be used by implementing `MetricsClient` interface.
 
-## Customise and extend GraphQLServer
+## Customize and extend GraphQLServer
 
-To make it easier to customise and extend the GraphQLServer classes and class functions are public. This makes extending
+To make it easier to customize and extend the `GraphQLServer` classes and class functions are public. This makes extending
 a class and overwriting logic easy.
 
 In the example below the logic of `TextLogger` is changed to add the text "SECRETAPP" in front of every log output.

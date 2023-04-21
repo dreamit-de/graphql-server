@@ -35,8 +35,8 @@ const requestCouldNotBeProcessed = 'Request could not be processed: '
 const defaultOptions = new DefaultGraphQLServerOptions()
 
 export class GraphQLServer {
-    protected options = new DefaultGraphQLServerOptions()
-    protected schemaValidationErrors: ReadonlyArray<GraphQLError> = []
+    options = new DefaultGraphQLServerOptions()
+    schemaValidationErrors: ReadonlyArray<GraphQLError> = []
 
     constructor(optionsParameter?: GraphQLServerOptions) {
         this.setOptions(optionsParameter)
@@ -177,7 +177,7 @@ export class GraphQLServer {
         return result
     }
 
-    protected getRequestInformation(request: GraphQLServerRequest,
+    getRequestInformation(request: GraphQLServerRequest,
         context: unknown): GraphQLRequestInfo | GraphQLExecutionResult {
         const {
             logger,
@@ -215,7 +215,7 @@ export class GraphQLServer {
         return requestInformation
     }
 
-    protected async executeRequestWithInfo(requestInformation: GraphQLRequestInfo,
+    async executeRequestWithInfo(requestInformation: GraphQLRequestInfo,
         context?: unknown,
         requestMethod?: string): Promise<GraphQLExecutionResult> {
         const {
