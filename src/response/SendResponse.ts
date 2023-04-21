@@ -13,8 +13,7 @@ export function sendResponse(responseParameters: ResponseParameters): void {
         response,
         statusCode,
         formatErrorFunction
-    }
-            = responseParameters
+    } = responseParameters
     logger.debug(
         `Preparing response with executionResult ${JSON.stringify(executionResult)}`+
             `, status code ${statusCode} and custom headers ${JSON.stringify(customHeaders)}` +
