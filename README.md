@@ -266,14 +266,15 @@ functionality provided by the webserver.
 
 | Framework/Module | Version |       Mapping        |                                                           Example                                                           | 
 |------------------|:-------:|:--------------------:|:---------------------------------------------------------------------------------------------------------------------------:|
-| [AdonisJS][6]    |   5.8   |  request, response   |                  [AdonisJS example](https://github.com/sgohlke/adonisjs-example/blob/main/start/routes.ts)                  |
+| [AdonisJS][6]    |   5.9   |  request, response   |                  [AdonisJS example](https://github.com/sgohlke/adonisjs-example/blob/main/start/routes.ts)                  |
 | [Express][2]     | > = 2.x |         none         | [GraphQLServer test](https://github.com/dreamit-de/graphql-server/blob/main/tests/server/GraphQLServer.integration.test.ts) |
-| [fastify][4]     |   4.7   |       response       |                    [Fastify example](https://github.com/sgohlke/fastify-example/blob/main/src/index.ts)                     |
-| [hapi][10]       |  20.2   | request, no response |                       [hapi example](https://github.com/sgohlke/hapi-example/blob/main/src/index.ts)                        |
-| [Koa][5]         |  2.13   |       response       |                        [Koa example](https://github.com/sgohlke/koa-example/blob/main/src/index.ts)                         |
-| [Next.js][7]     |  12.3   |         none         |                 [Next.js example](https://github.com/sgohlke/nextjs-example/blob/main/pages/api/graphql.ts)                 |
-| [Nitro][8]       |   0.5   |       request        |                 [Nitro example](https://github.com/sgohlke/nitro-example/blob/main/routes/graphql.post.ts)                  |
-| [NodeJS http][9] |  16.17  |       request        |                [NodeJS http example](https://github.com/sgohlke/nodejs-http-example/blob/main/src/index.ts)                 |
+| [fastify][4]     |   4.15   |       response       |                    [Fastify example](https://github.com/sgohlke/fastify-example/blob/main/src/index.ts)                     |
+| [hapi][10]       |  21.3.1  | request, no response |                       [hapi example](https://github.com/sgohlke/hapi-example/blob/main/src/index.ts)                        |
+| [Koa][5]         |  2.14.1   |       response       |                        [Koa example](https://github.com/sgohlke/koa-example/blob/main/src/index.ts)                         |
+| [Next.js][7]     |  13.1.6   |         none         |                 [Next.js example](https://github.com/sgohlke/nextjs-example/blob/main/pages/api/graphql.ts)                 |
+| [Nitro][8]       |   2.3.3   |       request        |                 [Nitro example](https://github.com/sgohlke/nitro-example/blob/main/routes/graphql.post.ts)                  |
+| [NodeJS http][9] |  18.14  |       request        |                [NodeJS http example](https://github.com/sgohlke/nodejs-http-example/blob/main/src/index.ts)                 |
+| [Socket.IO][13] |  4.6.1  |       response        |                [Socket.IO example](https://github.com/sgohlke/socketio-example/blob/main/src/index.ts)                 |
 
 **`GraphQLServerRequest` and `GraphQLServerResponse` interfaces**
 
@@ -446,3 +447,5 @@ graphql-server is under [MIT-License](./LICENSE).
 [10]: https://hapi.dev/
 
 [12]: https://github.com/sgohlke/graphql-server-base
+
+[13]: https://socket.io/
