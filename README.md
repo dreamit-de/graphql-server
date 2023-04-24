@@ -18,11 +18,12 @@ The following table shows which version of [graphql-js][1] and [@sgohlke/graphql
 choose a fitting version used in your project and by other libraries depending
 on them.
 
-| graphql-js version | graphql-server version |  graphql-server-base version |                                       Github branch                                        | Development Status |
-|--------------------|:----------------------:|:----------------------:|:------------------------------------------------------------------------------------------:|:------------------:|
-| ~~^15.2.0~~        |        ~~1.x~~         |        ~~n.a.~~        | [~~legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15) |    end of life     |
-| ^16.0.0            |          2.x           |          n.a.          |   [legacy-server-v2](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2)   |    maintenance     |
-| ^16.0.0            |          3.x           |          ^1.0          |                    [main](https://github.com/dreamit-de/graphql-server)                    |       active       |
+| graphql-js version | graphql-server version |  graphql-server-base version |                                       Github branch                                        |   Development Status   |
+|--------------------|:----------------------:|:----------------------:|:------------------------------------------------------------------------------------------:|:----------------------:|
+| ~~^15.2.0~~        |        ~~1.x~~         |        ~~n.a.~~        | [~~legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15) |      end of life       |
+| ~~^16.0.0~~        |        ~~2.x~~         |        ~~n.a.~~        | [~~legacy-server-v2~~](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2) |      end of life       |
+| ^16.0.0            |          3.x           |        ^1.0.1          |   [legacy-server-v3](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v3)   |      maintenance       |
+| ^16.0.0            |          4.x           |          ^2.0          |                    [main](https://github.com/dreamit-de/graphql-server)                    |         active         |
 
 ## Features
 
@@ -31,48 +32,57 @@ on them.
 - Uses out-of-the-box default options to ease use and keep code short
 - Provides hot reloading for schema and options
 - Provides out-of-the-box metrics for GraphQLServer
-- Uses only 3 peerDependencies: [graphql-js][1] version 16, [graphql-prom-metrics][11] version 1 and [graphql-server-base][12] (no other production
+- Uses only 2 peerDependencies: [graphql-js][1] version 16 and [graphql-server-base][12] version 2 (no other production
   dependencies)
 
-## Core Functions
+## Handling and executing requests
 
-`GraphQLServer` provides four core functions that can be used to create a result or send a response with a given request
-information or server request depending on the needs. For the most common use case, usage as webserver middleware,
-`handleRequestAndSendResponse` can be used.
+`GraphQLServer` provides the function `handleRequest` to handle and execute requests.
+Depending on the provided parameters different actions will be executed in order to send or return the `ExecutionResult`
+- request: If the request is a `GraphQLServerRequest` the `extractInformationFromRequest` function will be used to 
+  extract information from the request (url and/or body) and be available as `GraphQLRequestInfo`. If the request already 
+  is a `GraphQLRequestInfo` this information will be used without extracting information from the server request.
+- response: If a response is provided (i.e. not undefined), a response will be sent using `sendResponse` function and
+  the `GraphQLExecutionResult` will be returned. If response is undefined, no response will be sent and
+  the `GraphQLExecutionResult` will be returned.
 
-| **Request / Response**      | **Return GraphQLExecutionResult** | **Send server response**              |
-|-----------------------------|-----------------------------------|---------------------------------------|
-| **Use request information** | `async executeRequest`            | `async executeRequestAndSendResponse` |
-| **Use server request**      | `async handleRequest`             | `async handleRequestAndSendResponse`  |
+```typescript
+class GraphQLServer {
+  async handleRequest(request: GraphQLServerRequest | GraphQLRequestInfo,
+          response?: GraphQLServerResponse): Promise<GraphQLExecutionResult> {}
+}
+```
 
 ### Use cases
 
-The core functions can be used for many use cases. The following part lists some use cases with a short description. It
-is possible to use more than one core function with a single `GraphQLServer` instance, e.g. when using a webserver with
-websockets or messaging.
+The `handleRequest` function can be used for many use cases. The following part lists some use cases with a short 
+description. It is possible to use `handleRequest` with different parameters with a single `GraphQLServer` instance,
+e.g. when using a webserver with websockets or messaging.
 
-- `handleRequestAndSendResponse`: Use as webserver middleware. Create an instance of `GraphQLServer` and use the request
-  and response provided by the webserver as parameters for this function. You might need to wrap one or both values,
+- `handleRequest` with `GraphQLServerRequest` and `GraphQLServerResponse`: Use as webserver middleware. 
+  Create an instance of `GraphQLServer` and use the request
+  and response provided by the webserver as parameters. You might need to wrap one or both values,
   see [Webserver compatibility](#webserver-compatibility)
-- `executeRequest`: Use for flexible GraphQL execution, e.g. for websockets or messaging. Create an instance
-  of `GraphQLServer` and given a `GraphQLRequestInfo` the request can be executed and the returned
+- `handleRequest` with `GraphQLRequestInfo`: Use for flexible GraphQL execution, e.g. for websockets or messaging. 
+  Create an instance of `GraphQLServer` and given a `GraphQLRequestInfo` the request can be executed and the returned
   `GraphQLExecutionResult` can be used for multiple purposes like sending a message or responding to a websocket
   request.
-- `handleRequest`: Use as alternative webserver middleware or if custom actions should be done before sending back a
-  response. Create an instance of `GraphQLServer` and use the request provided by the webserver as parameter for this
-  function. You might need request values, see [Webserver compatibility](#webserver-compatibility). The returned
-  `GraphQLExecutionResult` can be used to execute custom logic with the result and/or prepare or send a response.
-- `executeRequestAndSendResponse`: Use if a `GraphQLRequestInfo` is available and a response should be sent from this
-  request.
+- `handleRequest` with `GraphQLServerRequest`: Use as alternative webserver middleware or if custom actions should be 
+  done before sending back a response. Create an instance of `GraphQLServer` and use the request provided by the 
+  webserver as parameter for this function. You might need request values, 
+  see [Webserver compatibility](#webserver-compatibility). The returned `GraphQLExecutionResult` can be used to execute 
+  custom logic with the result and/or prepare or send a response.
+- `handleRequest` with `GraphQLRequestInfo` and `GraphQLServerResponse`: Use if a `GraphQLRequestInfo` is available and 
+  a response should be sent from this request.
 
 ## Usage as webserver middleware
 
 You can create a new instance of `GraphQLServer` with the options necessary for your tasks. The
-`handleRequestAndSendResponse` function of the `GraphQLServer` can be integrated with many fitting webservers.
+`handleRequest` function of the `GraphQLServer` can be integrated with many fitting webservers.
 
 **Note regarding POST requests:**
 
-graphql-server version 3 tries to extract the request information from the `request.body` field. Some webserver
+graphql-server version 3 and higher try to extract the request information from the `request.body` field. Some webserver
 frameworks like [Express][2] might need a fitting body parser in order to populate this `body` field.
 
 - parse body as `string/text` (recommended): graphql-server will handle reading content and parsing it to JSON.
@@ -86,7 +96,7 @@ const graphQLServerExpress = express()
 const customGraphQLServer = new GraphQLServer({schema: someExampleSchema})
 graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
-    return customGraphQLServer.handleRequestAndSendResponse(req, res)
+    return customGraphQLServer.handleRequest(req, res)
 })
 graphQLServerExpress.listen({port: graphQLServerPort})
 console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
@@ -118,7 +128,7 @@ const customGraphQLServer = new GraphQLServer({
 })
 graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
-    return customGraphQLServer.handleRequestAndSendResponse(req, res)
+    return customGraphQLServer.handleRequest(req, res)
 })
 graphQLServerExpress.listen({port: graphQLServerPort})
 console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
@@ -145,7 +155,7 @@ const customGraphQLServer = new GraphQLServer({
 })
 graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
-    return customGraphQLServer.handleRequestAndSendResponse(req, res)
+    return customGraphQLServer.handleRequest(req, res)
 })
 graphQLServerExpress.listen({port: graphQLServerPort})
 console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
@@ -167,7 +177,7 @@ const graphQLServerExpress = express()
 const customGraphQLServer = new GraphQLServer({schema: someExampleSchema})
 graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
-    return customGraphQLServer.handleRequestAndSendResponse(req, res)
+    return customGraphQLServer.handleRequest(req, res)
 })
 graphQLServerExpress.all('/updateme', (req, res) => {
     const updatedSchema = someMagicHappened()
@@ -183,21 +193,8 @@ console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 
 There are 2 builtin `MetricsClient` implementations available.
 
-- **SimpleMetricsClient**: Used as fallback `MetricsClient` if library detects that cpu usage cannot be
-  read. Provides GraphQLServer related metrics without relying on [prom-client][3] library and does not provide NodeJS
-  metrics like cpu and memory usage.
+- **SimpleMetricsClient**: Used as default `MetricsClient`. Provides GraphQLServer related metrics without but does not provide NodeJS metrics like cpu and memory usage.
 - **NoMetricsClient**: Does not collect any metrics. Can be used to disable metrics collection/increase performance.
-
-As migration help to the `@dreamit/graphql-server` v4 version the default `MetricsClient` uses `PromMetricsClient` 
-from [graphql-prom-metrics][11]
-- **PromMetricsClient**: Used as default `MetricsClient` if no specific client is set. Uses [prom-client][3] library
-  to provide NodeJS metrics like cpu and memory usage as well as GraphQLServer related metrics.
-
-**Warning!**:
-If you are using **PromMetricsClient** you should avoid creating multiple **GraphQLServer** instances that all use 
-the **PromMetricsClient**. Because of the usage of a global object in the [prom-client][3] library this might result 
-in unexpected behavior or malfunction. You can set another metrics client like **SimpleMetricsClient** 
-by calling **GraphQLServer setOptions()** or **GraphQLServer setMetricsClient()**.   
 
 The **SimpleMetricsClient** provides three custom metrics for the GraphQL server:
 
@@ -205,7 +202,7 @@ The **SimpleMetricsClient** provides three custom metrics for the GraphQL server
 - **graphql_server_request_throughput**: The number of incoming requests
 - **graphql_server_errors**: The number of errors that are encountered while running the GraphQLServer. The counter uses
   the *errorName* field as label so errors could be differentiated. At the moment the following labels are available and
-  initialised with 0:
+  initialized with 0:
     - FetchError
     - GraphQLError
     - SchemaValidationError
@@ -225,7 +222,7 @@ const graphQLServerExpress = express()
 const customGraphQLServer = new GraphQLServer({schema: someExampleSchema})
 graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
-    return customGraphQLServer.handleRequestAndSendResponse(req, res)
+    return customGraphQLServer.handleRequest(req, res)
 })
 graphQLServerExpress.get('/metrics', async(req, res) => {
     return res.contentType(customGraphQLServer.getMetricsContentType())
@@ -247,7 +244,7 @@ graphQLServerExpress.use(cors())
 const customGraphQLServer = new GraphQLServer({schema: someExampleSchema})
 graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
 graphQLServerExpress.all('/graphql', (req, res) => {
-    return customGraphQLServer.handleRequestAndSendResponse(req, res)
+    return customGraphQLServer.handleRequest(req, res)
 })
 graphQLServerExpress.listen({port: graphQLServerPort})
 console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
@@ -255,30 +252,35 @@ console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 
 ## Webserver compatibility
 
-The `GraphQLServer.handleRequestAndSendResponse` function works with webservers that provide a fitting request and
+The `handleRequest` function works with webservers that provide a fitting request and
 response object that matches `GraphQLServerRequest` and `GraphQLServerResponse` interface. As [Express][2] (since
 version 2.x) matches both no further adjustment is necessary. If one or both objects do not match `GraphQLServerRequest`
 and `GraphQLServerResponse`
 it might still be possible to map the webserver request and response objects to these interfaces.
 
 In the following table a list of webserver frameworks/versions can be found that are able to run `GraphQLServer`.
-The `Version` column shows the version of the webserver framework we tested `GraphQLServer` version 3 with.  
-If the request, response and/or core function has to be mapped it is noted in the `Mapping` column. There are some code
-examples on how
-to adjust the request/response to be able to use `GraphQLServer.handleRequest` with the webserver.
+The `Version` column shows the version of the webserver framework we tested `GraphQLServer` version 4 with.  
+If the request and/or response has to be mapped it is noted in the `Mapping` column. There is a code
+examples on how to use `handleRequest` without providing a `GraphQLServerResponse` and sending the response with the 
+functionality provided by the webserver.
 
-| Framework/Module | Version |        Mapping         |                                                           Example                                                           | 
-|------------------|:-------:|:----------------------:|:---------------------------------------------------------------------------------------------------------------------------:|
-| [AdonisJS][6]    |   5.8   |   request, response    |                  [AdonisJS example](https://github.com/sgohlke/adonisjs-example/blob/main/start/routes.ts)                  |
-| [Express][2]     | > = 2.x |          none          | [GraphQLServer test](https://github.com/dreamit-de/graphql-server/blob/main/tests/server/GraphQLServer.integration.test.ts) |
-| [fastify][4]     |   4.7   |        response        |                    [Fastify example](https://github.com/sgohlke/fastify-example/blob/main/src/index.ts)                     |
-| [hapi][10]       |  20.2   | request, handleRequest |                       [hapi example](https://github.com/sgohlke/hapi-example/blob/main/src/index.ts)                        |
-| [Koa][5]         |  2.13   |        response        |                        [Koa example](https://github.com/sgohlke/koa-example/blob/main/src/index.ts)                         |
-| [Next.js][7]     |  12.3   |          none          |                 [Next.js example](https://github.com/sgohlke/nextjs-example/blob/main/pages/api/graphql.ts)                 |
-| [Nitro][8]       |   0.5   |        request         |                 [Nitro example](https://github.com/sgohlke/nitro-example/blob/main/routes/graphql.post.ts)                  |
-| [NodeJS http][9] |  16.17  |        request         |                [NodeJS http example](https://github.com/sgohlke/nodejs-http-example/blob/main/src/index.ts)                 |
+| Framework/Module | Version |       Mapping        |                                                           Example                                                           | 
+|------------------|:-------:|:--------------------:|:---------------------------------------------------------------------------------------------------------------------------:|
+| [AdonisJS][6]    |   5.9   |  request, response   |                  [AdonisJS example](https://github.com/sgohlke/adonisjs-example/blob/main/start/routes.ts)                  |
+| [Express][2]     | > = 2.x |         none         | [GraphQLServer test](https://github.com/dreamit-de/graphql-server/blob/main/tests/server/GraphQLServer.integration.test.ts) |
+| [fastify][4]     |   4.15   |       response       |                    [Fastify example](https://github.com/sgohlke/fastify-example/blob/main/src/index.ts)                     |
+| [hapi][10]       |  21.3.1  | request, no response |                       [hapi example](https://github.com/sgohlke/hapi-example/blob/main/src/index.ts)                        |
+| [Koa][5]         |  2.14.1   |       response       |                        [Koa example](https://github.com/sgohlke/koa-example/blob/main/src/index.ts)                         |
+| [Next.js][7]     |  13.1.6   |         none         |                 [Next.js example](https://github.com/sgohlke/nextjs-example/blob/main/pages/api/graphql.ts)                 |
+| [Nitro][8]       |   2.3.3   |       request        |                 [Nitro example](https://github.com/sgohlke/nitro-example/blob/main/routes/graphql.post.ts)                  |
+| [NodeJS http][9] |  18.14  |       request        |                [NodeJS http example](https://github.com/sgohlke/nodejs-http-example/blob/main/src/index.ts)                 |
+| [Socket.IO][13] |  4.6.1  |       response        |                [Socket.IO example](https://github.com/sgohlke/socketio-example/blob/main/src/index.ts)                 |
 
 **`GraphQLServerRequest` and `GraphQLServerResponse` interfaces**
+
+The `GraphQLServerRequest` and `GraphQLServerResponse` are available in the [@sgohlke/graphql-server-base][12] module.
+This allows extensions such as custom `Logger` or `MetricsClient` implementations to implement these interfaces without
+defining `@dreamit/graphql-server` as dependency.
 
 ```typescript
 export interface GraphQLServerRequest {
@@ -296,33 +298,26 @@ export interface GraphQLServerResponse {
 }
 ```
 
-## Working with context functions
+## Working with context function
 
-`GraphQLServer`, like many GraphQL libraries, uses context functions to create a context object that is available during
-the whole request execution process. This can for example be used to inject information about request headers or adjust
-responses. An example can be found in the `CustomResponseHandler.integration.test.ts` class in the test/server folder.
+`GraphQLServer`, like many GraphQL libraries, uses a context function to create a context object that is available
+during the whole request execution process. This can for example be used to inject information about request headers 
+or adjust responses. An example can be found in the `CustomSendResponse.integration.test.ts` class in the test/server folder.
 
-The following three context functions are available and used by different core functions depending on if a request or
-response or both objects are available.
-**Deprecation Warning:**
-For accessing the Logger please use the field `serverOptions.logger` instead of `logger`. The logger parameter might be
-removed in the next major version.
-
-- `requestResponseContextFunction`: Used by `handleRequestAndSendResponse`. Has server options, logger, request and
-  response object
-  available.
-- `requestContextFunction`: Used by `handleRequest`. Has server options, logger and request object available .
-- `loggerContextFunction`: Used by `executeRequest` and `executeRequestAndSendResponse`. Only has server options and
-  logger available.
+```typescript
+export interface GraphQLServerOptions {
+  readonly contextFunction?: (contextParameters: {
+    serverOptions: GraphQLServerOptions,
+    request?: GraphQLServerRequest,
+    response?: GraphQLServerResponse,
+  }) => unknown
+}
+```
 
 ## Available options
 
 The `GraphQLServer` accepts the following options. Note that all options are optional and can be overwritten by calling
 the `setOptions` function of the `GraphQLServer` instance.
-
-### Application behaviour
-
-- **`debug`**: If `true` additional log output will be created.
 
 ### GraphQL related options
 
@@ -365,7 +360,7 @@ the `setOptions` function of the `GraphQLServer` instance.
   given schema, values and resolvers. Returns a Promise or value of an `ExecutionResult`. By default `execute`
   from [graphql-js][1] library is called.
 - **`extensionFunction`**: Extension function that can be used to add additional information to the `extensions` field
-  of the response. Given a `Request`, `GraphQLRequestInfo` and `ExecutionResult` it should return undefined or an ObjMap
+  of the response. Given a `GraphQLRequestInfo`, `ExecutionResult`, `GraphQLServerOptions` and context  it should return undefined or an ObjMap
   of key-value-pairs that are added to the`extensions` field. By default `defaultExtensions`
   is used and returns undefined.
 - **`reassignAggregateError`**: If `true` and the `ExecutionResult` created by the `executeFunction` contains
@@ -376,34 +371,23 @@ the `setOptions` function of the `GraphQLServer` instance.
   another application creates `AggregateErrors` while the initiator of the request (e.g. a Frontend app) does not expect
   or know how to handle `AggregateErrors`.
 
-### Context functions
+### Context function
 
-**Deprecation Warning:**
-For accessing the Logger please use the field `serverOptions.logger` instead of `logger`. The logger parameter might be
-removed in the next major version.
-
-- **`requestResponseContextFunction`**: Given a `GraphQLServerRequest`, `GraphQLServerResponse`, `Logger` and
-  `GraphQLServerOptions` this function is used to create a context value that is used when `executeFunction` is called.
-  Default implementation is `defaultRequestResponseContextFunction`.
+- **`contextFunction`**: Given `GraphQLServerOptions`, `GraphQLServerRequest` and `GraphQLServerResponse` this function is used to create a context value that is available in the whole request flow.
+  Default implementation is `defaultContextFunction` that returns the given `GraphQLServerRequest`.
   Can be used to extract information from the request and/or response and return them as context.
   This is often used to extract headers like 'Authorization' and set them in the execute function.
-  `defaultRequestResponseContextFunction` just returns the whole initial `GraphQLServerRequest` object.
-- **`requestContextFunction`**: Given a `GraphQLServerRequest`, `Logger` and `GraphQLServerOptions` this function is
-  used
-  to create a context value that is used when `executeFunction` is called.
-  Default implementation is `defaultRequestContextFunction`.
-  Can be used to extract information from the request and return them as context.
-  This is often used to extract headers like 'Authorization' and set them in the execute function.
-  `defaultRequestContextFunction` just returns the whole initial `GraphQLServerRequest` object.
-- **`loggerContextFunction`**: Given a `Logger` and `GraphQLServerOptions` this function is used
-  to create a context value that is used when `executeFunction` is called.
-  Default implementation is `defaultLoggerContextFunction`.
-  Can be used to during the request execution process to read or write information as context.
-  `defaultLoggerContextFunction` just returns an empty `{}` object.
+  
+### Error responses
+- **`methodNotAllowedResponse:`**: Function given a method as `string` returns an error that the used method is not allowed by `GraphQLServer`.
+- **`invalidSchemaResponse:`**: Default error that is returned with set schema is invalid.
+- **`missingQueryParameterResponse:`**: Default error that is returned if no query is available in the `GraphQLRequestInfo`.
+- **`onlyQueryInGetRequestsResponse:`**: Function given an operation as `string` returns an error that the used operation is not allowed for `GET` requests.
+
 
 ### Metrics options
 
-- **`collectErrorMetricsFunction:`**: Given an error name as string, `Error`, request and request context this function
+- **`collectErrorMetricsFunction:`**: Given an error name as string, error as `unknown`, `GraphQLServerOptions` and context as `unknown` this function
   can be used to trigger collecting error metrics. Default implementation is `defaultCollectErrorMetrics` that increase
   the error counter for the given errorName or Error by 1.
 
@@ -411,20 +395,18 @@ removed in the next major version.
 
 - **`logger`**: Logger to be used in the GraphQL server. `TextLogger` and `JsonLogger` are available in the module. Own
   Logger can be created by implementing `Logger` interface.
-- **`requestInformationExtractor`**: The `RequestInformationExtractor` used to extract information from the `Request`
-  and return a `Promise<GraphQLRequestInfo>`. By default, the `DefaultRequestInformationExtractor` is used that tries to
-  extract the information from the body (using `request.body` field) and URL params of the request. Own Extractor can be
-  created by implementing `RequestInformationExtractor` interface.
-- **`responseHandler`**: The `ResponseHandler` used to send a fitting response being either a `data` or `error`response.
-  By default, the `DefaultResponseHandler` is used that tries to create and send a response using the functions provided
-  by the given `GraphQLServerResponse`. Own ResponseHandler can be created by implementing `ResponseHandler` interface.
+- **`extractInformationFromRequest`**: Function that can be used to extract information from the `GraphQLServerRequest`
+  and return a `Promise<GraphQLRequestInfo>`. By default, the `extractInformationFromRequest` function is used that tries to
+  extract the information from the body (using `request.body` field) and URL params of the request.
+- **`sendResponse`**: Function used to send a fitting response being either a `data` or `error` response.
+  By default, the `sendResponse` is used that tries to create and send a response using the functions provided
+  by the given `GraphQLServerResponse`.
 - **`metricsClient`**: The `MetricsClient` used to collect metrics from the GraphQLServer. By default,
-  the `PromMetricsClient` from [graphql-prom-metrics][11] is used that collects default NodeJS and three custom metrics 
-  using [prom-client][3] library. Own MetricsClient can be used by implementing `MetricsClient` interface.
+  the `SimpleMetricsClient` is used that collects three custom metrics. Own MetricsClient can be used by implementing `MetricsClient` interface.
 
-## Customise and extend GraphQLServer
+## Customize and extend GraphQLServer
 
-To make it easier to customise and extend the GraphQLServer classes and class functions are public. This makes extending
+To make it easier to customize and extend the `GraphQLServer` classes and class functions are public. This makes extending
 a class and overwriting logic easy.
 
 In the example below the logic of `TextLogger` is changed to add the text "SECRETAPP" in front of every log output.
@@ -450,8 +432,6 @@ graphql-server is under [MIT-License](./LICENSE).
 
 [2]: https://expressjs.com/
 
-[3]: https://github.com/siimon/prom-client
-
 [4]: https://www.fastify.io/
 
 [5]: https://koajs.com/
@@ -466,6 +446,6 @@ graphql-server is under [MIT-License](./LICENSE).
 
 [10]: https://hapi.dev/
 
-[11]: https://github.com/sgohlke/graphql-prom-metrics
-
 [12]: https://github.com/sgohlke/graphql-server-base
+
+[13]: https://socket.io/

@@ -2,32 +2,38 @@ import {
     GraphQLServerOptions,
     JsonLogger,
     LogEntry,
-    LogHelper,
-    LogLevel,
-    TextLogger
+    LogEntryInput,
+    TextLogger,
+    createLogEntry
 } from '~/src'
 import {
     userSchema,
     userSchemaResolvers
 } from './ExampleSchemas'
-import fetch from 'cross-fetch'
 import {Console} from 'node:console'
 import { GraphQLRequestInfo } from '@sgohlke/graphql-server-base'
+import fetch from 'cross-fetch'
 
 export class NoStacktraceJsonLogger extends JsonLogger {
     loggerConsole: Console = new Console(process.stdout, process.stderr, false)
-    logMessage(logMessage: string,
-        loglevel: LogLevel,
-        error?: Error,
-        customErrorName?: string,
-        context?: unknown): void {
-        const logEntry: LogEntry = LogHelper.createLogEntry(logMessage,
+    logMessage(logEntryInput: LogEntryInput): void {
+        const {
+            logMessage,
             loglevel,
-            this.loggerName,
-            this.serviceName,
             error,
             customErrorName,
-            context)
+            context
+        } = logEntryInput
+
+        const logEntry: LogEntry = createLogEntry({
+            context,
+            customErrorName,
+            error,
+            logMessage,
+            loggerName: this.loggerName,
+            loglevel,
+            serviceName: this.serviceName
+        })
         logEntry.stacktrace = undefined
         this.loggerConsole.log(JSON.stringify(logEntry))
     }
@@ -45,7 +51,11 @@ export const GRAPHQL_SERVER_PORT = 3000
 export const LOGGER = new NoStacktraceJsonLogger('nostack-logger', 'myTestService', false)
 export const TEXT_LOGGER = new NoStacktraceTextLogger('nostack-logger', 'myTestService', false)
 export const INITIAL_GRAPHQL_SERVER_OPTIONS: GraphQLServerOptions =
-    {schema: userSchema, rootValue: userSchemaResolvers, logger: LOGGER}
+    {
+        logger: LOGGER,
+        rootValue: userSchemaResolvers,
+        schema: userSchema
+    }
 
 export function generateGetParametersFromGraphQLRequestInfo(requestInfo: GraphQLRequestInfo)
 : string {
@@ -70,5 +80,9 @@ export function fetchResponse(body: BodyInit,
         'Content-Type': 'application/json'
     }): Promise<Response> {
     return fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql`,
-        {method: method, body: body, headers: headers})
+        {
+            body: body,
+            headers: headers,
+            method: method
+        })
 }

@@ -1,40 +1,40 @@
-import bodyParser from 'body-parser'
-import express, {Express} from 'express'
-import {Server} from 'node:http'
 import {
     FETCH_ERROR,
     GRAPHQL_ERROR,
     INVALID_SCHEMA_ERROR,
     METHOD_NOT_ALLOWED_ERROR,
     MISSING_QUERY_PARAMETER_ERROR,
+    MetricsClient,
     SCHEMA_VALIDATION_ERROR,
     SYNTAX_ERROR,
     VALIDATION_ERROR,
-    MetricsClient,
 } from '@sgohlke/graphql-server-base'
 import {
-    GraphQLServer,
-    SimpleMetricsClient,
-    GraphQLServerOptions,
-    NoMetricsClient
-} from '~/src'
-import fetch from 'cross-fetch'
-import {
-    usersQuery,
-    returnErrorQuery,
-    userSchemaResolvers,
-    initialSchemaWithOnlyDescription,
-    userSchema
-} from '../ExampleSchemas'
-import {
-    fetchResponse,
     GRAPHQL_SERVER_PORT,
-    LOGGER
+    LOGGER,
+    fetchResponse
 } from '../TestHelpers'
 import {
     GraphQLError,
     NoSchemaIntrospectionCustomRule
 } from 'graphql'
+import {
+    GraphQLServer,
+    GraphQLServerOptions,
+    NoMetricsClient,
+    SimpleMetricsClient
+} from '~/src'
+import express, {Express} from 'express'
+import {
+    initialSchemaWithOnlyDescription,
+    returnErrorQuery,
+    userSchema,
+    userSchemaResolvers,
+    usersQuery
+} from '../ExampleSchemas'
+import {Server} from 'node:http'
+import bodyParser from 'body-parser'
+import fetch from 'cross-fetch'
 
 let customGraphQLServer: GraphQLServer
 let graphQLServer: Server
@@ -124,10 +124,10 @@ async function testInitialMetrics(isNoMetricsClient: boolean): Promise<void> {
 async function testInvalidSchemaMetrics(metricsClient: MetricsClient,
     isNoMetricsClient: boolean): Promise<void> {
     customGraphQLServer.setOptions({
-        schema: initialSchemaWithOnlyDescription,
-        rootValue: userSchemaResolvers,
         logger: LOGGER,
         metricsClient: metricsClient,
+        rootValue: userSchemaResolvers,
+        schema: initialSchemaWithOnlyDescription,
         shouldUpdateSchemaFunction: () => true
     })
     metricsResponseBody = await getMetricsResponse()
@@ -318,14 +318,14 @@ async function testFetchErrorResponseMetrics(metricsClient: MetricsClient,
     isNoMetricsClient: boolean): Promise<void> {
 
     customGraphQLServer.setOptions({
-        schema: userSchema,
-        rootValue: userSchemaResolvers,
-        logger: LOGGER,
-        metricsClient: metricsClient,
         executeFunction: () => {
             throw new GraphQLError('FetchError: ' +
                 'An error occurred while connecting to following endpoint', {})
-        }
+        },
+        logger: LOGGER,
+        metricsClient: metricsClient,
+        rootValue: userSchemaResolvers,
+        schema: userSchema
     })
 
     await fetchResponse(`{"query":"${usersQuery}"}`)
@@ -373,7 +373,7 @@ function setupGraphQLServer(): Express {
     customGraphQLServer = new GraphQLServer(getInitialGraphQLServerOptions(new NoMetricsClient()))
     graphQLServerExpress.use(bodyParser.json())
     graphQLServerExpress.all('/graphql', (request, response) => {
-        return customGraphQLServer.handleRequestAndSendResponse(request, response)
+        return customGraphQLServer.handleRequest(request, response)
     })
     graphQLServerExpress.get('/metrics', async(_request, response) => {
         return response.contentType(customGraphQLServer.getMetricsContentType())
@@ -384,11 +384,11 @@ function setupGraphQLServer(): Express {
 
 function getInitialGraphQLServerOptions(metricsClient: MetricsClient): GraphQLServerOptions {
     return {
-        schema: userSchema,
-        rootValue: userSchemaResolvers,
-        logger: LOGGER,
         customValidationRules: [NoSchemaIntrospectionCustomRule],
-        metricsClient: metricsClient
+        logger: LOGGER,
+        metricsClient: metricsClient,
+        rootValue: userSchemaResolvers,
+        schema: userSchema
     }
 }
 

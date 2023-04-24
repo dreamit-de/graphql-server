@@ -5,25 +5,25 @@ import {
     validate
 } from 'graphql'
 import {
-    defaultCollectErrorMetrics,
-    defaultLoggerContextFunction,
-    defaultRequestContextFunction,
-    DefaultRequestInformationExtractor,
-    DefaultResponseHandler,
     GraphQLServer,
-    SimpleMetricsClient
+    SimpleMetricsClient,
+    defaultCollectErrorMetrics,
+    defaultContextFunction,
+    defaultMethodNotAllowedResponse,
+    defaultOnlyQueryInGetRequestsResponse,
+    extractInformationFromRequest
 } from '~/src'
 import {
     initialSchemaWithOnlyDescription,
     userOne,
     userSchema,
     userSchemaResolvers,
-    usersQuery,
-    userTwo
+    userTwo,
+    usersQuery
 } from '../ExampleSchemas'
-import {TEXT_LOGGER} from '~/tests/TestHelpers'
-import {PromMetricsClient} from '@sgohlke/graphql-prom-metrics'
 import {GraphQLExecutionResult} from '@sgohlke/graphql-server-base'
+import {TEXT_LOGGER} from '~/tests/TestHelpers'
+
 
 const graphQLErrorResponse: GraphQLExecutionResult = {
     executionResult: {
@@ -34,12 +34,12 @@ const graphQLErrorResponse: GraphQLExecutionResult = {
 
 test('Should create schema on GraphQLServer class creation', () => {
     const graphqlServer = new GraphQLServer({
+        invalidSchemaResponse: graphQLErrorResponse,
         logger: TEXT_LOGGER,
+        methodNotAllowedResponse: defaultMethodNotAllowedResponse,
+        missingQueryParameterResponse: graphQLErrorResponse,
+        onlyQueryInGetRequestsResponse: defaultOnlyQueryInGetRequestsResponse,
         schema: initialSchemaWithOnlyDescription,
-        responseHandler: new DefaultResponseHandler(graphQLErrorResponse,
-            graphQLErrorResponse,
-            graphQLErrorResponse,
-            graphQLErrorResponse)
     })
     const schema = graphqlServer.getSchema()
     expect(schema).toBeDefined()
@@ -49,8 +49,8 @@ test('Should create schema on GraphQLServer class creation', () => {
 
 test('Should update schema when calling GraphQLServer updateGraphQLSchema function', () => {
     const graphqlServer = new GraphQLServer({
+        logger: TEXT_LOGGER,
         schema: initialSchemaWithOnlyDescription,
-        logger: TEXT_LOGGER
     })
     const updatedSchema = new GraphQLSchema({description:'updated'})
     graphqlServer.setSchema(updatedSchema)
@@ -62,8 +62,8 @@ test('Should update schema when calling GraphQLServer updateGraphQLSchema functi
 
 test('Should not update schema when given schema is undefined', () => {
     const graphqlServer = new GraphQLServer({
+        logger: TEXT_LOGGER,
         schema: initialSchemaWithOnlyDescription,
-        logger: TEXT_LOGGER
     })
     graphqlServer.setSchema()
     const schema = graphqlServer.getSchema()
@@ -86,18 +86,19 @@ test('Should update schema when given schema is undefined ' +
 
 test('Should execute query without server', async() => {
     const graphqlServer = new GraphQLServer({
-        schema: userSchema,
-        rootValue: userSchemaResolvers,
-        logger: TEXT_LOGGER,
-        requestInformationExtractor: new DefaultRequestInformationExtractor(),
-        metricsClient: new PromMetricsClient(),
         collectErrorMetricsFunction: defaultCollectErrorMetrics,
+        contextFunction: defaultContextFunction,
+        extractInformationFromRequest: extractInformationFromRequest,
+        logger: TEXT_LOGGER,
+        metricsClient: new SimpleMetricsClient(),
         parseFunction: parse,
+        rootValue: userSchemaResolvers,
+
+        schema: userSchema,
         validateFunction: validate,
-        requestContextFunction: defaultRequestContextFunction,
-        loggerContextFunction: defaultLoggerContextFunction,
+
     })
-    const result = await graphqlServer.executeRequest({
+    const result = await graphqlServer.handleRequest({
         query: usersQuery
     })
     expect(result.executionResult.data?.users).toEqual([userOne, userTwo])
@@ -114,8 +115,8 @@ test('Should use SimpleMetricsClient as fallback if cpuUsage is not available', 
     process.hrtime = savedProcess.hrtime
 
     const graphqlServer = new GraphQLServer({
-        schema: userSchema,
-        rootValue: userSchemaResolvers
+        rootValue: userSchemaResolvers,
+        schema: userSchema
     })
     const metrics = await graphqlServer.getMetrics()
     expect(metrics).toContain(
@@ -132,16 +133,16 @@ test('Should use SimpleMetricsClient as fallback if cpuUsage is not available', 
 test('Usage of a second GraphQLServer with MetricsClient that does not use prom-client' +
     ' should not intervene with metrics collection of first server', async() => {
     const graphqlServerMain = new GraphQLServer({
-        schema: userSchema,
-        rootValue: userSchemaResolvers,
         logger: TEXT_LOGGER,
+        rootValue: userSchemaResolvers,
+        schema: userSchema,
     })
 
     // Execute request on main server twice to get throughput count of 2
-    await graphqlServerMain.executeRequest({
+    await graphqlServerMain.handleRequest({
         query: usersQuery
     })
-    await graphqlServerMain.executeRequest({
+    await graphqlServerMain.handleRequest({
         query: usersQuery
     })
     let metrics = await graphqlServerMain.getMetrics()
@@ -150,14 +151,14 @@ test('Usage of a second GraphQLServer with MetricsClient that does not use prom-
     )
 
     const graphqlServerSecond = new GraphQLServer({
-        schema: userSchema,
-        rootValue: userSchemaResolvers,
         logger: TEXT_LOGGER,
-        metricsClient: new SimpleMetricsClient()
+        metricsClient: new SimpleMetricsClient(),
+        rootValue: userSchemaResolvers,
+        schema: userSchema
     })
 
     // Execute request on second server once to get throughput count of 1
-    await graphqlServerSecond.executeRequest({
+    await graphqlServerSecond.handleRequest({
         query: usersQuery
     })
     metrics = await graphqlServerSecond.getMetrics()

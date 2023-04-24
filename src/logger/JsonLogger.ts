@@ -1,10 +1,11 @@
-import {Logger} from '@sgohlke/graphql-server-base'
-import {Console} from 'node:console'
 import {
     LogEntry,
-    LogHelper,
-    LogLevel
+    LogEntryInput,
+    LogLevel,
+    createLogEntry
 } from '..'
+import {Console} from 'node:console'
+import {Logger} from '@sgohlke/graphql-server-base'
 
 const loggerConsole: Console = new Console(process.stdout, process.stderr, false)
 
@@ -34,12 +35,8 @@ export class JsonLogger implements Logger {
     }
 
     debug(logMessage: string, context?: unknown): void {
-        this.logMessage(logMessage, LogLevel.debug, undefined, undefined, context)
-    }
-
-    logDebugIfEnabled(message: string, context?: unknown): void {
         if (this.debugEnabled) {
-            this.debug(message, context)
+            this.logMessage({context, logMessage, loglevel: LogLevel.debug})
         }
     }
 
@@ -47,29 +44,35 @@ export class JsonLogger implements Logger {
         error: Error,
         customErrorName: string,
         context?: unknown): void {
-        this.logMessage(logMessage, LogLevel.error, error, customErrorName, context)
+        this.logMessage({context, customErrorName, error, logMessage, loglevel: LogLevel.error})
     }
 
     info(logMessage: string, context?: unknown): void {
-        this.logMessage(logMessage, LogLevel.info, undefined, undefined, context)
+        this.logMessage({context, logMessage, loglevel: LogLevel.info})
     }
 
     warn(logMessage: string, context?: unknown): void {
-        this.logMessage(logMessage, LogLevel.warn, undefined, undefined, context)
+        this.logMessage({context, logMessage, loglevel: LogLevel.warn})
     }
 
-    logMessage(logMessage: string,
-        loglevel: LogLevel,
-        error?: Error,
-        customErrorName?: string,
-        context?: unknown): void {
-        const logEntry: LogEntry = LogHelper.createLogEntry(logMessage,
+    logMessage(logEntryInput: LogEntryInput): void {
+        const {
+            logMessage,
             loglevel,
-            this.loggerName,
-            this.serviceName,
             error,
             customErrorName,
-            context)
+            context
+        } = logEntryInput
+
+        const logEntry: LogEntry = createLogEntry({
+            context,
+            customErrorName,
+            error,
+            logMessage,
+            loggerName: this.loggerName,
+            loglevel,
+            serviceName: this.serviceName,
+        })
         loggerConsole.log(JSON.stringify(logEntry))
     }
 }
