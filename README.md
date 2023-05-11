@@ -275,6 +275,9 @@ functionality provided by the webserver.
 | [Nitro][8]       |   2.3.3   |       request        |                 [Nitro example](https://github.com/sgohlke/nitro-example/blob/main/routes/graphql.post.ts)                  |
 | [NodeJS http][9] |  18.14  |       request        |                [NodeJS http example](https://github.com/sgohlke/nodejs-http-example/blob/main/src/index.ts)                 |
 | [Socket.IO][13] |  4.6.1  |       response        |                [Socket.IO example](https://github.com/sgohlke/socketio-example/blob/main/src/index.ts)                 |
+| [gRPC][14] |  1.8.14  |       no response        |                [gRPC example](https://github.com/sgohlke/grpc-server-example/blob/main/server.js)                 |
+| [Deno][15] |  0.181.0  |       request, no response        |                [Deno HTTP example](https://github.com/sgohlke/deno-graphql/blob/main/webserver.ts)                 |
+
 
 **`GraphQLServerRequest` and `GraphQLServerResponse` interfaces**
 
@@ -449,3 +452,7 @@ graphql-server is under [MIT-License](./LICENSE).
 [12]: https://github.com/sgohlke/graphql-server-base
 
 [13]: https://socket.io/
+
+[14]: https://grpc.io/
+
+[15]: https://deno.land/
