@@ -4,7 +4,7 @@ import {
     ResponseParameters
 } from '..'
 import {GraphQLError} from 'graphql'
-import { GraphQLExecutionResult } from '@sgohlke/graphql-server-base'
+import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
 
 /**
  * Default implementation of ResponseHandler interface

@@ -1,4 +1,4 @@
-import {Logger} from '@sgohlke/graphql-server-base'
+import {Logger} from '@dreamit/graphql-server-base'
 import {
     LogLevel,
     LogEntry,

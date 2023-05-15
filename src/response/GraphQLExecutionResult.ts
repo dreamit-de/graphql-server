@@ -1,7 +1,7 @@
 import {
     GraphQLError
 } from 'graphql'
-import {GraphQLExecutionResult} from '@sgohlke/graphql-server-base'
+import {GraphQLExecutionResult} from '@dreamit/graphql-server-base'
 
 export function getFirstErrorFromExecutionResult(result: GraphQLExecutionResult)
     : GraphQLError {

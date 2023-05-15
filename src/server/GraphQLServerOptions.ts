@@ -4,7 +4,7 @@ import {
     MetricsClient,
     GraphQLServerRequest,
     GraphQLServerResponse,
-} from '@sgohlke/graphql-server-base'
+} from '@dreamit/graphql-server-base'
 import {
     RequestInformationExtractor,
     ResponseHandler

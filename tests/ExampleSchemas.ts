@@ -1,4 +1,4 @@
-import {GraphQLRequestInfo} from '@sgohlke/graphql-server-base'
+import {GraphQLRequestInfo} from '@dreamit/graphql-server-base'
 import {
     buildSchema,
     GraphQLError,

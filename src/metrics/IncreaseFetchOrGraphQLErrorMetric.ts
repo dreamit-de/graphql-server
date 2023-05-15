@@ -1,7 +1,7 @@
 import { 
     Logger, 
     MetricsClient 
-} from '@sgohlke/graphql-server-base'
+} from '@dreamit/graphql-server-base'
 import {
     determineGraphQLOrFetchError,
 } from '..'

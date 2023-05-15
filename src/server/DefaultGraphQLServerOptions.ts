@@ -32,7 +32,7 @@ import {
     GraphQLServerResponse, 
     Logger, 
     MetricsClient 
-} from '@sgohlke/graphql-server-base'
+} from '@dreamit/graphql-server-base'
 
 export const fallbackTextLogger = new TextLogger('fallback-logger', 'fallback-service')
 export const defaultRequestInformationExtractor = new DefaultRequestInformationExtractor()

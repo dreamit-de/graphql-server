@@ -33,4 +33,4 @@ export * from './server/GraphQLServer'
 export * from './server/GraphQLServerOptions'
 
 // For backwards-compatibility with graphql-server v3 versions and extensions
-export * from '@sgohlke/graphql-server-base'
+export * from '@dreamit/graphql-server-base'

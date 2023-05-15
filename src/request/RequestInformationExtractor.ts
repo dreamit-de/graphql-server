@@ -1,7 +1,7 @@
 import {
     GraphQLRequestInfo,
     GraphQLServerRequest
-} from '@sgohlke/graphql-server-base'
+} from '@dreamit/graphql-server-base'
 
 /**
  * Interface for RequestInformationExtractor.

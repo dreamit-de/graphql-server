@@ -1,7 +1,7 @@
 import {
     GraphQLExecutionResult,
     ResponseParameters
-} from '@sgohlke/graphql-server-base'
+} from '@dreamit/graphql-server-base'
 
 /**
  * Interface for ResponseHandler.

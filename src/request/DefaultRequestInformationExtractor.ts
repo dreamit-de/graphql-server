@@ -9,7 +9,7 @@ import {
     ContentType, 
     GraphQLRequestInfo, 
     GraphQLServerRequest 
-} from '@sgohlke/graphql-server-base'
+} from '@dreamit/graphql-server-base'
 
 /**
  * Default implementation of RequestInformationExtractor interface

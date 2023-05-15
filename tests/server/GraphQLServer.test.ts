@@ -23,7 +23,7 @@ import {
 } from '../ExampleSchemas'
 import {TEXT_LOGGER} from '~/tests/TestHelpers'
 import {PromMetricsClient} from '@sgohlke/graphql-prom-metrics'
-import {GraphQLExecutionResult} from '@sgohlke/graphql-server-base'
+import {GraphQLExecutionResult} from '@dreamit/graphql-server-base'
 
 const graphQLErrorResponse: GraphQLExecutionResult = {
     executionResult: {
