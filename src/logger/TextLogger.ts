@@ -4,7 +4,7 @@ import {
     LogLevel,
     createLogEntry,
 } from '..'
-import {Logger} from '@sgohlke/graphql-server-base'
+import {Logger} from '@dreamit/graphql-server-base'
 
 /**
  * Logger implementation that outputs log entries as text to console.

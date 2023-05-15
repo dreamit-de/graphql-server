@@ -16,7 +16,7 @@ import {
     Logger,
     MetricsClient,
     ResponseParameters
-} from '@sgohlke/graphql-server-base'
+} from '@dreamit/graphql-server-base'
 import {
     GraphQLFieldResolver,
     GraphQLTypeResolver

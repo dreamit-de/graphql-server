@@ -2,7 +2,7 @@ import {
     ContentType,
     GraphQLRequestInfo,
     GraphQLServerRequest
-} from '@sgohlke/graphql-server-base'
+} from '@dreamit/graphql-server-base'
 import {Buffer} from 'node:buffer'
 import {GraphQLError} from 'graphql'
 import {URLSearchParams} from 'node:url'

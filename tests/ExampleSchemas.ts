@@ -6,7 +6,7 @@ import {
 import {
     AggregateError,
 } from '~/src'
-import {GraphQLRequestInfo} from '@sgohlke/graphql-server-base'
+import {GraphQLRequestInfo} from '@dreamit/graphql-server-base'
 
 // Contains example schemas and data that can be used across tests
 

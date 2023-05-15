@@ -21,7 +21,7 @@ import {
     userTwo,
     usersQuery
 } from '../ExampleSchemas'
-import {GraphQLExecutionResult} from '@sgohlke/graphql-server-base'
+import {GraphQLExecutionResult} from '@dreamit/graphql-server-base'
 import {TEXT_LOGGER} from '~/tests/TestHelpers'
 
 

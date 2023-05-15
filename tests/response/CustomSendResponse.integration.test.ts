@@ -20,7 +20,7 @@ import {
 
 
 import {Buffer} from 'node:buffer'
-import { ResponseParameters } from '@sgohlke/graphql-server-base'
+import { ResponseParameters } from '@dreamit/graphql-server-base'
 import {Server} from 'node:http'
 import bodyParser from 'body-parser'
 

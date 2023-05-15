@@ -1,7 +1,7 @@
 import {
     INTROSPECTION_DISABLED_ERROR,
     VALIDATION_ERROR
-} from '@sgohlke/graphql-server-base'
+} from '@dreamit/graphql-server-base'
 
 /**
  * Determines if an error is a ValidationError or

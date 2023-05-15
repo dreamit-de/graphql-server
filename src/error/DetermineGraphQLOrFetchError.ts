@@ -1,7 +1,7 @@
 import {
     FETCH_ERROR,
     GRAPHQL_ERROR
-} from '@sgohlke/graphql-server-base'
+} from '@dreamit/graphql-server-base'
 
 /**
  * Determines if an error is a GraphQLError or

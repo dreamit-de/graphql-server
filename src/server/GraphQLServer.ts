@@ -29,7 +29,7 @@ import {
     SCHEMA_VALIDATION_ERROR,
     SYNTAX_ERROR,
     isGraphQLServerRequest,
-}  from '@sgohlke/graphql-server-base'
+}  from '@dreamit/graphql-server-base'
 
 const requestCouldNotBeProcessed = 'Request could not be processed: '
 const defaultOptions = new DefaultGraphQLServerOptions()
@@ -107,7 +107,7 @@ export class GraphQLServer {
 
     // Gets the metrics for use in the response body.
     async getMetrics(): Promise<string> {
-        return this.options.metricsClient.getMetrics()
+        return await this.options.metricsClient.getMetrics()
     }
 
     /**

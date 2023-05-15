@@ -1,5 +1,5 @@
 import {Buffer} from 'node:buffer'
-import { ResponseParameters } from '@sgohlke/graphql-server-base'
+import { ResponseParameters } from '@dreamit/graphql-server-base'
 
 /**
  * Default implementation of sendResponse function

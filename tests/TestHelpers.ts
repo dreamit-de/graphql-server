@@ -11,7 +11,7 @@ import {
     userSchemaResolvers
 } from './ExampleSchemas'
 import {Console} from 'node:console'
-import { GraphQLRequestInfo } from '@sgohlke/graphql-server-base'
+import { GraphQLRequestInfo } from '@dreamit/graphql-server-base'
 import fetch from 'cross-fetch'
 
 export class NoStacktraceJsonLogger extends JsonLogger {

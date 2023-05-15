@@ -5,7 +5,7 @@ import {
     createLogEntry
 } from '..'
 import {Console} from 'node:console'
-import {Logger} from '@sgohlke/graphql-server-base'
+import {Logger} from '@dreamit/graphql-server-base'
 
 const loggerConsole: Console = new Console(process.stdout, process.stderr, false)
 
