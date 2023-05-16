@@ -106,7 +106,7 @@ test('Should execute query without server', async() => {
     expect(result.requestInformation?.query).toBe(usersQuery)
 })
 
-describe('Test adjusted prepending error message', () => {
+describe('Test using custom error messages', () => {
     const graphqlServer = new GraphQLServer({
         executionResultErrorMessage: 'Error:',
         logger: TEXT_LOGGER,
@@ -137,7 +137,7 @@ describe('Test adjusted prepending error message', () => {
             )
         })
 
-    test('Should receive correct error message if request validation failes', 
+    test('Should receive correct error message if request validation fails', 
         async() => {
             await graphqlServer.handleRequest({
                 query: 'query users{ users { unknownField } }'
