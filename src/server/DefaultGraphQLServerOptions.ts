@@ -34,6 +34,13 @@ import {ObjMap} from 'graphql/jsutils/ObjMap'
 import {TypeInfo} from 'graphql/utilities/TypeInfo'
 import {ValidationRule} from 'graphql/validation/ValidationContext'
 
+export const defaultGraphqlExecutionErrorMessage = 
+    'While processing the request a GraphQL execution error occurred: '
+export const defaultExecutionResultErrorMessage = 
+    'While processing the request the following error occurred: '
+export const defaultValidationErrorMessage = 
+    'While processing the request the following validation error occurred: '
+
 export const fallbackTextLogger = new TextLogger('fallback-logger', 'fallback-service')
 export const invalidSchemaResponse: GraphQLExecutionResult = {
     executionResult: {
@@ -84,6 +91,9 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     missingQueryParameterResponse = missingQueryParameterResponse
     methodNotAllowedResponse = defaultMethodNotAllowedResponse
     onlyQueryInGetRequestsResponse = defaultOnlyQueryInGetRequestsResponse
+    validationErrorMessage = defaultValidationErrorMessage
+    executionResultErrorMessage = defaultExecutionResultErrorMessage
+    graphqlExecutionErrorMessage = defaultGraphqlExecutionErrorMessage
 }
 
 /**

@@ -15,6 +15,7 @@ import {
 } from '~/src'
 import {
     initialSchemaWithOnlyDescription,
+    returnErrorQuery,
     userOne,
     userSchema,
     userSchemaResolvers,
@@ -93,7 +94,6 @@ test('Should execute query without server', async() => {
         metricsClient: new SimpleMetricsClient(),
         parseFunction: parse,
         rootValue: userSchemaResolvers,
-
         schema: userSchema,
         validateFunction: validate,
 
@@ -104,6 +104,50 @@ test('Should execute query without server', async() => {
     expect(result.executionResult.data?.users).toEqual([userOne, userTwo])
     expect(result.statusCode).toBe(200)
     expect(result.requestInformation?.query).toBe(usersQuery)
+})
+
+describe('Test adjusted prepending error message', () => {
+    const graphqlServer = new GraphQLServer({
+        executionResultErrorMessage: 'Error:',
+        logger: TEXT_LOGGER,
+        metricsClient: new SimpleMetricsClient(),
+        rootValue: userSchemaResolvers,
+        schema: userSchema,
+        validationErrorMessage: 'ValidationError:'
+    })
+    beforeEach(() => {
+        jest.spyOn(TEXT_LOGGER, 'prepareLogOutput')
+        // We return only the message here so it can be asserted in the tests
+        .mockImplementation((logEntry) => logEntry.message)
+    })
+
+    afterEach(() => {
+        jest.restoreAllMocks()
+    })
+
+    test('Should receive correct error message if response contains a GraphQLError', 
+        async() => {
+            await graphqlServer.handleRequest({
+                query: returnErrorQuery
+            })
+            expect(TEXT_LOGGER.prepareLogOutput).toHaveBeenCalledTimes(1)
+            expect(TEXT_LOGGER.prepareLogOutput)
+            .toHaveLastReturnedWith(
+                'Error: Something went wrong!'
+            )
+        })
+
+    test('Should receive correct error message if request validation failes', 
+        async() => {
+            await graphqlServer.handleRequest({
+                query: 'query users{ users { unknownField } }'
+            })
+            expect(TEXT_LOGGER.prepareLogOutput).toHaveBeenCalledTimes(1)
+            expect(TEXT_LOGGER.prepareLogOutput)
+            .toHaveLastReturnedWith(
+                'ValidationError: Cannot query field "unknownField" on type "User".'
+            )
+        })
 })
 
 test('Should use SimpleMetricsClient as fallback if cpuUsage is not available', async() => {
