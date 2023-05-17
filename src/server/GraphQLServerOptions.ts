@@ -79,4 +79,7 @@ export interface GraphQLServerOptions {
     readonly invalidSchemaResponse?: GraphQLExecutionResult
     readonly missingQueryParameterResponse?: GraphQLExecutionResult
     readonly onlyQueryInGetRequestsResponse?: (operation?: string) => GraphQLExecutionResult
+    readonly validationErrorMessage?: string
+    readonly executionResultErrorMessage?: string
+    readonly graphqlExecutionErrorMessage?: string
 }

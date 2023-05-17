@@ -380,8 +380,15 @@ the `setOptions` function of the `GraphQLServer` instance.
   Default implementation is `defaultContextFunction` that returns the given `GraphQLServerRequest`.
   Can be used to extract information from the request and/or response and return them as context.
   This is often used to extract headers like 'Authorization' and set them in the execute function.
-  
+
+### Error messages
+
+- **`executionResultErrorMessage:`**: Error message that is used in logging if a response contains an `errors` element.
+- **`graphqlExecutionErrorMessage:`**: Error message that is used in logging if an error is thrown when `execute` function is called.
+- **`validationErrorMessage:`**: Error message that is used in logging if one or more errors occurred when calling the `validate` function.
+
 ### Error responses
+
 - **`methodNotAllowedResponse:`**: Function given a method as `string` returns an error that the used method is not allowed by `GraphQLServer`.
 - **`invalidSchemaResponse:`**: Default error that is returned with set schema is invalid.
 - **`missingQueryParameterResponse:`**: Default error that is returned if no query is available in the `GraphQLRequestInfo`.

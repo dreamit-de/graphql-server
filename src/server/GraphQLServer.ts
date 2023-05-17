@@ -238,7 +238,10 @@ export class GraphQLServer {
             typeResolver,
             extensionFunction,
             reassignAggregateError,
-            removeValidationRecommendations
+            removeValidationRecommendations,
+            validationErrorMessage,
+            executionResultErrorMessage,
+            graphqlExecutionErrorMessage
         } = this.options
 
         // Reject requests if schema is invalid
@@ -346,11 +349,10 @@ export class GraphQLServer {
             for (const validationError of validationErrors) {
                 const errorName =
                     determineValidationOrIntrospectionDisabledError(validationError)
-                logger.error('While processing the request ' +
-                    'the following validation error occurred: ',
-                validationError,
-                errorName,
-                context)
+                logger.error(validationErrorMessage,
+                    validationError,
+                    errorName,
+                    context)
                 collectErrorMetricsFunction(
                     {
                         context,
@@ -436,11 +438,10 @@ export class GraphQLServer {
                         executionResult.errors = error.originalError.errors
                     }
 
-                    logger.error('While processing the request ' +
-                        'the following error occurred: ',
-                    error,
-                    determineGraphQLOrFetchError(error),
-                    context)
+                    logger.error(executionResultErrorMessage,
+                        error,
+                        determineGraphQLOrFetchError(error),
+                        context)
                     increaseFetchOrGraphQLErrorMetric(error,
                         this.options,
                         context)
@@ -458,8 +459,7 @@ export class GraphQLServer {
                 statusCode: 200,
             }
         } catch (error: unknown) {
-            logger.error('While processing the request ' +
-                'a GraphQL execution error occurred',
+            logger.error(graphqlExecutionErrorMessage,
                 error as GraphQLError,
                 determineGraphQLOrFetchError(error),
                 context)
