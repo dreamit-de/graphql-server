@@ -15,6 +15,7 @@ import {
 import {GraphQLServer} from '~/src'
 import {Server} from 'node:http'
 import bodyParser from 'body-parser'
+import fetch from 'cross-fetch'
 
 let customGraphQLServer: GraphQLServer
 let graphQLServer: Server
@@ -62,6 +63,16 @@ test('Should get error response if invalid method is used', async() => {
     const allowResponseHeader = responseObject.result.customHeaders.allow
     expect(allowResponseHeader).toBe('GET, POST')
 })
+
+test(
+    'Should get correct error response if GET method is used and no query is provided', async() => {
+        const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql`)
+        const responseObject = await response.json()
+        expect(responseObject.result.executionResult.errors[0].message).toBe(
+            'Request cannot be processed. No query was found in parameters or body.'
+        )
+    }
+)
 
 function setupGraphQLServer(): Express {
     const graphQLServerExpress = express()
