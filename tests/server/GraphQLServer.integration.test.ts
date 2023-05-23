@@ -188,10 +188,20 @@ test('Should get error response when using mutation in a GET request', async() =
 })
 
 test('Should get an error response when content type is not defined', async() => {
-    const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql?aField=aValue`)
+    const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql`, {
+        method: 'POST',
+    })
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe(
         'Invalid request. Request header content-type is undefined.'
+    )
+})
+
+test('Should get an error response when no query parameter is found', async() => {
+    const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql?aField=aValue`)
+    const responseObject = await response.json()
+    expect(responseObject.errors[0].message).toBe(
+        'Request cannot be processed. No query was found in parameters or body.'
     )
 })
 

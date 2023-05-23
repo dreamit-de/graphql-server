@@ -37,6 +37,11 @@ export function extractInformationFromUrlParameters(url: string): GraphQLRequest
 /** Extracts information from request body. Based on implementation from express-graphql */
 export function extractInformationFromBody(request: GraphQLServerRequest)
     : GraphQLRequestInfo {
+    // Do not try to read body for GET requests
+    if (request.method && request.method === 'GET') {
+        return {}
+    }
+
     const { body } = request
     const bodyIsString = typeof body === 'string'
     const bodyIsObject = typeof body === 'object'
