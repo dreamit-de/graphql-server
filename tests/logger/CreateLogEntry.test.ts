@@ -18,16 +18,17 @@ class FetchError extends Error {
     }
 }
 
+const customerMessage = '`CustomerPayload` is an extension type'
 const customerQuery = '{\n  customer {\n    dateOfBirth\n  }\n}'
 const messageWithVariables = 'Variable \\"$login\\" got invalid value' +
     ' { email: \\"max@mustermann.de\\", password: \\"12345678\\", abc: \\"def\\" }' +
     '; Field \\"abc\\" is not defined by type LoginInput.'
 
-const graphQLError: GraphQLError = new GraphQLError('`CustomerPayload` is an extension type', {
+const graphQLError: GraphQLError = new GraphQLError(customerMessage, {
     extensions:  {exception: 'A stacktrace', query: customerQuery, serviceName: 'customer'}
 })
 const graphQLErrorWithVariables: GraphQLError = new GraphQLError(messageWithVariables, {extensions:  {exception: 'A stacktrace', query: customerQuery, serviceName: 'myTestService'}})
-const graphQLErrorWithSourceBody = new GraphQLError('`CustomerPayload` is an extension type', {
+const graphQLErrorWithSourceBody = new GraphQLError(customerMessage, {
     extensions: {
         exception: 'A stacktrace',
         serviceName: 'customer'
@@ -45,7 +46,7 @@ const graphQLErrorWithSourceBody = new GraphQLError('`CustomerPayload` is an ext
     }
 })
 
-const graphQLErrorWithAstNode = new GraphQLError('`CustomerPayload` is an extension type', {
+const graphQLErrorWithAstNode = new GraphQLError(customerMessage, {
     extensions: {
         exception: 'A stacktrace',
         serviceName: 'customer'
@@ -60,7 +61,7 @@ const graphQLErrorWithAstNode = new GraphQLError('`CustomerPayload` is an extens
     }
 })
 
-const graphQLErrorWithSensibleStacktrace = new GraphQLError('`CustomerPayload` is an extension type', {
+const graphQLErrorWithSensibleStacktrace = new GraphQLError(customerMessage, {
     extensions: {
         exception: messageWithVariables,
         serviceName: 'customer'
@@ -76,7 +77,7 @@ const graphQLErrorWithSensibleStacktrace = new GraphQLError('`CustomerPayload` i
 })
 
 const errorWithSensibleStackInformation: Error = {
-    message: '`CustomerPayload` is an extension type',
+    message: customerMessage,
     name: 'SensibleError',
     stack: messageWithVariables
 }
@@ -84,7 +85,7 @@ const errorWithSensibleStackInformation: Error = {
 const fetchError = new FetchError('An error occurred while connecting to following endpoint',
     'system')
 
-const graphQLErrorMessage = 'A GraphQLError message `CustomerPayload` is an extension type'
+const graphQLErrorMessage = 'A GraphQLError message ' + customerMessage
 const fetchErrorMessage = 'A FetchError message ' +
     'An error occurred while connecting to following endpoint'
 const sanitizedMessage = 'Variable \\"$login\\" got invalid value REMOVED BY SANITIZER; Field \\"abc\\" is not defined by type LoginInput.'
@@ -164,4 +165,13 @@ test('Should use fallback values for loggerName, serviceName and level if they a
     expect(logEntry.level).toBe(LogLevel.info)
     expect(logEntry.logger).toBe('fallback-logger')
     expect(logEntry.serviceName).toBe('fallback-service')
+})
+
+test('Should remove white spaces at the beginning of the message', () => {
+    const logEntry = createLogEntry({
+        context: undefined,
+        error: graphQLError,
+        logMessage: '',
+    })
+    expect(logEntry.message).toBe(customerMessage)
 })
