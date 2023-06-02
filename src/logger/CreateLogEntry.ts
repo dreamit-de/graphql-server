@@ -37,7 +37,7 @@ export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
 
     if (error) {
         logEntry.errorName = customErrorName ?? error.name
-        logEntry.message = `${logEntry.message} ${sanitizeMessage(error.message)}`
+        logEntry.message = `${logEntry.message} ${sanitizeMessage(error.message)}`.trim()
         if (error.stack) {
             logEntry.stacktrace =  sanitizeMessage(error.stack)
         }
