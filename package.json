@@ -1,8 +1,12 @@
 {
   "name": "@dreamit/graphql-server",
-  "version": "4.2.1",
+  "version": "4.2.2",
   "description": "A GraphQL server written in NodeJS/Typescript.",
   "main": "build/src/index.js",
+  "exports": {
+    "import": "./build/src/index.js",
+    "default": "./build/src/index.js"
+  },
   "types": "build/src/index.d.ts",
   "scripts": {
     "build": "tsc",
@@ -35,7 +39,7 @@
     "jest-html-reporters": "3.1.4"
   },
   "peerDependencies": {
-    "graphql": "^16.0.0",
-    "@dreamit/graphql-server-base": "^2.1.4"
+    "@dreamit/graphql-server-base": "^2.1.4",
+    "graphql": "^16.0.0"
   }
 }
