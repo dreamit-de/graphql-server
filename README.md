@@ -13,7 +13,7 @@ TypeScript declarations are provided within the project.
 
 ## Compatibility
 
-The following table shows which version of [graphql-js][1] and [@sgohlke/graphql-server-base][12] are compatible with which version of
+The following table shows which version of [graphql-js][1] and [@dreamit/graphql-server-base][12] are compatible with which version of
 `@dreamit/graphql-server`. As `@dreamit/graphql-server` defines them as peerDependency you might want to
 choose a fitting version used in your project and by other libraries depending
 on them.
@@ -281,7 +281,7 @@ functionality provided by the webserver.
 
 **`GraphQLServerRequest` and `GraphQLServerResponse` interfaces**
 
-The `GraphQLServerRequest` and `GraphQLServerResponse` are available in the [@sgohlke/graphql-server-base][12] module.
+The `GraphQLServerRequest` and `GraphQLServerResponse` are available in the [@dreamit/graphql-server-base][12] module.
 This allows extensions such as custom `Logger` or `MetricsClient` implementations to implement these interfaces without
 defining `@dreamit/graphql-server` as dependency.
 
@@ -456,7 +456,7 @@ graphql-server is under [MIT-License](./LICENSE).
 
 [10]: https://hapi.dev/
 
-[12]: https://github.com/sgohlke/graphql-server-base
+[12]: https://github.com/dreamit-de/graphql-server-base
 
 [13]: https://socket.io/
 
