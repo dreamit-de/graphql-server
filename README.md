@@ -456,7 +456,7 @@ graphql-server is under [MIT-License](./LICENSE).
 
 [10]: https://hapi.dev/
 
-[12]: https://github.com/dreamit/graphql-server-base
+[12]: https://github.com/dreamit-de/graphql-server-base
 
 [13]: https://socket.io/
 
