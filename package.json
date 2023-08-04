@@ -1,6 +1,6 @@
 {
   "name": "@dreamit/graphql-server",
-  "version": "4.2.6",
+  "version": "4.2.7",
   "description": "A GraphQL server written in NodeJS/Typescript.",
   "main": "build/src/index.js",
   "exports": {
