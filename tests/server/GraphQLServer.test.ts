@@ -38,7 +38,7 @@ test('Should create schema on GraphQLServer class creation', () => {
         invalidSchemaResponse: graphQLErrorResponse,
         logger: TEXT_LOGGER,
         methodNotAllowedResponse: defaultMethodNotAllowedResponse,
-        missingQueryParameterResponse: graphQLErrorResponse,
+        missingQueryParameterResponse: (): GraphQLExecutionResult => graphQLErrorResponse,
         onlyQueryInGetRequestsResponse: defaultOnlyQueryInGetRequestsResponse,
         schema: initialSchemaWithOnlyDescription,
     })

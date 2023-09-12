@@ -69,7 +69,8 @@ test(
         const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql`)
         const responseObject = await response.json()
         expect(responseObject.result.executionResult.errors[0].message).toBe(
-            'Request cannot be processed. No query was found in parameters or body.'
+            'Request cannot be processed. No query was found in parameters or body. ' + 
+            'Used method is GET'
         )
     }
 )

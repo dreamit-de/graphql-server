@@ -286,8 +286,9 @@ export class GraphQLServer {
         }
         // Reject request if no query parameter is provided
         else if (!requestInformation.query) {
+            const response = missingQueryParameterResponse(requestMethod)
             const error =
-                getFirstErrorFromExecutionResult(missingQueryParameterResponse)
+                getFirstErrorFromExecutionResult(response)
             logger.error(requestCouldNotBeProcessed,
                 error,
                 MISSING_QUERY_PARAMETER_ERROR,
@@ -300,7 +301,7 @@ export class GraphQLServer {
                     serverOptions: this.options
                 }
             )
-            return {...missingQueryParameterResponse, ...requestInformation}
+            return {...response, ...requestInformation}
         }
 
         // Parse given GraphQL source into a document (parse(query) function)

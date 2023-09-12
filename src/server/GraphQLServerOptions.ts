@@ -77,7 +77,7 @@ export interface GraphQLServerOptions {
         }) => ObjMap<unknown> | undefined
     readonly methodNotAllowedResponse?: (method?: string) => GraphQLExecutionResult
     readonly invalidSchemaResponse?: GraphQLExecutionResult
-    readonly missingQueryParameterResponse?: GraphQLExecutionResult
+    readonly missingQueryParameterResponse?: (method?: string) => GraphQLExecutionResult
     readonly onlyQueryInGetRequestsResponse?: (operation?: string) => GraphQLExecutionResult
     readonly validationErrorMessage?: string
     readonly executionResultErrorMessage?: string

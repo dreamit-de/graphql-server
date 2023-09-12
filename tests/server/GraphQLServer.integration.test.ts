@@ -81,7 +81,8 @@ test('Should get error response if body does not contain query information', asy
     const response = await fetchResponse('{"aField":"aValue"}')
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe(
-        'Request cannot be processed. No query was found in parameters or body.'
+        'Request cannot be processed. No query was found in parameters or body. ' + 
+        'Used method is POST'
     )
 })
 
@@ -201,7 +202,8 @@ test('Should get an error response when no query parameter is found', async() =>
     const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql?aField=aValue`)
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe(
-        'Request cannot be processed. No query was found in parameters or body.'
+        'Request cannot be processed. No query was found in parameters or body. ' + 
+        'Used method is GET'
     )
 })
 
@@ -221,7 +223,8 @@ test('Should get error response when using urlencoded request with no query prov
     })
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe(
-        'Request cannot be processed. No query was found in parameters or body.'
+        'Request cannot be processed. No query was found in parameters or body. ' + 
+        'Used method is POST'
     )
 })
 
