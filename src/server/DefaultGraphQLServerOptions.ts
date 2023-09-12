@@ -52,16 +52,6 @@ export const invalidSchemaResponse: GraphQLExecutionResult = {
     statusCode: 500,
 }
 
-export const missingQueryParameterResponse: GraphQLExecutionResult = {
-    executionResult: {
-        errors:
-            [new GraphQLError(
-                'Request cannot be processed. No query was found in parameters or body.', {}
-            )]
-    },
-    statusCode: 400,
-}
-
 export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     logger: Logger = fallbackTextLogger
     extractInformationFromRequest:
@@ -88,7 +78,7 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
     schema?: GraphQLSchema
     invalidSchemaResponse = invalidSchemaResponse
-    missingQueryParameterResponse = missingQueryParameterResponse
+    missingQueryParameterResponse = defaultMissingQueryParameterResponse
     methodNotAllowedResponse = defaultMethodNotAllowedResponse
     onlyQueryInGetRequestsResponse = defaultOnlyQueryInGetRequestsResponse
     validationErrorMessage = defaultValidationErrorMessage
@@ -218,6 +208,25 @@ export function defaultMethodNotAllowedResponse(method?: string): GraphQLExecuti
                 ]
         },
         statusCode: 405
+    }
+}
+
+/**
+ * Return a default error message if no query information is found in body or URL parameter
+ * @param {string} method - The actual used method
+ * @returns {GraphQLExecutionResult} A MissingQueryParameter response
+ */
+export function defaultMissingQueryParameterResponse(method?: string): GraphQLExecutionResult {
+    return {
+        executionResult: {
+            errors:
+                [
+                    new GraphQLError('Request cannot be processed. No query was found '
+                        + `in parameters or body. Used method is ${method}`
+                    , {})
+                ]
+        },
+        statusCode: 400
     }
 }
 
