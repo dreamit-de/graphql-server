@@ -22,7 +22,7 @@ export class SimpleMetricsClient implements MetricsClient {
     readonly errorsMetricName: string
     graphQLServerAvailabilityGauge!: number
     requestThroughput!: number
-    graphQLServerErrorCounter!: Record<string, number>
+    graphQLServerErrorCounter!: Map<string, number>
 
     constructor(requestThroughputMetricName = 'graphql_server_request_throughput',
         availabilityMetricName = 'graphql_server_availability',
@@ -41,7 +41,7 @@ export class SimpleMetricsClient implements MetricsClient {
     }
 
     createServerErrorCounter(): void {
-        this.graphQLServerErrorCounter = {}
+        this.graphQLServerErrorCounter = new Map<string, number>()
     }
 
     createServerAvailabilityGauge(): void {
@@ -60,19 +60,23 @@ export class SimpleMetricsClient implements MetricsClient {
      * an undefined time series might not work for the first occurrence of an error.
      */
     initErrorCounterLabels(): void {
-        this.graphQLServerErrorCounter[GRAPHQL_ERROR] = 0
-        this.graphQLServerErrorCounter[SCHEMA_VALIDATION_ERROR] = 0
-        this.graphQLServerErrorCounter[FETCH_ERROR] = 0
-        this.graphQLServerErrorCounter[METHOD_NOT_ALLOWED_ERROR] = 0
-        this.graphQLServerErrorCounter[INVALID_SCHEMA_ERROR] = 0
-        this.graphQLServerErrorCounter[MISSING_QUERY_PARAMETER_ERROR] = 0
-        this.graphQLServerErrorCounter[VALIDATION_ERROR] = 0
-        this.graphQLServerErrorCounter[SYNTAX_ERROR] = 0
-        this.graphQLServerErrorCounter[INTROSPECTION_DISABLED_ERROR] = 0
+        this.graphQLServerErrorCounter.set(GRAPHQL_ERROR, 0)
+        this.graphQLServerErrorCounter.set(SCHEMA_VALIDATION_ERROR, 0)
+        this.graphQLServerErrorCounter.set(FETCH_ERROR, 0)
+        this.graphQLServerErrorCounter.set(METHOD_NOT_ALLOWED_ERROR, 0)
+        this.graphQLServerErrorCounter.set(INVALID_SCHEMA_ERROR, 0)
+        this.graphQLServerErrorCounter.set(MISSING_QUERY_PARAMETER_ERROR, 0)
+        this.graphQLServerErrorCounter.set(VALIDATION_ERROR, 0)
+        this.graphQLServerErrorCounter.set(SYNTAX_ERROR, 0)
+        this.graphQLServerErrorCounter.set(INTROSPECTION_DISABLED_ERROR, 0)
     }
 
     increaseErrors(label: string): void {
-        this.graphQLServerErrorCounter[label]++
+        let errorCounter = this.graphQLServerErrorCounter.get(label)
+        if (errorCounter !== undefined) {
+            errorCounter++
+            this.graphQLServerErrorCounter.set(label, errorCounter)
+        }
     }
 
     increaseRequestThroughput(): void {
@@ -89,7 +93,7 @@ export class SimpleMetricsClient implements MetricsClient {
 
     getErrorCount(errorLabel: string): string {
         return `${this.errorsMetricName}{errorClass="${errorLabel}"} ` +
-         this.graphQLServerErrorCounter[errorLabel]
+         this.graphQLServerErrorCounter.get(errorLabel)
     }
 
     async getMetrics(): Promise<string> {
