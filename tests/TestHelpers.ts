@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import {
     GraphQLServerOptions,
     JsonLogger,
@@ -76,7 +77,7 @@ export function fetchResponse(body: BodyInit,
     method = 'POST',
     // eslint-disable-next-line unicorn/no-object-as-default-parameter
     headers: HeadersInit = {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'Connection': 'close',
         'Content-Type': 'application/json'
     }): Promise<Response> {
     return fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql`,
