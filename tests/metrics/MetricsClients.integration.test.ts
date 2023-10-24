@@ -270,7 +270,7 @@ async function testErrorResponseMetrics(isNoMetricsClient: boolean): Promise<voi
 async function testEmptyContentResponseMetrics(isNoMetricsClient: boolean): Promise<void> {
     await fetchResponse('{"query":"unknown"}', 'POST', {
         'Connection': 'close',
-        'Content-Type': 'application/json',
+        'Content-Type': '',
     })
     metricsResponseBody = await getMetricsResponse()
 
@@ -394,6 +394,11 @@ function getInitialGraphQLServerOptions(metricsClient: MetricsClient): GraphQLSe
 }
 
 async function getMetricsResponse(): Promise<string> {
-    const metricsResponse = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/metrics`)
+    const metricsResponse = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/metrics`, {
+        headers: {
+            'Connection': 'close',
+            'Content-Type': 'application/json'
+        }
+    })
     return await metricsResponse.text()
 }
