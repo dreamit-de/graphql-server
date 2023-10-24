@@ -14,7 +14,7 @@
     "lint": "eslint src/*.ts src/**/*.ts tests/*.ts tests/**/*.ts",
     "lintfix": "eslint --fix src/*.ts src/**/*.ts tests/*.ts tests/**/*.ts",
     "prepack": "npm run build",
-    "test": "jest --runInBand"
+    "test": "jest --detectOpenHandles --runInBand"
   },
   "repository": {
     "type": "git",
