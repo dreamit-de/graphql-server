@@ -203,8 +203,7 @@ test('Should get error response when using mutation in a GET request', async() =
 test('Should get an error response when content type is not defined', async() => {
     const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql`, {
         headers: {
-            'Connection': 'close',
-            'Content-Type': 'application/json'
+            'Connection': 'close'
         },
         method: 'POST',
     })
