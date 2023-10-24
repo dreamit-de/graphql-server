@@ -175,7 +175,12 @@ test('Should get error response with formatted error results ' +
 test('Should get data response when using GET request', async() => {
     const response = await fetch(
         `http://localhost:${GRAPHQL_SERVER_PORT}/graphql?` +
-        generateGetParametersFromGraphQLRequestInfo(usersRequest)
+        generateGetParametersFromGraphQLRequestInfo(usersRequest), {
+            headers: {
+                'Connection': 'close',
+                'Content-Type': 'application/json'
+            }
+        }
     )
     const responseObject = await response.json()
     expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
@@ -183,7 +188,12 @@ test('Should get data response when using GET request', async() => {
 
 test('Should get error response when using mutation in a GET request', async() => {
     const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql?` +
-    generateGetParametersFromGraphQLRequestInfo(loginRequest))
+    generateGetParametersFromGraphQLRequestInfo(loginRequest), {
+        headers: {
+            'Connection': 'close',
+            'Content-Type': 'application/json'
+        }
+    })
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe(
         'Only "query" operation is allowed in "GET" requests. Got: "mutation"'
@@ -192,6 +202,10 @@ test('Should get error response when using mutation in a GET request', async() =
 
 test('Should get an error response when content type is not defined', async() => {
     const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql`, {
+        headers: {
+            'Connection': 'close',
+            'Content-Type': 'application/json'
+        },
         method: 'POST',
     })
     const responseObject = await response.json()
@@ -201,7 +215,12 @@ test('Should get an error response when content type is not defined', async() =>
 })
 
 test('Should get an error response when no query parameter is found', async() => {
-    const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql?aField=aValue`)
+    const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql?aField=aValue`, {
+        headers: {
+            'Connection': 'close',
+            'Content-Type': 'application/json'
+        }
+    })
     const responseObject = await response.json()
     expect(responseObject.errors[0].message).toBe(
         'Request cannot be processed. No query was found in parameters or body. ' + 

@@ -66,7 +66,12 @@ test('Should get error response if invalid method is used', async() => {
 
 test(
     'Should get correct error response if GET method is used and no query is provided', async() => {
-        const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql`)
+        const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql`, {
+            headers: {
+                'Connection': 'close',
+                'Content-Type': 'application/json'
+            }
+        })
         const responseObject = await response.json()
         expect(responseObject.result.executionResult.errors[0].message).toBe(
             'Request cannot be processed. No query was found in parameters or body. ' + 
