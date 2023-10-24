@@ -94,6 +94,7 @@ test('Should get error response if body contains invalid json', async() => {
 
 test('Should get error response if content type cannot be processed', async() => {
     const response = await fetchResponse('{"query":{"unknown"}', 'POST',{
+        'Connection': 'close',
         'Content-Type': 'application/specialapp'
     })
     const responseObject = await response.json()
@@ -126,6 +127,7 @@ test('Should get unfiltered error response if a' +
 
 test('Should get error response if content type is not set', async() => {
     const response = await fetchResponse('{"query":"unknown"}', 'POST',{
+        'Connection': 'close',
         'Content-Type': ''
     })
     const responseObject = await response.json()
@@ -211,6 +213,7 @@ test('Should get data response when using urlencoded request', async() => {
     const response = await fetchResponse(generateGetParametersFromGraphQLRequestInfo(usersRequest),
         'POST',
         {
+            'Connection': 'close',
             'Content-Type': 'application/x-www-form-urlencoded'
         })
     const responseObject = await response.json()
@@ -219,6 +222,7 @@ test('Should get data response when using urlencoded request', async() => {
 
 test('Should get error response when using urlencoded request with no query provided', async() => {
     const response = await fetchResponse('{"unknown":"unknown"}', 'POST',{
+        'Connection': 'close',
         'Content-Type': 'application/x-www-form-urlencoded'
     })
     const responseObject = await response.json()
@@ -230,6 +234,7 @@ test('Should get error response when using urlencoded request with no query prov
 
 test('Should get data response for application graphql request', async() => {
     const response = await fetchResponse(usersQuery, 'POST',{
+        'Connection': 'close',
         'Content-Type': 'application/graphql'
     })
     const responseObject = await response.json()

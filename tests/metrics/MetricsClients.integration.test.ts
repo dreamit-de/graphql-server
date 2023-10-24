@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import {
     FETCH_ERROR,
     GRAPHQL_ERROR,
@@ -268,8 +269,8 @@ async function testErrorResponseMetrics(isNoMetricsClient: boolean): Promise<voi
  */
 async function testEmptyContentResponseMetrics(isNoMetricsClient: boolean): Promise<void> {
     await fetchResponse('{"query":"unknown"}', 'POST', {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        'Content-Type': ''
+        'Connection': 'close',
+        'Content-Type': 'application/json',
     })
     metricsResponseBody = await getMetricsResponse()
 
