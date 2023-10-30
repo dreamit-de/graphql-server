@@ -267,7 +267,7 @@ functionality provided by the webserver.
 | Framework/Module | Version |       Mapping        |                                                           Example                                                           | 
 |------------------|:-------:|:--------------------:|:---------------------------------------------------------------------------------------------------------------------------:|
 | [AdonisJS][6]    |   5.9   |  request, response   |                  [AdonisJS example](https://github.com/sgohlke/adonisjs-example/blob/main/start/routes.ts)                  |
-| [Express][2]     | > = 2.x |         none         | [GraphQLServer test](https://github.com/dreamit-de/graphql-server/blob/main/tests/server/GraphQLServer.integration.test.ts) |
+| [Express][2]     | > = 2.x |         none         | [Express example](https://github.com/sgohlke/express-example/blob/main/src/index.ts) |
 | [fastify][4]     |   4.15   |       response       |                    [Fastify example](https://github.com/sgohlke/fastify-example/blob/main/src/index.ts)                     |
 | [hapi][10]       |  21.3.1  | request, no response |                       [hapi example](https://github.com/sgohlke/hapi-example/blob/main/src/index.ts)                        |
 | [Koa][5]         |  2.14.1   |       response       |                        [Koa example](https://github.com/sgohlke/koa-example/blob/main/src/index.ts)                         |
