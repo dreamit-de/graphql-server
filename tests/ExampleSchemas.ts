@@ -10,12 +10,12 @@ import {GraphQLRequestInfo} from '@dreamit/graphql-server-base'
 
 // Contains example schemas and data that can be used across tests
 
-export interface User {
+interface User {
     userId: string
     userName: string
 }
 
-export interface LogoutResult {
+interface LogoutResult {
     result: string
 }
 
@@ -29,7 +29,7 @@ export const userVariables = '{"id201":"1"}'
 export const usersQuery = 'query users{ users { userId userName } }'
 export const usersQueryWithUnknownField = 'query users{ users { userId userName hobby } }'
 export const returnErrorQuery = 'query returnError{ returnError { userId } }'
-export const loginMutation =
+const loginMutation =
     'mutation login{ login(userName:"magic_man", password:"123456") { jwt } }'
 export const logoutMutation = 'mutation logout{ logout { result } }'
 export const introspectionQuery = 'query introspection{ __schema { queryType { name } } }'

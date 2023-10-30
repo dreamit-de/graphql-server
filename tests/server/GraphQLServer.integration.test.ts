@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import {
-    GRAPHQL_SERVER_PORT,
-    INITIAL_GRAPHQL_SERVER_OPTIONS,
-    LOGGER,
-    fetchResponse,
-    generateGetParametersFromGraphQLRequestInfo
-} from '../TestHelpers'
-import {
     GraphQLError,
     NoSchemaIntrospectionCustomRule
 } from 'graphql'
-import express, {Express} from 'express'
+import {
+    INITIAL_GRAPHQL_SERVER_OPTIONS,
+    LOGGER,
+    StandaloneGraphQLServerResponse,
+    generateGetParametersFromGraphQLRequestInfo,
+    sendRequest,
+    sendRequestWithURL
+} from '../TestHelpers'
 import {
     introspectionQuery,
     loginRequest,
@@ -28,85 +28,99 @@ import {
     usersRequest,
 } from '../ExampleSchemas'
 import {GraphQLServer} from '~/src'
-import {Server} from 'node:http'
-import bodyParser from 'body-parser'
-import fetch from 'cross-fetch'
 
-let customGraphQLServer: GraphQLServer
-let graphQLServer: Server
+const customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
 const extensionTestData : Record<string, string> = {
     'hello': 'world'
 }
 
+const standaloneGraphQLServerResponse = new StandaloneGraphQLServerResponse()
 function testFormatErrorFunction(error: GraphQLError): GraphQLError {
     error.message = 'Formatted: ' + error.message
     return error
 }
 
-beforeAll(() => {
-    graphQLServer = setupGraphQLServer().listen({port: GRAPHQL_SERVER_PORT})
-    console.info(`Starting GraphQL server on port ${GRAPHQL_SERVER_PORT}`)
-})
-
-afterAll(() => {
-    graphQLServer.close()
-})
-
 test('Should get data response', async() => {
-    const response = await fetchResponse(`{"query":"${usersQuery}"}`)
-    const responseObject = await response.json()
-    expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
-    expect(responseObject.extensions).toBeUndefined()
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        `{"query":"${usersQuery}"}`)
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.data.users).toStrictEqual([userOne, userTwo])
+})
+
+test('Should get data response in GraphQLServerResponse when using GraphQLRequestInfo', async() => {
+    await customGraphQLServer.handleRequest({
+        query: usersQuery
+    }, 
+    standaloneGraphQLServerResponse)
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.data.users).toStrictEqual([userOne, userTwo])
 })
 
 test('Should get data response for query with variables', async() => {
-    const response = await fetchResponse(`{"query":"${userQuery}", "variables":${userVariables}}`)
-    const responseObject = await response.json()
-    expect(responseObject.data.user).toStrictEqual(userOne)
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        `{"query":"${userQuery}", "variables":${userVariables}}`)
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.data.user).toStrictEqual(userOne)
 })
 
 test('Should get data response when using a mutation', async() => {
-    const response = await fetchResponse(`{"query":"${logoutMutation}"}`)
-    const responseObject = await response.json()
-    expect(responseObject.data.logout.result).toBe('Goodbye!')
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        `{"query":"${logoutMutation}"}`)
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.data.logout.result).toBe('Goodbye!')
 })
 
 test('Should get error response if query does not match expected query format', async() => {
-    const response = await fetchResponse('{"query":"unknown"}')
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('Syntax Error: Unexpected Name "unknown".')
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        '{"query":"unknown"}')
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe('Syntax Error: Unexpected Name "unknown".')
 })
 
 test('Should get error response if body does not contain query information', async() => {
-    const response = await fetchResponse('{"aField":"aValue"}')
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe(
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        '{"aField":"aValue"}')
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe(
         'Request cannot be processed. No query was found in parameters or body. ' + 
         'Used method is POST'
     )
 })
 
 test('Should get error response if body contains invalid json', async() => {
-    const response = await fetchResponse('{"query":{"unknown"}')
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('POST body contains invalid JSON.')
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        '{"query":{"unknown"}')
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe('POST body contains invalid JSON.')
 })
 
 test('Should get error response if content type cannot be processed', async() => {
-    const response = await fetchResponse('{"query":{"unknown"}', 'POST',{
-        'Connection': 'close',
-        'Content-Type': 'application/specialapp'
-    })
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe(
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        '{"query":{"unknown"}',
+        'POST',
+        {
+            'connection': 'close',
+            'content-type': 'application/specialapp'
+        })
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe(
         'POST body contains invalid content type: application/specialapp.'
     )
 })
 
 test('Should get filtered error response if a validation error occurs ', async() => {
-    const response = await fetchResponse('{"query":"query users{ users { userIdABC userName } }"}')
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('Cannot query field "userIdABC" on type "User". ')
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        '{"query":"query users{ users { userIdABC userName } }"}')
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe('Cannot query field "userIdABC" on type "User". ')
 })
 
 test('Should get unfiltered error response if a' +
@@ -117,21 +131,27 @@ test('Should get unfiltered error response if a' +
         rootValue: userSchemaResolvers,
         schema: userSchema
     })
-    const response = await fetchResponse('{"query":"query users{ users { userIdABC userName } }"}')
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe(
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        '{"query":"query users{ users { userIdABC userName } }"}')
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe(
         'Cannot query field "userIdABC" on type "User". Did you mean "userId" or "userName"?'
     )
     customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
 test('Should get error response if content type is not set', async() => {
-    const response = await fetchResponse('{"query":"unknown"}', 'POST',{
-        'Connection': 'close',
-        'Content-Type': ''
-    })
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('POST body contains invalid content type: .')
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        '{"query":"unknown"}',
+        'POST',
+        {
+            'connection': 'close',
+            'content-type': ''
+        })
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe('POST body contains invalid content type: .')
 })
 
 test('Should get error response when GraphQL context error' +
@@ -145,18 +165,21 @@ test('Should get error response when GraphQL context error' +
         rootValue: userSchemaResolvers,
         schema: userSchema
     })
-    const response = await fetchResponse(`{"query":"${usersQuery}"}`)
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('A GraphQL context error occurred!')
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        `{"query":"${usersQuery}"}`)
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe('A GraphQL context error occurred!')
     customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
 test('Should get error response if resolver returns GraphQL error', async() => {
-    const response = await fetchResponse(`{"query":"${returnErrorQuery}"}`)
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('Something went wrong!')
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        `{"query":"${returnErrorQuery}"}`)
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe('Something went wrong!')
 })
-
 
 test('Should get error response with formatted error results ' +
     'if resolver returns GraphQL error and formatError function is defined', async() => {
@@ -166,97 +189,110 @@ test('Should get error response with formatted error results ' +
         rootValue: userSchemaResolvers,
         schema: userSchema
     })
-    const response = await fetchResponse(`{"query":"${returnErrorQuery}"}`)
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('Formatted: Something went wrong!')
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        `{"query":"${returnErrorQuery}"}`)
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe('Formatted: Something went wrong!')
     customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
 test('Should get data response when using GET request', async() => {
-    const response = await fetch(
-        `http://localhost:${GRAPHQL_SERVER_PORT}/graphql?` +
-        generateGetParametersFromGraphQLRequestInfo(usersRequest), {
-            headers: {
-                'Connection': 'close',
-                'Content-Type': 'application/json'
-            }
-        }
-    )
-    const responseObject = await response.json()
-    expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
+    await sendRequestWithURL(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        'http://localhost:3000/graphql?' +
+        generateGetParametersFromGraphQLRequestInfo(usersRequest),
+        {
+            'connection': 'close',
+            'content-type': 'application/json'
+        })
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.data.users).toStrictEqual([userOne, userTwo])
 })
 
 test('Should get error response when using mutation in a GET request', async() => {
-    const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql?` +
-    generateGetParametersFromGraphQLRequestInfo(loginRequest), {
-        headers: {
-            'Connection': 'close',
-            'Content-Type': 'application/json'
-        }
-    })
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe(
+    await sendRequestWithURL(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        'http://localhost:3000/graphql?' +
+        generateGetParametersFromGraphQLRequestInfo(loginRequest), 
+        {    
+            'connection': 'close',
+            'content-type': 'application/json'
+        })
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe(
         'Only "query" operation is allowed in "GET" requests. Got: "mutation"'
     )
 })
 
 test('Should get an error response when content type is not defined', async() => {
-    const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql`, {
-        headers: {
-            'Connection': 'close'
-        },
-        method: 'POST',
-    })
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe(
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        'doesnotmatter',
+        'POST',
+        {
+            'connection': 'close'
+        })
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe(
         'Invalid request. Request header content-type is undefined.'
     )
 })
 
 test('Should get an error response when no query parameter is found', async() => {
-    const response = await fetch(`http://localhost:${GRAPHQL_SERVER_PORT}/graphql?aField=aValue`, {
-        headers: {
-            'Connection': 'close',
-            'Content-Type': 'application/json'
-        }
-    })
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe(
+    await sendRequestWithURL(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        'http://localhost:3000/graphql?aField=aValue', 
+        {
+            'connection': 'close',
+            'content-type': 'application/json'
+        })
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe(
         'Request cannot be processed. No query was found in parameters or body. ' + 
         'Used method is GET'
     )
 })
 
 test('Should get data response when using urlencoded request', async() => {
-    const response = await fetchResponse(generateGetParametersFromGraphQLRequestInfo(usersRequest),
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        generateGetParametersFromGraphQLRequestInfo(usersRequest),
         'POST',
         {
-            'Connection': 'close',
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'connection': 'close',
+            'content-type': 'application/x-www-form-urlencoded'
         })
-    const responseObject = await response.json()
-    expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.data.users).toStrictEqual([userOne, userTwo])
 })
 
 test('Should get error response when using urlencoded request with no query provided', async() => {
-    const response = await fetchResponse('{"unknown":"unknown"}', 'POST',{
-        'Connection': 'close',
-        'Content-Type': 'application/x-www-form-urlencoded'
-    })
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe(
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        '{"unknown":"unknown"}', 
+        'POST',
+        {
+            'content-type': 'application/x-www-form-urlencoded'
+        })
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe(
         'Request cannot be processed. No query was found in parameters or body. ' + 
         'Used method is POST'
     )
 })
 
 test('Should get data response for application graphql request', async() => {
-    const response = await fetchResponse(usersQuery, 'POST',{
-        'Connection': 'close',
-        'Content-Type': 'application/graphql'
-    })
-    const responseObject = await response.json()
-    expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        usersQuery,
+        'POST',
+        {
+            'connection': 'close',
+            'content-type': 'application/graphql'
+        })
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.data.users).toStrictEqual([userOne, userTwo])
 })
 
 test('Should get error response if invalid schema is used', async() => {
@@ -267,21 +303,26 @@ test('Should get error response if invalid schema is used', async() => {
         schema: userSchema,
         schemaValidationFunction: () => [new GraphQLError('Schema is not valid!', {})]
     })
-    const response = await fetchResponse('doesnotmatter')
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe(
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        'doesnotmatter')
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe(
         'Request cannot be processed. Schema in GraphQL server is invalid.'
     )
     customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
 test('Should get error response if invalid method is used', async() => {
-    const response = await fetchResponse('doesnotmatter', 'PUT')
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe(
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        'doesnotmatter', 
+        'PUT')
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe(
         'GraphQL server only supports GET and POST requests. Got PUT'
     )
-    const allowResponseHeader = response.headers.get('Allow')
+    const allowResponseHeader = standaloneGraphQLServerResponse.headers.get('allow')
     expect(allowResponseHeader).toBe('GET, POST')
 })
 
@@ -293,18 +334,22 @@ test('Should get extensions in GraphQL response if extension function is defined
         rootValue: userSchemaResolvers,
         schema: userSchema
     })
-    const response = await fetchResponse(`{"query":"${usersQuery}"}`)
-    const responseObject = await response.json()
-    expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
-    expect(responseObject.extensions).toStrictEqual(extensionTestData)
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        `{"query":"${usersQuery}"}`)
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.data.users).toStrictEqual([userOne, userTwo])
+    expect(responseBody.extensions).toStrictEqual(extensionTestData)
     customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
 test('Should get data response if introspection' +
     ' is requested when introspection is allowed', async() => {
-    const response = await fetchResponse(`{"query":"${introspectionQuery}"}`)
-    const responseObject = await response.json()
-    expect(responseObject.data.__schema.queryType.name).toBe('Query')
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        `{"query":"${introspectionQuery}"}`)
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.data.__schema.queryType.name).toBe('Query')
 })
 
 test('Should get error response if introspection is requested ' +
@@ -316,9 +361,11 @@ test('Should get error response if introspection is requested ' +
         rootValue: userSchemaResolvers,
         schema: userSchema
     })
-    const response = await fetchResponse(`{"query":"${introspectionQuery}"}`)
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe(
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        `{"query":"${introspectionQuery}"}`)
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe(
         'GraphQL introspection has been disabled, ' +
         'but the requested query contained the field "__schema".'
     )
@@ -334,9 +381,11 @@ test('Should get error response if query with unknown field is executed ' +
         rootValue: userSchemaResolvers,
         schema: userSchema
     })
-    const response = await fetchResponse(`{"query":"${usersQueryWithUnknownField}"}`)
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('Cannot query field "hobby" on type "User".')
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        `{"query":"${usersQueryWithUnknownField}"}`)
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe('Cannot query field "hobby" on type "User".')
     customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
@@ -349,9 +398,11 @@ test('Should get error response if query with unknown field is executed ' +
         rootValue: userSchemaResolvers,
         schema: userSchema
     })
-    const response = await fetchResponse(`{"query":"${usersQueryWithUnknownField}"}`)
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('Cannot query field "hobby" on type "User".')
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        `{"query":"${usersQueryWithUnknownField}"}`)
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe('Cannot query field "hobby" on type "User".')
     customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
@@ -365,9 +416,11 @@ test('Should get data response if query with unknown field is executed ' +
         rootValue: userSchemaResolvers,
         schema: userSchema
     })
-    const response = await fetchResponse(`{"query":"${usersQueryWithUnknownField}"}`)
-    const responseObject = await response.json()
-    expect(responseObject.data.users).toStrictEqual([userOne, userTwo])
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        `{"query":"${usersQueryWithUnknownField}"}`)
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.data.users).toStrictEqual([userOne, userTwo])
     customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
 
@@ -380,18 +433,10 @@ test('Should not reassign AggregateError to original errors field' +
         rootValue: userSchemaResolvers,
         schema: userSchema
     })
-    const response = await fetchResponse(`{"query":"${returnErrorQuery}"}`)
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('The first error!, The second error!')
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        `{"query":"${returnErrorQuery}"}`)
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe('The first error!, The second error!')
     customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
 })
-
-function setupGraphQLServer(): Express {
-    const graphQLServerExpress = express()
-    customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
-    graphQLServerExpress.use(bodyParser.text({type: '*/*'}))
-    graphQLServerExpress.all('/graphql', (request, response) => {
-        return customGraphQLServer.handleRequest(request, response)
-    })
-    return graphQLServerExpress
-}
