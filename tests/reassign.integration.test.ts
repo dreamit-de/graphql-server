@@ -1,20 +1,16 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import {
-    GRAPHQL_SERVER_PORT,
-    NoStacktraceJsonLogger,
-    fetchResponse,
-} from './TestHelpers'
-import {
     multipleErrorResponse,
+    userQuery,
     userSchema,
     userSchemaResolvers,
-    usersQuery
 } from './ExampleSchemas'
-import {ExecutionResult} from 'graphql'
+import {ExecutionResult } from 'graphql'
 import {GraphQLServer} from '~/src'
+import {NoStacktraceJsonLogger, StandaloneGraphQLServerResponse, sendRequest} from './TestHelpers'
 import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue'
-import bodyParser from 'body-parser'
-import express from 'express'
+
+const standaloneGraphQLServerResponse = new StandaloneGraphQLServerResponse()
 
 /*
  * Reassign test is located in this separate test as it seems to get in conflict with the
@@ -22,7 +18,6 @@ import express from 'express'
  */
 test('Should reassign AggregateError to original errors field' +
     ' when reassignAggregateError is enabled', async() => {
-    const graphQLServerExpress = express()
     const customGraphQLServer = new GraphQLServer({
         executeFunction: (): PromiseOrValue<ExecutionResult> => (multipleErrorResponse),
         logger: new NoStacktraceJsonLogger('nostack-logger', 'reassign-service', true),
@@ -30,18 +25,11 @@ test('Should reassign AggregateError to original errors field' +
         rootValue: userSchemaResolvers,
         schema: userSchema
     })
-    graphQLServerExpress.use(bodyParser.json())
-    graphQLServerExpress.all('/graphql', (request, response) => {
-        return customGraphQLServer.handleRequest(request, response)
-    })
 
-    const graphQLServer = graphQLServerExpress.listen({port: GRAPHQL_SERVER_PORT})
-    console.info(`Starting GraphQL server on port ${GRAPHQL_SERVER_PORT}`)
-
-    const response = await fetchResponse(`{"query":"${usersQuery}"}`)
-    const responseObject = await response.json()
-    expect(responseObject.errors[0].message).toBe('The first error!')
-    expect(responseObject.errors[1].message).toBe('The second error!')
-
-    graphQLServer.close()
+    await sendRequest(customGraphQLServer, 
+        standaloneGraphQLServerResponse,
+        `{"query":"${userQuery}"}`)
+    const responseBody = standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.errors[0].message).toBe('The first error!')
+    expect(responseBody.errors[1].message).toBe('The second error!')
 })
