@@ -266,17 +266,17 @@ functionality provided by the webserver.
 
 | Framework/Module | Version |       Mapping        |                                                           Example                                                           | 
 |------------------|:-------:|:--------------------:|:---------------------------------------------------------------------------------------------------------------------------:|
-| [AdonisJS][6]    |   5.9   |  request, response   |                  [AdonisJS example](https://github.com/sgohlke/adonisjs-example/blob/main/start/routes.ts)                  |
-| [Express][2]     | > = 2.x |         none         | [Express example](https://github.com/sgohlke/express-example/blob/main/src/index.ts) |
-| [fastify][4]     |   4.15   |       response       |                    [Fastify example](https://github.com/sgohlke/fastify-example/blob/main/src/index.ts)                     |
-| [hapi][10]       |  21.3.1  | request, no response |                       [hapi example](https://github.com/sgohlke/hapi-example/blob/main/src/index.ts)                        |
-| [Koa][5]         |  2.14.1   |       response       |                        [Koa example](https://github.com/sgohlke/koa-example/blob/main/src/index.ts)                         |
-| [Next.js][7]     |  13.1.6   |         none         |                 [Next.js example](https://github.com/sgohlke/nextjs-example/blob/main/pages/api/graphql.ts)                 |
-| [Nitro][8]       |   2.3.3   |       request        |                 [Nitro example](https://github.com/sgohlke/nitro-example/blob/main/routes/graphql.post.ts)                  |
-| [NodeJS http][9] |  18.14  |       request        |                [NodeJS http example](https://github.com/sgohlke/nodejs-http-example/blob/main/src/index.ts)                 |
-| [Socket.IO][13] |  4.6.1  |       response        |                [Socket.IO example](https://github.com/sgohlke/socketio-example/blob/main/src/index.ts)                 |
-| [gRPC][14] |  1.8.14  |       no response        |                [gRPC example](https://github.com/sgohlke/grpc-server-example/blob/main/server.js)                 |
-| [Deno][15] |  0.181.0  |       request, no response        |                [Deno HTTP example](https://github.com/sgohlke/deno-graphql/blob/main/webserver.ts)                 |
+| [AdonisJS][6]    |   5.9   |  request, response   |                  [AdonisJS example](https://github.com/dreamit-de/adonisjs-example/blob/main/start/routes.ts)                  |
+| [Express][2]     | > = 2.x |         none         | [Express example](https://github.com/dreamit-de/express-example/blob/main/src/index.ts) |
+| [fastify][4]     |   4.15   |       response       |                    [Fastify example](https://github.com/dreamit-de/fastify-example/blob/main/src/index.ts)                     |
+| [hapi][10]       |  21.3.1  | request, no response |                       [hapi example](https://github.com/dreamit-de/hapi-example/blob/main/src/index.ts)                        |
+| [Koa][5]         |  2.14.1   |       response       |                        [Koa example](https://github.com/dreamit-de/koa-example/blob/main/src/index.ts)                         |
+| [Next.js][7]     |  13.1.6   |         none         |                 [Next.js example](https://github.com/dreamit-de/nextjs-example/blob/main/pages/api/graphql.ts)                 |
+| [Nitro][8]       |   2.3.3   |       request        |                 [Nitro example](https://github.com/dreamit-de/nitro-example/blob/main/routes/graphql.post.ts)                  |
+| [NodeJS http][9] |  18.14  |       request        |                [NodeJS http example](https://github.com/dreamit-de/nodejs-http-example/blob/main/src/index.ts)                 |
+| [Socket.IO][13] |  4.6.1  |       response        |                [Socket.IO example](https://github.com/dreamit-de/socketio-example/blob/main/src/index.ts)                 |
+| [gRPC][14] |  1.8.14  |       no response        |                [gRPC example](https://github.com/dreamit-de/grpc-server-example/blob/main/server.js)                 |
+| [Deno][15] |  0.181.0  |       request, no response        |                [Deno HTTP example](https://github.com/dreamit-de/deno-graphql/blob/main/webserver.ts)                 |
 
 
 **`GraphQLServerRequest` and `GraphQLServerResponse` interfaces**
