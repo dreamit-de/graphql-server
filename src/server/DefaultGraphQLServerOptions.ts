@@ -29,6 +29,7 @@ import {
     extractInformationFromRequest,
     sendResponse,
 } from '..'
+import {Buffer} from 'node:buffer'
 import {Maybe} from 'graphql/jsutils/Maybe'
 import {ObjMap} from 'graphql/jsutils/ObjMap'
 import {TypeInfo} from 'graphql/utilities/TypeInfo'
@@ -84,6 +85,7 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     validationErrorMessage = defaultValidationErrorMessage
     executionResultErrorMessage = defaultExecutionResultErrorMessage
     graphqlExecutionErrorMessage = defaultGraphqlExecutionErrorMessage
+    responseEndChunkFunction = defaultResponseEndChunkFunction
 }
 
 /**
@@ -246,4 +248,15 @@ export function defaultOnlyQueryInGetRequestsResponse(operation?: string): Graph
         },
         statusCode: 405
     }
+}
+
+/**
+ * Default response.end chunk function to adjust chunk/Body if necessary.
+ * Default behavior: Create Buffer from stringified executionResult
+ * @param {GraphQLError} error - The error to be formatted
+ */
+export function defaultResponseEndChunkFunction(
+    executionResult: ExecutionResult | undefined
+): unknown {
+    return Buffer.from(JSON.stringify(executionResult), 'utf8')
 }

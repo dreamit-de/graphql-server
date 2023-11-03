@@ -82,4 +82,5 @@ export interface GraphQLServerOptions {
     readonly validationErrorMessage?: string
     readonly executionResultErrorMessage?: string
     readonly graphqlExecutionErrorMessage?: string
+    readonly responseEndChunkFunction?: (executionResult: ExecutionResult | undefined) => unknown
 }
