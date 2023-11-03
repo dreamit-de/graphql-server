@@ -12,7 +12,8 @@ export function sendResponse(responseParameters: ResponseParameters): void {
         logger,
         response,
         statusCode,
-        formatErrorFunction
+        formatErrorFunction,
+        responseEndChunkFunction,
     } = responseParameters
     logger.debug(
         `Preparing response with executionResult ${JSON.stringify(executionResult)}`+
@@ -34,5 +35,11 @@ export function sendResponse(responseParameters: ResponseParameters): void {
             response.setHeader(key, String(value))
         }
     }
-    response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))
+
+    if (responseEndChunkFunction) {
+        response.end(responseEndChunkFunction(executionResult))
+    } else {
+        response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))
+    }
+
 }

@@ -124,7 +124,8 @@ export class GraphQLServer {
             formatErrorFunction,
             logger,
             metricsClient,
-            sendResponse
+            sendResponse,
+            responseEndChunkFunction,
         } = this.options
 
         const context = contextFunction(
@@ -153,7 +154,8 @@ export class GraphQLServer {
                     logger,
                     request,
                     response,
-                    statusCode: requestInformation.statusCode
+                    responseEndChunkFunction,
+                    statusCode: requestInformation.statusCode,
                 })
             }
             return result
@@ -171,6 +173,7 @@ export class GraphQLServer {
                 logger,
                 request: isGraphQLServerRequest(request) ? request : undefined,
                 response,
+                responseEndChunkFunction,
                 statusCode: result.statusCode
             })
         }

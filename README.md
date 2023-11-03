@@ -413,6 +413,7 @@ the `setOptions` function of the `GraphQLServer` instance.
   by the given `GraphQLServerResponse`.
 - **`metricsClient`**: The `MetricsClient` used to collect metrics from the GraphQLServer. By default,
   the `SimpleMetricsClient` is used that collects three custom metrics. Own MetricsClient can be used by implementing `MetricsClient` interface.
+- **`responseEndChunkFunction`**: Function used to adjust the chunk/body before it is used in the `response.end` function call in the `sendResponse` function. By default it stringifies the ExecutionResult and creates a Buffer from this string.
 
 ## Customize and extend GraphQLServer
 
