@@ -3,6 +3,7 @@ import {
     LogEntryInput,
     LogLevel,
     createLogEntry,
+    truncateLogMessage,
 } from '..'
 import {Logger} from '@dreamit/graphql-server-base'
 
@@ -13,6 +14,8 @@ export class TextLogger implements Logger {
     loggerName: string
     serviceName: string
     debugEnabled = false
+    truncateLimit = 0
+    truncatedText = '_TRUNCATED_'
 
     /**
      * Creates a new instance of Logger.
@@ -23,11 +26,17 @@ export class TextLogger implements Logger {
      * it from remote graphql services like in a gateway setup.
      * Will be output to "serviceName" field in JSON.
      * @param {boolean} debugEnabled - If debug output should be enabled
+     * @param {number} truncateLimit - The length of the message before the message gets truncated. 
+     * Default: undefined/0 (off). 
+     * @param {string} truncatedText - The text to display if a message is truncated.
      */
-    constructor(loggerName: string, serviceName: string, debugEnabled = false) {
+    constructor(loggerName: string, serviceName: string, debugEnabled = false,
+        truncateLimit = 0, truncatedText = '_TRUNCATED_') {
         this.loggerName = loggerName
         this.serviceName = serviceName
         this.debugEnabled = debugEnabled
+        this.truncateLimit = truncateLimit
+        this.truncatedText = truncatedText
     }
 
     debug(logMessage: string, context?: unknown): void {
@@ -87,7 +96,9 @@ export class TextLogger implements Logger {
             loglevel: loglevel,
             serviceName: this.serviceName
         })
-        const logOutput = this.prepareLogOutput(logEntry, context)
+        const logOutput = this.prepareLogOutput(truncateLogMessage(logEntry, 
+            this.truncateLimit, 
+            this.truncatedText), context)
         console.log(`${loglevel?.toUpperCase()} - ${logOutput}`)
     }
 

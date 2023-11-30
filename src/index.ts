@@ -17,6 +17,7 @@ export * from './logger/LogEntryInput'
 export * from './logger/LogLevel'
 export * from './logger/SanitizeMessage'
 export * from './logger/TextLogger'
+export * from './logger/TruncateLogMessage'
 
 export * from './metrics/IncreaseFetchOrGraphQLErrorMetric'
 export * from './metrics/NoMetricsClient'
