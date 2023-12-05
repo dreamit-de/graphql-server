@@ -2,5 +2,5 @@ name: Install and test graphql-server
 on: [push]
 
 jobs:
-  graphqlserver:
-    uses: dreamit-de/workflows/.github/workflows/nodejs-ci.yml
+    graphqlserver:
+      uses: dreamit-de/workflows/.github/workflows/nodejs-ci.yml@main
