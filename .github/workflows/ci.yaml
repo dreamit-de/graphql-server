@@ -3,22 +3,4 @@ on: [push]
 
 jobs:
   graphqlserver:
-    name: Check
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 18.x, 20.x ]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Install dependencies
-        run: npm install
-      - name: Check for linting issues
-        run: npm run lint
-      - name: Run tests
-        run: npm test
-      - name: Check types
-        run: npm run check
+    uses: dreamit-de/workflows/.github/workflows/nodejs-ci.yml
