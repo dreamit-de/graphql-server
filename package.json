@@ -44,7 +44,7 @@
     "eslint-plugin-unicorn": "49.0.0",
     "jest-html-reporters": "3.1.5",
     "ts-jest": "29.1.1",
-    "typescript": "5.3.2"
+    "typescript": "5.3.3"
   },
   "peerDependencies": {
     "@dreamit/graphql-server-base": "^2.1.4",
