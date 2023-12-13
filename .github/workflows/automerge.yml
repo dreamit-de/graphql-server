@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
-        run: npm install
+        run: npm install --ignore-scripts
       - name: Check for linting issues
         run: npm run lint
       - name: Run tests
