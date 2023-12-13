@@ -1,5 +1,5 @@
 name: Install and test graphql-server
-on: [push]
+on: [push, workflow_dispatch]
 
 jobs:
     graphqlserver:
