@@ -2,10 +2,10 @@
 import {
     GraphQLServer,
     JsonLogger,
+    NoStacktraceTextLogger,
 } from '~/src'
 import {
     INITIAL_GRAPHQL_SERVER_OPTIONS,
-    NoStacktraceTextLogger,
     StandaloneGraphQLServerResponse,
     sendRequest,
 } from '../TestHelpers'

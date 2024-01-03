@@ -403,7 +403,7 @@ the `setOptions` function of the `GraphQLServer` instance.
 
 ### Technical components
 
-- **`logger`**: Logger to be used in the GraphQL server. `TextLogger` and `JsonLogger` are available in the module. Own
+- **`logger`**: Logger to be used in the GraphQL server. `TextLogger` and `JsonLogger` as well as `NoStacktraceTextLogger` and `NoStacktraceJsonLogger` (useful for tests without the need for a stacktrace) are available in the module. Own
   Logger can be created by implementing `Logger` interface.
 - **`extractInformationFromRequest`**: Function that can be used to extract information from the `GraphQLServerRequest`
   and return a `Promise<GraphQLRequestInfo>`. By default, the `extractInformationFromRequest` function is used that tries to

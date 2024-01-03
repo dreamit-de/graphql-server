@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import {
-    NoStacktraceJsonLogger, 
+    GraphQLServer, 
+    NoStacktraceJsonLogger
+} from '~/src'
+import { 
     StandaloneGraphQLServerResponse, 
     sendRequest
 } from './TestHelpers'
@@ -11,7 +14,6 @@ import {
     userSchemaResolvers,
 } from './ExampleSchemas'
 import {ExecutionResult } from 'graphql'
-import {GraphQLServer} from '~/src'
 import {PromiseOrValue} from 'graphql/jsutils/PromiseOrValue'
 
 const standaloneGraphQLServerResponse = new StandaloneGraphQLServerResponse()

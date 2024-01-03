@@ -7,51 +7,15 @@ import {
 import {
     GraphQLServer,
     GraphQLServerOptions,
-    JsonLogger,
-    LogEntry,
-    LogEntryInput,
-    TextLogger,
-    createLogEntry
+    NoStacktraceJsonLogger,
+    NoStacktraceTextLogger
 } from '~/src'
 import {
     userSchema,
     userSchemaResolvers
 } from './ExampleSchemas'
-import {Console} from 'node:console'
+
 import { IncomingHttpHeaders } from 'node:http'
-
-export class NoStacktraceJsonLogger extends JsonLogger {
-    loggerConsole: Console = new Console(process.stdout, process.stderr, false)
-    logMessage(logEntryInput: LogEntryInput): void {
-        const {
-            logMessage,
-            loglevel,
-            error,
-            customErrorName,
-            context
-        } = logEntryInput
-
-        const logEntry: LogEntry = createLogEntry({
-            context,
-            customErrorName,
-            error,
-            logMessage,
-            loggerName: this.loggerName,
-            loglevel,
-            serviceName: this.serviceName
-        })
-        logEntry.stacktrace = undefined
-        this.loggerConsole.log(JSON.stringify(logEntry))
-    }
-}
-
-export class NoStacktraceTextLogger extends TextLogger {
-    prepareLogOutput(logEntry: LogEntry): string {
-        return `${logEntry.timestamp} [${logEntry.level.toUpperCase()}]`
-            + `${this.loggerName}-${this.serviceName} :`
-            + `${logEntry.message}`
-    }
-}
 
 export class StandaloneGraphQLServerResponse implements GraphQLServerResponse {
     statusCode = 400
