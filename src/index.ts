@@ -18,6 +18,9 @@ export * from './logger/LogLevel'
 export * from './logger/SanitizeMessage'
 export * from './logger/TextLogger'
 export * from './logger/TruncateLogMessage'
+// Note: Stacktrace logger need their base class to be exported first before referencing it.
+export * from './logger/NoStacktraceJsonLogger'
+export * from './logger/NoStacktraceTextLogger'
 
 export * from './metrics/IncreaseFetchOrGraphQLErrorMetric'
 export * from './metrics/NoMetricsClient'
