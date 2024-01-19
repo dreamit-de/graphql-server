@@ -1,21 +1,11 @@
-import { 
-    JsonLogger, 
-    LogEntry, 
-    LogEntryInput, 
-    createLogEntry 
-} from '..'
-import {Console} from 'node:console'
+import { JsonLogger, LogEntry, LogEntryInput, createLogEntry } from '..'
+import { Console } from 'node:console'
 
 export class NoStacktraceJsonLogger extends JsonLogger {
     loggerConsole: Console = new Console(process.stdout, process.stderr, false)
     logMessage(logEntryInput: LogEntryInput): void {
-        const {
-            logMessage,
-            loglevel,
-            error,
-            customErrorName,
-            context
-        } = logEntryInput
+        const { logMessage, loglevel, error, customErrorName, context } =
+            logEntryInput
 
         const logEntry: LogEntry = createLogEntry({
             context,
@@ -24,7 +14,7 @@ export class NoStacktraceJsonLogger extends JsonLogger {
             logMessage,
             loggerName: this.loggerName,
             loglevel,
-            serviceName: this.serviceName
+            serviceName: this.serviceName,
         })
         logEntry.stacktrace = undefined
         this.loggerConsole.log(JSON.stringify(logEntry))

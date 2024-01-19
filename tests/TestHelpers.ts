@@ -1,19 +1,16 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import {
-    GraphQLExecutionResult, 
-    GraphQLRequestInfo, 
-    GraphQLServerResponse 
+    GraphQLExecutionResult,
+    GraphQLRequestInfo,
+    GraphQLServerResponse,
 } from '@dreamit/graphql-server-base'
 import {
     GraphQLServer,
     GraphQLServerOptions,
     NoStacktraceJsonLogger,
-    NoStacktraceTextLogger
+    NoStacktraceTextLogger,
 } from '~/src'
-import {
-    userSchema,
-    userSchemaResolvers
-} from './ExampleSchemas'
+import { userSchema, userSchemaResolvers } from './ExampleSchemas'
 
 import { IncomingHttpHeaders } from 'node:http'
 
@@ -44,23 +41,30 @@ export class StandaloneGraphQLServerResponse implements GraphQLServerResponse {
     getLastResponseAsObject(): any {
         return JSON.parse(this.getLastResponse())
     }
-
-} 
+}
 
 const JSON_CT_HEADER: IncomingHttpHeaders = {
-    'content-type': 'application/json'
+    'content-type': 'application/json',
 }
-export const LOGGER = new NoStacktraceJsonLogger('nostack-logger', 'myTestService', false)
-export const TEXT_LOGGER = new NoStacktraceTextLogger('nostack-logger', 'myTestService', false)
-export const INITIAL_GRAPHQL_SERVER_OPTIONS: GraphQLServerOptions =
-    {
-        logger: LOGGER,
-        rootValue: userSchemaResolvers,
-        schema: userSchema
-    }
+export const LOGGER = new NoStacktraceJsonLogger(
+    'nostack-logger',
+    'myTestService',
+    false,
+)
+export const TEXT_LOGGER = new NoStacktraceTextLogger(
+    'nostack-logger',
+    'myTestService',
+    false,
+)
+export const INITIAL_GRAPHQL_SERVER_OPTIONS: GraphQLServerOptions = {
+    logger: LOGGER,
+    rootValue: userSchemaResolvers,
+    schema: userSchema,
+}
 
-export function generateGetParametersFromGraphQLRequestInfo(requestInfo: GraphQLRequestInfo)
-: string {
+export function generateGetParametersFromGraphQLRequestInfo(
+    requestInfo: GraphQLRequestInfo,
+): string {
     let result = ''
     if (requestInfo.query) {
         result += `query=${requestInfo.query}&`
@@ -80,13 +84,16 @@ export function sendRequest(
     body: BodyInit,
     method = 'POST',
     // eslint-disable-next-line unicorn/no-object-as-default-parameter
-    headers: IncomingHttpHeaders = JSON_CT_HEADER
+    headers: IncomingHttpHeaders = JSON_CT_HEADER,
 ): Promise<GraphQLExecutionResult> {
-    return graphqlServer.handleRequest({
-        body: body,
-        headers: headers,
-        method: method
-    }, response)
+    return graphqlServer.handleRequest(
+        {
+            body: body,
+            headers: headers,
+            method: method,
+        },
+        response,
+    )
 }
 
 export function sendRequestWithURL(
@@ -94,11 +101,14 @@ export function sendRequestWithURL(
     response: GraphQLServerResponse,
     url: string,
     // eslint-disable-next-line unicorn/no-object-as-default-parameter
-    headers: IncomingHttpHeaders = JSON_CT_HEADER
+    headers: IncomingHttpHeaders = JSON_CT_HEADER,
 ): Promise<GraphQLExecutionResult> {
-    return graphqlServer.handleRequest({
-        headers: headers,
-        method: 'GET',
-        url: url,
-    }, response)
+    return graphqlServer.handleRequest(
+        {
+            headers: headers,
+            method: 'GET',
+            url: url,
+        },
+        response,
+    )
 }

@@ -3,9 +3,9 @@ import {
     LogEntryInput,
     LogLevel,
     createTimestamp,
-    sanitizeMessage
+    sanitizeMessage,
 } from '..'
-import {GraphQLError} from 'graphql'
+import { GraphQLError } from 'graphql'
 
 export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
     const {
@@ -15,7 +15,7 @@ export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
         serviceName,
         context,
         error,
-        customErrorName
+        customErrorName,
     } = logEntryInput
 
     const logEntry: LogEntry = {
@@ -27,19 +27,23 @@ export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
     }
 
     // If there is a serviceName in the context, use it as serviceName for the LogEntry
-    const contextRecord =  context as Record<string, unknown>
+    const contextRecord = context as Record<string, unknown>
     if (contextRecord && contextRecord.serviceName) {
         logEntry.serviceName = contextRecord.serviceName as string
-        if (loglevel === LogLevel.error && contextRecord.serviceName !== serviceName) {
+        if (
+            loglevel === LogLevel.error &&
+            contextRecord.serviceName !== serviceName
+        ) {
             logEntry.level = LogLevel.warn
         }
     }
 
     if (error) {
         logEntry.errorName = customErrorName ?? error.name
-        logEntry.message = `${logEntry.message} ${sanitizeMessage(error.message)}`.trim()
+        logEntry.message =
+            `${logEntry.message} ${sanitizeMessage(error.message)}`.trim()
         if (error.stack) {
-            logEntry.stacktrace =  sanitizeMessage(error.stack)
+            logEntry.stacktrace = sanitizeMessage(error.stack)
         }
 
         if (error instanceof GraphQLError) {
@@ -53,14 +57,15 @@ export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
 
             if (error.extensions.serviceName) {
                 logEntry.serviceName = error.extensions.serviceName as string
-                logEntry.level = error.extensions.serviceName === serviceName
-                    ? LogLevel.error
-                    : LogLevel.warn
+                logEntry.level =
+                    error.extensions.serviceName === serviceName
+                        ? LogLevel.error
+                        : LogLevel.warn
             }
 
             if (error.extensions.exception) {
                 logEntry.stacktrace = sanitizeMessage(
-                    error.extensions.exception as string
+                    error.extensions.exception as string,
                 )
             }
         }

@@ -1,7 +1,5 @@
 /* eslint-disable max-len */
-import {
-    TextLogger
-} from '~/src'
+import { TextLogger } from '~/src'
 
 class NoLoglevelTextLogger extends TextLogger {
     prepareLogOutput(): string {
@@ -19,9 +17,14 @@ describe('Test TextLogger.logMessage with no given loglevel', () => {
     })
 
     test('logMessage should work even if no loglevel is provided', () => {
-        new NoLoglevelTextLogger('test-logger', 'test-service').logMessage({context: undefined, logMessage: 'test'})
+        new NoLoglevelTextLogger('test-logger', 'test-service').logMessage({
+            context: undefined,
+            logMessage: 'test',
+        })
         // Then
         expect(console.log).toHaveBeenCalledTimes(1)
-        expect(console.log).toHaveBeenLastCalledWith('undefined - doesnotmatter')
+        expect(console.log).toHaveBeenLastCalledWith(
+            'undefined - doesnotmatter',
+        )
     })
 })

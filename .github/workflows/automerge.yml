@@ -1,11 +1,11 @@
 name: Automerge dependabot PRs
 on:
-    pull_request:
-        types: opened
+  pull_request:
+    types: opened
 
 permissions:
-    contents: write
-    pull-requests: write
+  contents: write
+  pull-requests: write
 
 jobs:
   graphqlserver:
@@ -14,7 +14,7 @@ jobs:
     if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
     strategy:
       matrix:
-        node-version: [ 20.x ]
+        node-version: [20.x]
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
@@ -29,7 +29,7 @@ jobs:
         run: npm test
       - name: Check types
         run: npm run check
-  
+
   automerge:
     name: Automerge
     runs-on: ubuntu-latest
