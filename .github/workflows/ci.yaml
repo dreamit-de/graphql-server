@@ -3,4 +3,4 @@ on: [push, workflow_dispatch]
 
 jobs:
     graphqlserver:
-      uses: dreamit-de/workflows/.github/workflows/nodejs-ci.yml@main
+      uses: dreamit-de/workflows/.github/workflows/nodejs-ci-libs.yml@main
