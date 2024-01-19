@@ -1,4 +1,4 @@
-import {Buffer} from 'node:buffer'
+import { Buffer } from 'node:buffer'
 import { ResponseParameters } from '@dreamit/graphql-server-base'
 
 /**
@@ -16,10 +16,10 @@ export function sendResponse(responseParameters: ResponseParameters): void {
         responseEndChunkFunction,
     } = responseParameters
     logger.debug(
-        `Preparing response with executionResult ${JSON.stringify(executionResult)}`+
+        `Preparing response with executionResult ${JSON.stringify(executionResult)}` +
             `, status code ${statusCode} and custom headers ${JSON.stringify(customHeaders)}` +
             `, and context ${context}`,
-        context
+        context,
     )
     if (executionResult && executionResult.errors && formatErrorFunction) {
         executionResult.errors.map((element) => formatErrorFunction(element))
@@ -30,8 +30,7 @@ export function sendResponse(responseParameters: ResponseParameters): void {
     response.setHeader('Content-Type', 'application/json; charset=utf-8')
     if (customHeaders) {
         for (const [key, value] of Object.entries(customHeaders)) {
-            logger.debug(`Set custom header ${key} to ${value}`,
-                context)
+            logger.debug(`Set custom header ${key} to ${value}`, context)
             response.setHeader(key, String(value))
         }
     }
@@ -41,5 +40,4 @@ export function sendResponse(responseParameters: ResponseParameters): void {
     } else {
         response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))
     }
-
 }

@@ -1,12 +1,12 @@
-import {LogLevel} from '..'
+import { LogLevel } from '..'
 
 export interface LogEntry {
-    logger: string;
-    timestamp: string;
-    message: string;
-    level: LogLevel;
-    serviceName: string;
-    errorName?: string;
-    stacktrace?: string;
-    query?: string;
+    logger: string
+    timestamp: string
+    message: string
+    level: LogLevel
+    serviceName: string
+    errorName?: string
+    stacktrace?: string
+    query?: string
 }

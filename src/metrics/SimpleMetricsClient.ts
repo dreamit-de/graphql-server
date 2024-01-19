@@ -8,7 +8,7 @@ import {
     MetricsClient,
     SCHEMA_VALIDATION_ERROR,
     SYNTAX_ERROR,
-    VALIDATION_ERROR
+    VALIDATION_ERROR,
 } from '@dreamit/graphql-server-base'
 
 /**
@@ -24,9 +24,11 @@ export class SimpleMetricsClient implements MetricsClient {
     requestThroughput!: number
     graphQLServerErrorCounter!: Map<string, number>
 
-    constructor(requestThroughputMetricName = 'graphql_server_request_throughput',
+    constructor(
+        requestThroughputMetricName = 'graphql_server_request_throughput',
         availabilityMetricName = 'graphql_server_availability',
-        errorsMetricName = 'graphql_server_errors') {
+        errorsMetricName = 'graphql_server_errors',
+    ) {
         this.requestThroughputMetricName = requestThroughputMetricName
         this.availabilityMetricName = availabilityMetricName
         this.errorsMetricName = errorsMetricName
@@ -92,8 +94,10 @@ export class SimpleMetricsClient implements MetricsClient {
     }
 
     getErrorCount(errorLabel: string): string {
-        return `${this.errorsMetricName}{errorClass="${errorLabel}"} ` +
-         this.graphQLServerErrorCounter.get(errorLabel)
+        return (
+            `${this.errorsMetricName}{errorClass="${errorLabel}"} ` +
+            this.graphQLServerErrorCounter.get(errorLabel)
+        )
     }
 
     async getMetrics(): Promise<string> {

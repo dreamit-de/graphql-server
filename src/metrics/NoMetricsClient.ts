@@ -16,6 +16,8 @@ export class NoMetricsClient implements MetricsClient {
         return ''
     }
     getMetrics(): Promise<string> {
-        return new Promise((resolve) => {resolve('')})
+        return new Promise((resolve) => {
+            resolve('')
+        })
     }
 }

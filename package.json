@@ -1,56 +1,58 @@
 {
-  "name": "@dreamit/graphql-server",
-  "version": "4.5.0",
-  "description": "A GraphQL server written in NodeJS/Typescript.",
-  "main": "build/src/index.js",
-  "exports": {
-    "import": "./build/src/index.js",
-    "default": "./build/src/index.js"
-  },
-  "types": "build/src/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "check": "tsc --noEmit --pretty",
-    "lint": "eslint src/*.ts src/**/*.ts tests/*.ts tests/**/*.ts",
-    "lintfix": "eslint --fix src/*.ts src/**/*.ts tests/*.ts tests/**/*.ts",
-    "prepack": "npm run build",
-    "test": "jest --runInBand"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dreamit-de/graphql-server.git"
-  },
-  "keywords": [
-    "GraphQL",
-    "server"
-  ],
-  "author": "dreamIT",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/dreamit-de/graphql-server/issues"
-  },
-  "homepage": "https://github.com/dreamit-de/graphql-server#readme",
-  "devDependencies": {
-    "@types/content-type": "1.1.8",
-    "@types/jest": "29.5.11",
-    "@types/node": "20.11.5",
-    "@typescript-eslint/eslint-plugin": "6.19.0",
-    "@typescript-eslint/parser": "6.19.0",
-    "eslint": "8.56.0",
-    "eslint-plugin-deprecation": "2.0.0",
-    "eslint-plugin-import": "2.29.1",
-    "eslint-plugin-modules-newline": "0.0.6",
-    "eslint-plugin-security": "2.1.0",
-    "eslint-plugin-unicorn": "50.0.1",
-    "jest-html-reporters": "3.1.7",
-    "ts-jest": "29.1.1",
-    "typescript": "5.3.3"
-  },
-  "peerDependencies": {
-    "@dreamit/graphql-server-base": "^2.1.4",
-    "graphql": "^16.0.0"
-  },
-  "engines": {
-    "node": ">=v6.13.0"
-  }
+    "name": "@dreamit/graphql-server",
+    "version": "4.5.0",
+    "description": "A GraphQL server written in NodeJS/Typescript.",
+    "main": "build/src/index.js",
+    "exports": {
+        "import": "./build/src/index.js",
+        "default": "./build/src/index.js"
+    },
+    "types": "build/src/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "check": "tsc --noEmit --pretty",
+        "checkformat": "prettier --check .",
+        "format": "prettier --cache --write .",
+        "lint": "eslint src/*.ts src/**/*.ts tests/*.ts tests/**/*.ts",
+        "lintfix": "eslint --fix src/*.ts src/**/*.ts tests/*.ts tests/**/*.ts",
+        "prepack": "npm run build",
+        "test": "jest --runInBand"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/dreamit-de/graphql-server.git"
+    },
+    "keywords": [
+        "GraphQL",
+        "server"
+    ],
+    "author": "dreamIT",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/dreamit-de/graphql-server/issues"
+    },
+    "homepage": "https://github.com/dreamit-de/graphql-server#readme",
+    "devDependencies": {
+        "@types/content-type": "1.1.8",
+        "@types/jest": "29.5.11",
+        "@types/node": "20.11.5",
+        "@typescript-eslint/eslint-plugin": "6.19.0",
+        "@typescript-eslint/parser": "6.19.0",
+        "eslint": "8.56.0",
+        "eslint-plugin-deprecation": "2.0.0",
+        "eslint-plugin-import": "2.29.1",
+        "eslint-plugin-security": "2.1.0",
+        "eslint-plugin-unicorn": "50.0.1",
+        "jest-html-reporters": "3.1.7",
+        "prettier": "3.2.4",
+        "ts-jest": "29.1.1",
+        "typescript": "5.3.3"
+    },
+    "peerDependencies": {
+        "@dreamit/graphql-server-base": "^2.1.4",
+        "graphql": "^16.0.0"
+    },
+    "engines": {
+        "node": ">=v6.13.0"
+    }
 }

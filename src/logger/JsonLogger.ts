@@ -3,12 +3,16 @@ import {
     LogEntryInput,
     LogLevel,
     createLogEntry,
-    truncateLogMessage
+    truncateLogMessage,
 } from '..'
-import {Console} from 'node:console'
-import {Logger} from '@dreamit/graphql-server-base'
+import { Console } from 'node:console'
+import { Logger } from '@dreamit/graphql-server-base'
 
-const loggerConsole: Console = new Console(process.stdout, process.stderr, false)
+const loggerConsole: Console = new Console(
+    process.stdout,
+    process.stderr,
+    false,
+)
 
 /**
  * Logger implementation that outputs log entries as JSON text to console.
@@ -30,12 +34,17 @@ export class JsonLogger implements Logger {
      * it from remote graphql services like in a gateway setup.
      * Will be output to "serviceName" field in JSON.
      * @param {boolean} debugEnabled - If debug output should be enabled
-     * @param {number} truncateLimit - The length of the message before the message gets truncated. 
-     * Default: undefined/0 (off). 
+     * @param {number} truncateLimit - The length of the message before the message gets truncated.
+     * Default: undefined/0 (off).
      * @param {string} truncatedText - The text to display if a message is truncated.
      */
-    constructor(loggerName: string, serviceName: string, debugEnabled = false, 
-        truncateLimit = 0, truncatedText = '_TRUNCATED_') {
+    constructor(
+        loggerName: string,
+        serviceName: string,
+        debugEnabled = false,
+        truncateLimit = 0,
+        truncatedText = '_TRUNCATED_',
+    ) {
         this.loggerName = loggerName
         this.serviceName = serviceName
         this.debugEnabled = debugEnabled
@@ -45,33 +54,36 @@ export class JsonLogger implements Logger {
 
     debug(logMessage: string, context?: unknown): void {
         if (this.debugEnabled) {
-            this.logMessage({context, logMessage, loglevel: LogLevel.debug})
+            this.logMessage({ context, logMessage, loglevel: LogLevel.debug })
         }
     }
 
-    error(logMessage: string,
+    error(
+        logMessage: string,
         error: Error,
         customErrorName: string,
-        context?: unknown): void {
-        this.logMessage({context, customErrorName, error, logMessage, loglevel: LogLevel.error})
+        context?: unknown,
+    ): void {
+        this.logMessage({
+            context,
+            customErrorName,
+            error,
+            logMessage,
+            loglevel: LogLevel.error,
+        })
     }
 
     info(logMessage: string, context?: unknown): void {
-        this.logMessage({context, logMessage, loglevel: LogLevel.info})
+        this.logMessage({ context, logMessage, loglevel: LogLevel.info })
     }
 
     warn(logMessage: string, context?: unknown): void {
-        this.logMessage({context, logMessage, loglevel: LogLevel.warn})
+        this.logMessage({ context, logMessage, loglevel: LogLevel.warn })
     }
 
     logMessage(logEntryInput: LogEntryInput): void {
-        const {
-            logMessage,
-            loglevel,
-            error,
-            customErrorName,
-            context
-        } = logEntryInput
+        const { logMessage, loglevel, error, customErrorName, context } =
+            logEntryInput
 
         const logEntry: LogEntry = createLogEntry({
             context,
@@ -82,8 +94,14 @@ export class JsonLogger implements Logger {
             loglevel,
             serviceName: this.serviceName,
         })
-        loggerConsole.log(JSON.stringify(truncateLogMessage(logEntry, 
-            this.truncateLimit, 
-            this.truncatedText)))
+        loggerConsole.log(
+            JSON.stringify(
+                truncateLogMessage(
+                    logEntry,
+                    this.truncateLimit,
+                    this.truncatedText,
+                ),
+            ),
+        )
     }
 }

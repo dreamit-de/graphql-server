@@ -5,7 +5,7 @@ import {
     createLogEntry,
     truncateLogMessage,
 } from '..'
-import {Logger} from '@dreamit/graphql-server-base'
+import { Logger } from '@dreamit/graphql-server-base'
 
 /**
  * Logger implementation that outputs log entries as text to console.
@@ -26,12 +26,17 @@ export class TextLogger implements Logger {
      * it from remote graphql services like in a gateway setup.
      * Will be output to "serviceName" field in JSON.
      * @param {boolean} debugEnabled - If debug output should be enabled
-     * @param {number} truncateLimit - The length of the message before the message gets truncated. 
-     * Default: undefined/0 (off). 
+     * @param {number} truncateLimit - The length of the message before the message gets truncated.
+     * Default: undefined/0 (off).
      * @param {string} truncatedText - The text to display if a message is truncated.
      */
-    constructor(loggerName: string, serviceName: string, debugEnabled = false,
-        truncateLimit = 0, truncatedText = '_TRUNCATED_') {
+    constructor(
+        loggerName: string,
+        serviceName: string,
+        debugEnabled = false,
+        truncateLimit = 0,
+        truncatedText = '_TRUNCATED_',
+    ) {
         this.loggerName = loggerName
         this.serviceName = serviceName
         this.debugEnabled = debugEnabled
@@ -44,21 +49,23 @@ export class TextLogger implements Logger {
             this.logMessage({
                 context,
                 logMessage,
-                loglevel: LogLevel.debug
+                loglevel: LogLevel.debug,
             })
         }
     }
 
-    error(logMessage: string,
+    error(
+        logMessage: string,
         error: Error,
         customErrorName: string,
-        context?: unknown): void {
+        context?: unknown,
+    ): void {
         this.logMessage({
             context,
             customErrorName,
             error,
             logMessage,
-            loglevel: LogLevel.error
+            loglevel: LogLevel.error,
         })
     }
 
@@ -66,7 +73,7 @@ export class TextLogger implements Logger {
         this.logMessage({
             context,
             logMessage,
-            loglevel: LogLevel.info
+            loglevel: LogLevel.info,
         })
     }
 
@@ -74,7 +81,7 @@ export class TextLogger implements Logger {
         this.logMessage({
             context,
             logMessage,
-            loglevel: LogLevel.warn
+            loglevel: LogLevel.warn,
         })
     }
 
@@ -84,7 +91,7 @@ export class TextLogger implements Logger {
             loglevel: loglevel,
             error,
             customErrorName,
-            context
+            context,
         } = logEntryInput
 
         const logEntry: LogEntry = createLogEntry({
@@ -94,11 +101,16 @@ export class TextLogger implements Logger {
             logMessage,
             loggerName: this.loggerName,
             loglevel: loglevel,
-            serviceName: this.serviceName
+            serviceName: this.serviceName,
         })
-        const logOutput = this.prepareLogOutput(truncateLogMessage(logEntry, 
-            this.truncateLimit, 
-            this.truncatedText), context)
+        const logOutput = this.prepareLogOutput(
+            truncateLogMessage(
+                logEntry,
+                this.truncateLimit,
+                this.truncatedText,
+            ),
+            context,
+        )
         console.log(`${loglevel?.toUpperCase()} - ${logOutput}`)
     }
 
@@ -110,8 +122,10 @@ export class TextLogger implements Logger {
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     prepareLogOutput(logEntry: LogEntry, context?: unknown): string {
-        return `${logEntry.timestamp} [${logEntry.level.toUpperCase()}]`
-            + `${this.loggerName}-${this.serviceName} :`
-            + `${logEntry.message} ${logEntry.stacktrace || ''}`
+        return (
+            `${logEntry.timestamp} [${logEntry.level.toUpperCase()}]` +
+            `${this.loggerName}-${this.serviceName} :` +
+            `${logEntry.message} ${logEntry.stacktrace || ''}`
+        )
     }
 }

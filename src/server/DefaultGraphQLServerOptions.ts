@@ -7,7 +7,7 @@ import {
     parse,
     specifiedRules,
     validate,
-    validateSchema
+    validateSchema,
 } from 'graphql'
 import {
     GraphQLExecutionResult,
@@ -16,11 +16,11 @@ import {
     GraphQLServerResponse,
     Logger,
     MetricsClient,
-    ResponseParameters
+    ResponseParameters,
 } from '@dreamit/graphql-server-base'
 import {
     GraphQLFieldResolver,
-    GraphQLTypeResolver
+    GraphQLTypeResolver,
 } from 'graphql/type/definition'
 import {
     GraphQLServerOptions,
@@ -29,35 +29,42 @@ import {
     extractInformationFromRequest,
     sendResponse,
 } from '..'
-import {Buffer} from 'node:buffer'
-import {Maybe} from 'graphql/jsutils/Maybe'
-import {ObjMap} from 'graphql/jsutils/ObjMap'
-import {TypeInfo} from 'graphql/utilities/TypeInfo'
-import {ValidationRule} from 'graphql/validation/ValidationContext'
+import { Buffer } from 'node:buffer'
+import { Maybe } from 'graphql/jsutils/Maybe'
+import { ObjMap } from 'graphql/jsutils/ObjMap'
+import { TypeInfo } from 'graphql/utilities/TypeInfo'
+import { ValidationRule } from 'graphql/validation/ValidationContext'
 
-export const defaultGraphqlExecutionErrorMessage = 
+export const defaultGraphqlExecutionErrorMessage =
     'While processing the request a GraphQL execution error occurred: '
-export const defaultExecutionResultErrorMessage = 
+export const defaultExecutionResultErrorMessage =
     'While processing the request the following error occurred: '
-export const defaultValidationErrorMessage = 
+export const defaultValidationErrorMessage =
     'While processing the request the following validation error occurred: '
 
-export const fallbackTextLogger = new TextLogger('fallback-logger', 'fallback-service')
+export const fallbackTextLogger = new TextLogger(
+    'fallback-logger',
+    'fallback-service',
+)
 export const invalidSchemaResponse: GraphQLExecutionResult = {
     executionResult: {
-        errors:
-            [new GraphQLError(
-                'Request cannot be processed. Schema in GraphQL server is invalid.', {}
-            )]
+        errors: [
+            new GraphQLError(
+                'Request cannot be processed. Schema in GraphQL server is invalid.',
+                {},
+            ),
+        ],
     },
     statusCode: 500,
 }
 
 export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     logger: Logger = fallbackTextLogger
-    extractInformationFromRequest:
-    (request: GraphQLServerRequest) => GraphQLRequestInfo = extractInformationFromRequest
-    sendResponse: (responseParameters: ResponseParameters) => void = sendResponse
+    extractInformationFromRequest: (
+        request: GraphQLServerRequest,
+    ) => GraphQLRequestInfo = extractInformationFromRequest
+    sendResponse: (responseParameters: ResponseParameters) => void =
+        sendResponse
     metricsClient: MetricsClient = new SimpleMetricsClient()
     formatErrorFunction = defaultFormatErrorFunction
     collectErrorMetricsFunction = defaultCollectErrorMetrics
@@ -93,7 +100,9 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
  * Default behaviour: Calls toJSON function of error. Can be set in options.
  * @param {GraphQLError} error - The error to be formatted
  */
-export function defaultFormatErrorFunction(error: GraphQLError): GraphQLFormattedError {
+export function defaultFormatErrorFunction(
+    error: GraphQLError,
+): GraphQLFormattedError {
     return error.toJSON()
 }
 
@@ -102,20 +111,18 @@ export function defaultFormatErrorFunction(error: GraphQLError): GraphQLFormatte
  * Default behaviour: return request object. Can be set in options.
  * @param contextParameters - The context parameters
  */
-export function defaultContextFunction(contextParameters: {serverOptions: GraphQLServerOptions,
-    request?: GraphQLServerRequest,
-    response?: GraphQLServerResponse}): unknown {
-    const {
-        serverOptions,
-        request,
-        response
-    } = contextParameters
+export function defaultContextFunction(contextParameters: {
+    serverOptions: GraphQLServerOptions
+    request?: GraphQLServerRequest
+    response?: GraphQLServerResponse
+}): unknown {
+    const { serverOptions, request, response } = contextParameters
 
     if (serverOptions.logger) {
         serverOptions.logger.debug(
-            'Calling defaultRequestResponseContextFunction with '+
-            `request ${request} and response ${response}`,
-            request
+            'Calling defaultRequestResponseContextFunction with ' +
+                `request ${request} and response ${response}`,
+            request,
         )
     }
     return request
@@ -128,26 +135,20 @@ export function defaultContextFunction(contextParameters: {serverOptions: GraphQ
  * @returns {ObjMap<unknown>}
  * A key-value map to be added as extensions in response
  */
-export function defaultExtensions(
-    extensionParameters: {
-        requestInformation: GraphQLRequestInfo,
-        executionResult: ExecutionResult,
-        serverOptions: GraphQLServerOptions,
-        context?: unknown
-    }
-): ObjMap<unknown> | undefined {
-    const {
-        requestInformation,
-        executionResult,
-        serverOptions,
-        context
-    } = extensionParameters
+export function defaultExtensions(extensionParameters: {
+    requestInformation: GraphQLRequestInfo
+    executionResult: ExecutionResult
+    serverOptions: GraphQLServerOptions
+    context?: unknown
+}): ObjMap<unknown> | undefined {
+    const { requestInformation, executionResult, serverOptions, context } =
+        extensionParameters
 
     if (serverOptions.logger) {
         serverOptions.logger.debug(
-            `Calling defaultExtensions for requestInfo ${JSON.stringify(requestInformation)}`+
-            ` and executionResult ${JSON.stringify(executionResult)}`,
-            context
+            `Calling defaultExtensions for requestInfo ${JSON.stringify(requestInformation)}` +
+                ` and executionResult ${JSON.stringify(executionResult)}`,
+            context,
         )
     }
 
@@ -159,28 +160,22 @@ export function defaultExtensions(
  * @param errorParameters - The error parameters
  */
 export function defaultCollectErrorMetrics(errorParameters: {
-        errorName: string,
-        error: unknown,
-        serverOptions: GraphQLServerOptions,
-        context?: unknown
+    errorName: string
+    error: unknown
+    serverOptions: GraphQLServerOptions
+    context?: unknown
 }): void {
-    const {
-        errorName,
-        error,
-        serverOptions,
-        context
-    } = errorParameters
+    const { errorName, error, serverOptions, context } = errorParameters
 
     if (serverOptions.logger) {
         serverOptions.logger.debug(
             `Calling defaultCollectErrorMetrics with error ${error} and errorName ${errorName}`,
-            context
+            context,
         )
     }
     if (serverOptions.metricsClient) {
         serverOptions.metricsClient.increaseErrors(errorName, context)
     }
-
 }
 
 /**
@@ -198,18 +193,21 @@ export function defaultShouldUpdateSchema(schema?: GraphQLSchema): boolean {
  * @param {string} method - The actual used method
  * @returns {GraphQLExecutionResult} A MethodNotAllowed response
  */
-export function defaultMethodNotAllowedResponse(method?: string): GraphQLExecutionResult {
+export function defaultMethodNotAllowedResponse(
+    method?: string,
+): GraphQLExecutionResult {
     return {
-        customHeaders: {allow: 'GET, POST'},
+        customHeaders: { allow: 'GET, POST' },
         executionResult: {
-            errors:
-                [
-                    new GraphQLError('GraphQL server only supports GET and POST requests.'
-                        + ` Got ${method}`
-                    , {})
-                ]
+            errors: [
+                new GraphQLError(
+                    'GraphQL server only supports GET and POST requests.' +
+                        ` Got ${method}`,
+                    {},
+                ),
+            ],
         },
-        statusCode: 405
+        statusCode: 405,
     }
 }
 
@@ -218,17 +216,20 @@ export function defaultMethodNotAllowedResponse(method?: string): GraphQLExecuti
  * @param {string} method - The actual used method
  * @returns {GraphQLExecutionResult} A MissingQueryParameter response
  */
-export function defaultMissingQueryParameterResponse(method?: string): GraphQLExecutionResult {
+export function defaultMissingQueryParameterResponse(
+    method?: string,
+): GraphQLExecutionResult {
     return {
         executionResult: {
-            errors:
-                [
-                    new GraphQLError('Request cannot be processed. No query was found '
-                        + `in parameters or body. Used method is ${method}`
-                    , {})
-                ]
+            errors: [
+                new GraphQLError(
+                    'Request cannot be processed. No query was found ' +
+                        `in parameters or body. Used method is ${method}`,
+                    {},
+                ),
+            ],
         },
-        statusCode: 400
+        statusCode: 400,
     }
 }
 
@@ -238,15 +239,21 @@ export function defaultMissingQueryParameterResponse(method?: string): GraphQLEx
  * @param {string} operation - The actual used operation
  * @returns {GraphQLExecutionResult} A OnlyQueryInGetRequestsResponse response
  */
-export function defaultOnlyQueryInGetRequestsResponse(operation?: string): GraphQLExecutionResult {
+export function defaultOnlyQueryInGetRequestsResponse(
+    operation?: string,
+): GraphQLExecutionResult {
     return {
-        customHeaders: {allow: 'POST'},
+        customHeaders: { allow: 'POST' },
         executionResult: {
-            errors:
-                [new GraphQLError('Only "query" operation is allowed in "GET" requests.' +
-                    ` Got: "${operation}"`, {})]
+            errors: [
+                new GraphQLError(
+                    'Only "query" operation is allowed in "GET" requests.' +
+                        ` Got: "${operation}"`,
+                    {},
+                ),
+            ],
         },
-        statusCode: 405
+        statusCode: 405,
     }
 }
 
@@ -256,7 +263,7 @@ export function defaultOnlyQueryInGetRequestsResponse(operation?: string): Graph
  * @param {GraphQLError} error - The error to be formatted
  */
 export function defaultResponseEndChunkFunction(
-    executionResult: ExecutionResult | undefined
+    executionResult: ExecutionResult | undefined,
 ): unknown {
     return Buffer.from(JSON.stringify(executionResult), 'utf8')
 }

@@ -1,6 +1,6 @@
 import {
     INTROSPECTION_DISABLED_ERROR,
-    VALIDATION_ERROR
+    VALIDATION_ERROR,
 } from '@dreamit/graphql-server-base'
 
 /**
@@ -10,9 +10,14 @@ import {
  * @returns {string} INTROSPECTION_DISABLED_ERROR if error is an IntrospectionDisabledError,
  * ValidationError otherwise
  */
-export function determineValidationOrIntrospectionDisabledError(error: unknown): string {
-    return error instanceof Error && error.message &&
-    ((error.message.includes('introspection') && error.message.includes('disabled'))
-        || error.message.includes('__Directive')
-    ) ? INTROSPECTION_DISABLED_ERROR : VALIDATION_ERROR
+export function determineValidationOrIntrospectionDisabledError(
+    error: unknown,
+): string {
+    return error instanceof Error &&
+        error.message &&
+        ((error.message.includes('introspection') &&
+            error.message.includes('disabled')) ||
+            error.message.includes('__Directive'))
+        ? INTROSPECTION_DISABLED_ERROR
+        : VALIDATION_ERROR
 }

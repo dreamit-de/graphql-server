@@ -1,36 +1,21 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es5",
-    "moduleResolution": "node",
-    "sourceMap": true,
-    "outDir": "build",
-    "lib": [
-      "es2017",
-      "es7",
-      "es6",
-      "dom"
-    ],
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "declaration": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "~/*": [
-        "./*"
-      ]
-    }
-  },
-  "include": [
-    "jest.config.js",
-    "src/**/*",
-    "tests/**/*"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+    "compilerOptions": {
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "target": "es5",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "outDir": "build",
+        "lib": ["es2017", "es7", "es6", "dom"],
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "declaration": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"],
+            "~/*": ["./*"],
+        },
+    },
+    "include": ["jest.config.js", "src/**/*", "tests/**/*"],
+    "exclude": ["node_modules"],
 }
