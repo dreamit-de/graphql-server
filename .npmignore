@@ -3,7 +3,7 @@
 /coverage/
 .eslintrc.json
 /.github/
-jest.config.js
+vitest.config.js
 tsconfig.json
 /src/
 /tests/

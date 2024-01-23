@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import { LogLevel, truncateLogMessage } from '~/src'
+import { expect, test } from 'vitest'
 
 const timeoutMessage =
     '{"stack":"Error: 14 UNAVAILABLE: No connection established}'

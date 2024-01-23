@@ -8,6 +8,7 @@ import {
     defaultOnlyQueryInGetRequestsResponse,
     extractInformationFromRequest,
 } from '~/src'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import {
     initialSchemaWithOnlyDescription,
     returnErrorQuery,
@@ -112,13 +113,13 @@ describe('Test using custom error messages', () => {
         validationErrorMessage: 'ValidationError:',
     })
     beforeEach(() => {
-        jest.spyOn(TEXT_LOGGER, 'prepareLogOutput')
+        vi.spyOn(TEXT_LOGGER, 'prepareLogOutput')
             // We return only the message here so it can be asserted in the tests
             .mockImplementation((logEntry) => logEntry.message)
     })
 
     afterEach(() => {
-        jest.restoreAllMocks()
+        vi.restoreAllMocks()
     })
 
     test('Should receive correct error message if response contains a GraphQLError', async () => {

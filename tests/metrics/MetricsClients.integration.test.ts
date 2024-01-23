@@ -17,6 +17,7 @@ import {
     NoMetricsClient,
     SimpleMetricsClient,
 } from '~/src'
+import { expect, test } from 'vitest'
 import {
     initialSchemaWithOnlyDescription,
     returnErrorQuery,
@@ -25,6 +26,7 @@ import {
     userSchemaResolvers,
     usersQuery,
 } from '../ExampleSchemas'
+
 import { LOGGER } from '../TestHelpers'
 
 const customGraphQLServer = new GraphQLServer(
