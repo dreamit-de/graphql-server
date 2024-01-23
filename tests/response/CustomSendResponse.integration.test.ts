@@ -5,6 +5,7 @@ import {
     StandaloneGraphQLServerResponse,
     sendRequest,
 } from '../TestHelpers'
+import { expect, test } from 'vitest'
 import {
     returnErrorQuery,
     userSchema,

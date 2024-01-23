@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { GraphQLServer, NoStacktraceJsonLogger } from '~/src'
 import { StandaloneGraphQLServerResponse, sendRequest } from './TestHelpers'
+import { expect, test } from 'vitest'
 import {
     multipleErrorResponse,
     userQuery,

@@ -2,8 +2,7 @@
     "env": {
         "node": true,
         "commonjs": true,
-        "es6": true,
-        "jest": true
+        "es6": true
     },
     "extends": [
         "eslint:recommended",
@@ -72,7 +71,7 @@
             "error",
             {
                 "case": "pascalCase",
-                "ignore": ["GraphQL", "\\.test\\.ts$"]
+                "ignore": ["GraphQL", "\\.config\\.ts$", "\\.test\\.ts$"]
             }
         ],
         "unicorn/custom-error-definition": "error",

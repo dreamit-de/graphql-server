@@ -2,21 +2,28 @@
     "name": "@dreamit/graphql-server",
     "version": "4.5.0",
     "description": "A GraphQL server written in NodeJS/Typescript.",
-    "main": "build/src/index.js",
-    "exports": {
-        "import": "./build/src/index.js",
-        "default": "./build/src/index.js"
-    },
-    "types": "build/src/index.d.ts",
     "scripts": {
-        "build": "tsc",
+        "build": "tsup-node",
         "check": "tsc --noEmit --pretty",
         "checkformat": "prettier --check .",
         "format": "prettier --cache --write .",
         "lint": "eslint src/*.ts src/**/*.ts tests/*.ts tests/**/*.ts",
         "lintfix": "eslint --fix src/*.ts src/**/*.ts tests/*.ts tests/**/*.ts",
         "prepack": "npm run build",
-        "test": "jest --runInBand"
+        "test": "vitest run --coverage"
+    },
+    "type": "module",
+    "main": "build/index.cjs",
+    "module": "build/index.js",
+    "types": "build/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./build/index.d.ts",
+            "import": "./build/index.js",
+            "require": "./build/index.cjs",
+            "default": "./build/index.js"
+        },
+        "./package.json": "./package.json"
     },
     "repository": {
         "type": "git",
@@ -34,19 +41,20 @@
     "homepage": "https://github.com/dreamit-de/graphql-server#readme",
     "devDependencies": {
         "@types/content-type": "1.1.8",
-        "@types/jest": "29.5.11",
         "@types/node": "20.11.5",
         "@typescript-eslint/eslint-plugin": "6.19.1",
         "@typescript-eslint/parser": "6.19.1",
+        "@vitest/coverage-v8": "^1.2.1",
         "eslint": "8.56.0",
         "eslint-plugin-deprecation": "2.0.0",
         "eslint-plugin-import": "2.29.1",
         "eslint-plugin-security": "2.1.0",
         "eslint-plugin-unicorn": "50.0.1",
-        "jest-html-reporters": "3.1.7",
         "prettier": "3.2.4",
-        "ts-jest": "29.1.2",
-        "typescript": "5.3.3"
+        "tsup": "8.0.1",
+        "typescript": "5.3.3",
+        "vite-tsconfig-paths": "4.3.1",
+        "vitest": "1.2.1"
     },
     "peerDependencies": {
         "@dreamit/graphql-server-base": "^2.1.4",

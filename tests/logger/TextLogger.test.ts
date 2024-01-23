@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest'
 import { TextLogger } from '~/src'
 
 class NoLoglevelTextLogger extends TextLogger {
@@ -9,11 +10,11 @@ class NoLoglevelTextLogger extends TextLogger {
 
 describe('Test TextLogger.logMessage with no given loglevel', () => {
     beforeAll(() => {
-        jest.spyOn(console, 'log').mockImplementation()
+        vi.spyOn(console, 'log')
     })
 
     afterAll(() => {
-        jest.restoreAllMocks()
+        vi.restoreAllMocks()
     })
 
     test('logMessage should work even if no loglevel is provided', () => {

@@ -8,6 +8,7 @@ import {
     sendRequest,
     sendRequestWithURL,
 } from '../TestHelpers'
+import { expect, test } from 'vitest'
 import {
     introspectionQuery,
     loginRequest,
