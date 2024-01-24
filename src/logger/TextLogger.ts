@@ -1,3 +1,4 @@
+import { Logger } from '@dreamit/graphql-server-base'
 import {
     LogEntry,
     LogEntryInput,
@@ -5,7 +6,6 @@ import {
     createLogEntry,
     truncateLogMessage,
 } from '..'
-import { Logger } from '@dreamit/graphql-server-base'
 
 /**
  * Logger implementation that outputs log entries as text to console.

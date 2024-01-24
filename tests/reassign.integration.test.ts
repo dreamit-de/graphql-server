@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { GraphQLServer, NoStacktraceJsonLogger } from '~/src'
-import { StandaloneGraphQLServerResponse, sendRequest } from './TestHelpers'
+import { ExecutionResult } from 'graphql'
+import { PromiseOrValue } from 'graphql/jsutils/PromiseOrValue'
 import { expect, test } from 'vitest'
+import { GraphQLServer, NoStacktraceJsonLogger } from '~/src'
 import {
     multipleErrorResponse,
     userQuery,
     userSchema,
     userSchemaResolvers,
 } from './ExampleSchemas'
-import { ExecutionResult } from 'graphql'
-import { PromiseOrValue } from 'graphql/jsutils/PromiseOrValue'
+import { StandaloneGraphQLServerResponse, sendRequest } from './TestHelpers'
 
 const standaloneGraphQLServerResponse = new StandaloneGraphQLServerResponse()
 

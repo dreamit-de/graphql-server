@@ -86,7 +86,6 @@
         ],
         "import/no-unresolved": 0,
         "deprecation/deprecation": "error",
-        "sort-imports": "error",
         "sort-keys": "error",
         "sort-vars": "error"
     }

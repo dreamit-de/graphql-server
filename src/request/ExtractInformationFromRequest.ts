@@ -3,8 +3,8 @@ import {
     GraphQLRequestInfo,
     GraphQLServerRequest,
 } from '@dreamit/graphql-server-base'
-import { Buffer } from 'node:buffer'
 import { GraphQLError } from 'graphql'
+import { Buffer } from 'node:buffer'
 import { URLSearchParams } from 'node:url'
 import { getContentType } from '..'
 

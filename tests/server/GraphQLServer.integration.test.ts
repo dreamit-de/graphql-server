@@ -1,14 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql'
-import {
-    INITIAL_GRAPHQL_SERVER_OPTIONS,
-    LOGGER,
-    StandaloneGraphQLServerResponse,
-    generateGetParametersFromGraphQLRequestInfo,
-    sendRequest,
-    sendRequestWithURL,
-} from '../TestHelpers'
 import { expect, test } from 'vitest'
+import { GraphQLServer } from '~/src'
 import {
     introspectionQuery,
     loginRequest,
@@ -25,7 +18,14 @@ import {
     usersQueryWithUnknownField,
     usersRequest,
 } from '../ExampleSchemas'
-import { GraphQLServer } from '~/src'
+import {
+    INITIAL_GRAPHQL_SERVER_OPTIONS,
+    LOGGER,
+    StandaloneGraphQLServerResponse,
+    generateGetParametersFromGraphQLRequestInfo,
+    sendRequest,
+    sendRequestWithURL,
+} from '../TestHelpers'
 
 const customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
 const extensionTestData: Record<string, string> = {

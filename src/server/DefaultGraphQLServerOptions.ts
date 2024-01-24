@@ -1,4 +1,13 @@
 import {
+    GraphQLExecutionResult,
+    GraphQLRequestInfo,
+    GraphQLServerRequest,
+    GraphQLServerResponse,
+    Logger,
+    MetricsClient,
+    ResponseParameters,
+} from '@dreamit/graphql-server-base'
+import {
     ExecutionResult,
     GraphQLError,
     GraphQLFormattedError,
@@ -9,19 +18,15 @@ import {
     validate,
     validateSchema,
 } from 'graphql'
-import {
-    GraphQLExecutionResult,
-    GraphQLRequestInfo,
-    GraphQLServerRequest,
-    GraphQLServerResponse,
-    Logger,
-    MetricsClient,
-    ResponseParameters,
-} from '@dreamit/graphql-server-base'
+import { Maybe } from 'graphql/jsutils/Maybe'
+import { ObjMap } from 'graphql/jsutils/ObjMap'
 import {
     GraphQLFieldResolver,
     GraphQLTypeResolver,
 } from 'graphql/type/definition'
+import { TypeInfo } from 'graphql/utilities/TypeInfo'
+import { ValidationRule } from 'graphql/validation/ValidationContext'
+import { Buffer } from 'node:buffer'
 import {
     GraphQLServerOptions,
     SimpleMetricsClient,
@@ -29,11 +34,6 @@ import {
     extractInformationFromRequest,
     sendResponse,
 } from '..'
-import { Buffer } from 'node:buffer'
-import { Maybe } from 'graphql/jsutils/Maybe'
-import { ObjMap } from 'graphql/jsutils/ObjMap'
-import { TypeInfo } from 'graphql/utilities/TypeInfo'
-import { ValidationRule } from 'graphql/validation/ValidationContext'
 
 export const defaultGraphqlExecutionErrorMessage =
     'While processing the request a GraphQL execution error occurred: '

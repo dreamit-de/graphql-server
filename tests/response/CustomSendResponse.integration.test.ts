@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { GraphQLServer, JsonLogger, NoStacktraceTextLogger } from '~/src'
-import {
-    INITIAL_GRAPHQL_SERVER_OPTIONS,
-    StandaloneGraphQLServerResponse,
-    sendRequest,
-} from '../TestHelpers'
+import { ResponseParameters } from '@dreamit/graphql-server-base'
+import { Buffer } from 'node:buffer'
 import { expect, test } from 'vitest'
+import { GraphQLServer, JsonLogger, NoStacktraceTextLogger } from '~/src'
 import {
     returnErrorQuery,
     userSchema,
     userSchemaResolvers,
     usersQuery,
 } from '../ExampleSchemas'
-import { Buffer } from 'node:buffer'
-import { ResponseParameters } from '@dreamit/graphql-server-base'
+import {
+    INITIAL_GRAPHQL_SERVER_OPTIONS,
+    StandaloneGraphQLServerResponse,
+    sendRequest,
+} from '../TestHelpers'
 
 const customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
 const standaloneGraphQLServerResponse = new StandaloneGraphQLServerResponse()
