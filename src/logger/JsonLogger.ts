@@ -1,3 +1,5 @@
+import { Logger } from '@dreamit/graphql-server-base'
+import { Console } from 'node:console'
 import {
     LogEntry,
     LogEntryInput,
@@ -5,8 +7,6 @@ import {
     createLogEntry,
     truncateLogMessage,
 } from '..'
-import { Console } from 'node:console'
-import { Logger } from '@dreamit/graphql-server-base'
 
 const loggerConsole: Console = new Console(
     process.stdout,

@@ -1,3 +1,4 @@
+import { GraphQLError } from 'graphql'
 import {
     LogEntry,
     LogEntryInput,
@@ -5,7 +6,6 @@ import {
     createTimestamp,
     sanitizeMessage,
 } from '..'
-import { GraphQLError } from 'graphql'
 
 export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
     const {

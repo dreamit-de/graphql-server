@@ -1,4 +1,6 @@
+import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
 import { GraphQLError, GraphQLSchema, parse, validate } from 'graphql'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import {
     GraphQLServer,
     SimpleMetricsClient,
@@ -8,7 +10,7 @@ import {
     defaultOnlyQueryInGetRequestsResponse,
     extractInformationFromRequest,
 } from '~/src'
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import { TEXT_LOGGER } from '~/tests/TestHelpers'
 import {
     initialSchemaWithOnlyDescription,
     returnErrorQuery,
@@ -18,8 +20,6 @@ import {
     userTwo,
     usersQuery,
 } from '../ExampleSchemas'
-import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
-import { TEXT_LOGGER } from '~/tests/TestHelpers'
 
 const graphQLErrorResponse: GraphQLExecutionResult = {
     executionResult: {

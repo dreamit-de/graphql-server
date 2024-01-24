@@ -11,13 +11,13 @@ import {
     VALIDATION_ERROR,
 } from '@dreamit/graphql-server-base'
 import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql'
+import { expect, test } from 'vitest'
 import {
     GraphQLServer,
     GraphQLServerOptions,
     NoMetricsClient,
     SimpleMetricsClient,
 } from '~/src'
-import { expect, test } from 'vitest'
 import {
     initialSchemaWithOnlyDescription,
     returnErrorQuery,

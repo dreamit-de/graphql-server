@@ -1,5 +1,5 @@
-import { JsonLogger, LogEntry, LogEntryInput, createLogEntry } from '..'
 import { Console } from 'node:console'
+import { JsonLogger, LogEntry, LogEntryInput, createLogEntry } from '..'
 
 export class NoStacktraceJsonLogger extends JsonLogger {
     loggerConsole: Console = new Console(process.stdout, process.stderr, false)

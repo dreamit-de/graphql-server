@@ -1,22 +1,4 @@
 import {
-    DefaultGraphQLServerOptions,
-    GraphQLServerOptions,
-    SimpleMetricsClient,
-    determineGraphQLOrFetchError,
-    determineValidationOrIntrospectionDisabledError,
-    getFirstErrorFromExecutionResult,
-    increaseFetchOrGraphQLErrorMetric,
-    isAggregateError,
-    removeValidationRecommendationsFromErrors,
-} from '..'
-import {
-    DocumentNode,
-    GraphQLError,
-    GraphQLSchema,
-    Source,
-    getOperationAST,
-} from 'graphql'
-import {
     GRAPHQL_ERROR,
     GraphQLExecutionResult,
     GraphQLRequestInfo,
@@ -30,6 +12,24 @@ import {
     SYNTAX_ERROR,
     isGraphQLServerRequest,
 } from '@dreamit/graphql-server-base'
+import {
+    DocumentNode,
+    GraphQLError,
+    GraphQLSchema,
+    Source,
+    getOperationAST,
+} from 'graphql'
+import {
+    DefaultGraphQLServerOptions,
+    GraphQLServerOptions,
+    SimpleMetricsClient,
+    determineGraphQLOrFetchError,
+    determineValidationOrIntrospectionDisabledError,
+    getFirstErrorFromExecutionResult,
+    increaseFetchOrGraphQLErrorMetric,
+    isAggregateError,
+    removeValidationRecommendationsFromErrors,
+} from '..'
 
 const requestCouldNotBeProcessed = 'Request could not be processed: '
 const defaultOptions = new DefaultGraphQLServerOptions()

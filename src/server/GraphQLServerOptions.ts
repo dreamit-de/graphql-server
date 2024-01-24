@@ -1,14 +1,4 @@
 import {
-    DocumentNode,
-    ExecutionArgs,
-    ExecutionResult,
-    GraphQLError,
-    GraphQLFormattedError,
-    GraphQLSchema,
-    ParseOptions,
-    Source,
-} from 'graphql'
-import {
     GraphQLExecutionResult,
     GraphQLRequestInfo,
     GraphQLServerRequest,
@@ -18,12 +8,22 @@ import {
     ResponseParameters,
 } from '@dreamit/graphql-server-base'
 import {
-    GraphQLFieldResolver,
-    GraphQLTypeResolver,
-} from 'graphql/type/definition'
+    DocumentNode,
+    ExecutionArgs,
+    ExecutionResult,
+    GraphQLError,
+    GraphQLFormattedError,
+    GraphQLSchema,
+    ParseOptions,
+    Source,
+} from 'graphql'
 import { Maybe } from 'graphql/jsutils/Maybe'
 import { ObjMap } from 'graphql/jsutils/ObjMap'
 import { PromiseOrValue } from 'graphql/jsutils/PromiseOrValue'
+import {
+    GraphQLFieldResolver,
+    GraphQLTypeResolver,
+} from 'graphql/type/definition'
 import { TypeInfo } from 'graphql/utilities/TypeInfo'
 import { ValidationRule } from 'graphql/validation/ValidationContext'
 
