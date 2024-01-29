@@ -13,10 +13,7 @@ export class NoLogger implements Logger {
      * @param {string} loggerName - The logger name of the logger.
      * @param {string} serviceName - The service name of the logger.
      */
-    constructor(
-        loggerName: string,
-        serviceName: string,
-    ) {
+    constructor(loggerName: string, serviceName: string) {
         this.loggerName = loggerName
         this.serviceName = serviceName
     }

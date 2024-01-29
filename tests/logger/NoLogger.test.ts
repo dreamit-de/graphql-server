@@ -11,4 +11,3 @@ test('Should be able to use NoLogger without running into errors', () => {
     expect(() => logger.info()).not.toThrowError()
     expect(() => logger.warn()).not.toThrowError()
 })
-
