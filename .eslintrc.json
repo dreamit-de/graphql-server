@@ -51,7 +51,6 @@
         "array-bracket-newline": ["error", "consistent"],
         "array-element-newline": ["error", "consistent"],
         "function-call-argument-newline": ["error", "consistent"],
-        "function-paren-newline": ["error", "consistent"],
         "newline-per-chained-call": "error",
         "object-curly-newline": [
             "error",

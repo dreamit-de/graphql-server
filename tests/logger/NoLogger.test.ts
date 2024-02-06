@@ -9,8 +9,7 @@ test('Should be able to use NoLogger without running into errors', () => {
     // Then
     expect(() => logger.debug(testMessage)).not.toThrowError()
     expect(() =>
-        logger.error(testMessage, new Error(testMessage)),
-    ).not.toThrowError()
+        logger.error(testMessage, new Error(testMessage))).not.toThrowError()
     expect(() => logger.info(testMessage)).not.toThrowError()
     expect(() => logger.warn(testMessage)).not.toThrowError()
 })
