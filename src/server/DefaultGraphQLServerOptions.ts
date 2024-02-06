@@ -93,6 +93,7 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     executionResultErrorMessage = defaultExecutionResultErrorMessage
     graphqlExecutionErrorMessage = defaultGraphqlExecutionErrorMessage
     responseEndChunkFunction = defaultResponseEndChunkFunction
+    fetchErrorMessage?: string
 }
 
 /**
