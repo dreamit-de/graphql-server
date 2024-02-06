@@ -483,7 +483,6 @@ export class GraphQLServer {
                         executionResult.errors = error.originalError.errors
                     }
 
-                    // Add customFetchMessage logic
                     const graphqlOrFetchError =
                         determineGraphQLOrFetchError(error)
                     if (
