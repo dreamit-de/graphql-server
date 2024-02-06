@@ -3,6 +3,7 @@ import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql'
 import { expect, test } from 'vitest'
 import { GraphQLServer } from '~/src'
 import {
+    fetchErrorQuery,
     introspectionQuery,
     loginRequest,
     logoutMutation,
@@ -27,7 +28,10 @@ import {
     sendRequestWithURL,
 } from '../TestHelpers'
 
-const customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
+const customGraphQLServer = new GraphQLServer({
+    ...INITIAL_GRAPHQL_SERVER_OPTIONS,
+    fetchErrorMessage: 'network.error',
+})
 const extensionTestData: Record<string, string> = {
     hello: 'world',
 }
@@ -62,6 +66,22 @@ test(
         const responseBody =
             standaloneGraphQLServerResponse.getLastResponseAsObject()
         expect(responseBody.data.users).toStrictEqual([userOne, userTwo])
+    },
+)
+
+test(
+    'Should get custom fetch error message in response' +
+        ' when using GraphQLRequestInfo',
+    async () => {
+        await customGraphQLServer.handleRequest(
+            {
+                query: fetchErrorQuery,
+            },
+            standaloneGraphQLServerResponse,
+        )
+        const responseBody =
+            standaloneGraphQLServerResponse.getLastResponseAsObject()
+        expect(responseBody.errors[0].message).toBe('network.error')
     },
 )
 

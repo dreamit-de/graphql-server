@@ -1,4 +1,5 @@
 import {
+    FETCH_ERROR,
     GRAPHQL_ERROR,
     GraphQLExecutionResult,
     GraphQLRequestInfo,
@@ -262,6 +263,7 @@ export class GraphQLServer {
             validationErrorMessage,
             executionResultErrorMessage,
             graphqlExecutionErrorMessage,
+            fetchErrorMessage,
         } = this.options
 
         // Reject requests if schema is invalid
@@ -481,10 +483,20 @@ export class GraphQLServer {
                         executionResult.errors = error.originalError.errors
                     }
 
+                    // Add customFetchMessage logic
+                    const graphqlOrFetchError =
+                        determineGraphQLOrFetchError(error)
+                    if (
+                        graphqlOrFetchError === FETCH_ERROR &&
+                        fetchErrorMessage !== undefined
+                    ) {
+                        error.message = fetchErrorMessage
+                    }
+
                     logger.error(
                         executionResultErrorMessage,
                         error,
-                        determineGraphQLOrFetchError(error),
+                        graphqlOrFetchError,
                         context,
                     )
                     increaseFetchOrGraphQLErrorMetric(

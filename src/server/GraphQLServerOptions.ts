@@ -103,4 +103,5 @@ export interface GraphQLServerOptions {
     readonly responseEndChunkFunction?: (
         executionResult: ExecutionResult | undefined,
     ) => unknown
+    readonly fetchErrorMessage?: string
 }

@@ -26,6 +26,7 @@ export const userVariables = '{"id201":"1"}'
 export const usersQuery = 'query users{ users { userId userName } }'
 export const usersQueryWithUnknownField =
     'query users{ users { userId userName hobby } }'
+export const fetchErrorQuery = 'query fetchError{ fetchError { userId } }'
 export const returnErrorQuery = 'query returnError{ returnError { userId } }'
 const loginMutation =
     'mutation login{ login(userName:"magic_man", password:"123456") { jwt } }'
@@ -57,6 +58,7 @@ export const userSchema = buildSchema(`
   }
   
   type Query {
+    fetchError: User
     returnError: User 
     users: [User]
     user(id: String!): User
@@ -82,6 +84,9 @@ export const userSchema = buildSchema(`
 `)
 
 export const userSchemaResolvers = {
+    fetchError(): User {
+        throw new GraphQLError('Request failed ETIMEDOUT connection failed', {})
+    },
     logout(): LogoutResult {
         return { result: 'Goodbye!' }
     },

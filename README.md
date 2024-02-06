@@ -389,6 +389,7 @@ the `setOptions` function of the `GraphQLServer` instance.
 ### Error messages
 
 -   **`executionResultErrorMessage:`**: Error message that is used in logging if a response contains an `errors` element.
+-   **`fetchErrorMessage:`**: If provided and not set to undefined, used as fixed error message if a FetchError occurs.
 -   **`graphqlExecutionErrorMessage:`**: Error message that is used in logging if an error is thrown when `execute` function is called.
 -   **`validationErrorMessage:`**: Error message that is used in logging if one or more errors occurred when calling the `validate` function.
 
