@@ -42,8 +42,8 @@
     "devDependencies": {
         "@types/content-type": "1.1.8",
         "@types/node": "20.11.5",
-        "@typescript-eslint/eslint-plugin": "6.20.0",
-        "@typescript-eslint/parser": "6.20.0",
+        "@typescript-eslint/eslint-plugin": "6.21.0",
+        "@typescript-eslint/parser": "6.21.0",
         "@vitest/coverage-v8": "1.2.2",
         "eslint": "8.56.0",
         "eslint-plugin-deprecation": "2.0.0",
