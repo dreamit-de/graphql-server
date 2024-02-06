@@ -13,9 +13,9 @@
         "baseUrl": ".",
         "paths": {
             "@/*": ["src/*"],
-            "~/*": ["./*"],
-        },
+            "~/*": ["./*"]
+        }
     },
     "include": ["vitest.config.js", "tsup.config.ts", "src/**/*", "tests/**/*"],
-    "exclude": ["node_modules"],
+    "exclude": ["node_modules"]
 }

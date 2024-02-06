@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Logger } from '@dreamit/graphql-server-base'
 
 /**
@@ -17,8 +18,13 @@ export class NoLogger implements Logger {
         this.loggerName = loggerName
         this.serviceName = serviceName
     }
-    debug(): void {}
-    error(): void {}
-    info(): void {}
-    warn(): void {}
+    debug(logMessage: string, context?: unknown): void {}
+    error(
+        logMessage: string,
+        error: Error,
+        customErrorName?: string,
+        context?: unknown,
+    ): void {}
+    info(logMessage: string, context?: unknown): void {}
+    warn(logMessage: string, context?: unknown): void {}
 }

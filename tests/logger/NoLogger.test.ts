@@ -4,10 +4,13 @@ import { NoLogger } from '~/src'
 
 test('Should be able to use NoLogger without running into errors', () => {
     const logger = new NoLogger('no-logger', 'no-service')
+    const testMessage = 'Test message'
 
     // Then
-    expect(() => logger.debug()).not.toThrowError()
-    expect(() => logger.error()).not.toThrowError()
-    expect(() => logger.info()).not.toThrowError()
-    expect(() => logger.warn()).not.toThrowError()
+    expect(() => logger.debug(testMessage)).not.toThrowError()
+    expect(() =>
+        logger.error(testMessage, new Error(testMessage)),
+    ).not.toThrowError()
+    expect(() => logger.info(testMessage)).not.toThrowError()
+    expect(() => logger.warn(testMessage)).not.toThrowError()
 })
