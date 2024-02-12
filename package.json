@@ -52,7 +52,7 @@
         "eslint-plugin-unicorn": "51.0.1",
         "prettier": "3.2.5",
         "prettier-plugin-organize-imports": "3.2.4",
-        "tsup": "8.0.1",
+        "tsup": "8.0.2",
         "typescript": "5.3.3",
         "vite-tsconfig-paths": "4.3.1",
         "vitest": "1.2.2"
