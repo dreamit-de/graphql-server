@@ -135,6 +135,7 @@ export class GraphQLServer {
         response?: GraphQLServerResponse,
     ): Promise<GraphQLExecutionResult> {
         const {
+            adjustGraphQLExecutionResult,
             contextFunction,
             formatErrorFunction,
             logger,
@@ -152,33 +153,58 @@ export class GraphQLServer {
         const requestInformation = isGraphQLServerRequest(request)
             ? this.getRequestInformation(request, context)
             : request
-        if ('executionResult' in requestInformation) {
-            const result = {
+        if (
+            isGraphQLServerRequest(request) &&
+            'executionResult' in requestInformation
+        ) {
+            let result: GraphQLExecutionResult = {
                 customHeaders: requestInformation.customHeaders,
                 executionResult: requestInformation.executionResult,
                 statusCode: requestInformation.statusCode,
             }
+
+            if (adjustGraphQLExecutionResult) {
+                result = adjustGraphQLExecutionResult({
+                    context,
+                    executionResult: result,
+                    formatErrorFunction,
+                    logger,
+                    request: request,
+                })
+            }
+
             if (response && isGraphQLServerRequest(request)) {
                 sendResponse({
                     context,
-                    customHeaders: requestInformation.customHeaders,
-                    executionResult: requestInformation.executionResult,
+                    customHeaders: result.customHeaders,
+                    executionResult: result.executionResult,
                     formatErrorFunction,
                     logger,
                     request,
                     response,
                     responseEndChunkFunction,
-                    statusCode: requestInformation.statusCode,
+                    statusCode: result.statusCode,
                 })
             }
             return result
         }
 
-        const result = await this.executeRequestWithInfo(
-            requestInformation,
+        let result = await this.executeRequestWithInfo(
+            requestInformation as GraphQLRequestInfo,
             context,
             isGraphQLServerRequest(request) ? request.method : undefined,
         )
+
+        if (adjustGraphQLExecutionResult) {
+            result = adjustGraphQLExecutionResult({
+                context,
+                executionResult: result,
+                formatErrorFunction,
+                logger,
+                request: isGraphQLServerRequest(request) ? request : undefined,
+            })
+        }
+
         if (response) {
             sendResponse({
                 context,

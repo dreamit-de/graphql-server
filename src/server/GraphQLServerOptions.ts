@@ -26,6 +26,7 @@ import {
 } from 'graphql/type/definition'
 import { TypeInfo } from 'graphql/utilities/TypeInfo'
 import { ValidationRule } from 'graphql/validation/ValidationContext'
+import { StandaloneResponseParameters } from '..'
 
 /**
  * Interface for creating new GraphQLServer instances.
@@ -104,4 +105,7 @@ export interface GraphQLServerOptions {
         executionResult: ExecutionResult | undefined,
     ) => unknown
     readonly fetchErrorMessage?: string
+    readonly adjustGraphQLExecutionResult?: (
+        parameters: StandaloneResponseParameters,
+    ) => GraphQLExecutionResult
 }
