@@ -196,13 +196,6 @@ export class GraphQLServer {
         )
 
         if (adjustGraphQLExecutionResult) {
-            logger.info(
-                'Treffer!' +
-                    String(isGraphQLServerRequest(request)) +
-                    '___' +
-                    JSON.stringify(result),
-            )
-
             result = adjustGraphQLExecutionResult({
                 context,
                 executionResult: result,
