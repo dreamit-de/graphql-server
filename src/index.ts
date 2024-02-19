@@ -32,6 +32,7 @@ export * from './request/GetContentType'
 
 export * from './response/GraphQLExecutionResult'
 export * from './response/SendResponse'
+export * from './response/StandaloneResponseParameters'
 
 export * from './server/DefaultGraphQLServerOptions'
 export * from './server/GraphQLServer'

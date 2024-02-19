@@ -30,6 +30,7 @@ import { Buffer } from 'node:buffer'
 import {
     GraphQLServerOptions,
     SimpleMetricsClient,
+    StandaloneResponseParameters,
     TextLogger,
     extractInformationFromRequest,
     sendResponse,
@@ -94,6 +95,9 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     graphqlExecutionErrorMessage = defaultGraphqlExecutionErrorMessage
     responseEndChunkFunction = defaultResponseEndChunkFunction
     fetchErrorMessage?: string
+    adjustGraphQLExecutionResult?: (
+        parameters: StandaloneResponseParameters,
+    ) => GraphQLExecutionResult
 }
 
 /**

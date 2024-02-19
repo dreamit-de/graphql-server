@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
 import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql'
 import { expect, test } from 'vitest'
-import { GraphQLServer } from '~/src'
+import { GraphQLServer, StandaloneResponseParameters } from '~/src'
 import {
     fetchErrorQuery,
     introspectionQuery,
@@ -527,6 +528,43 @@ test(
     },
 )
 
+test('Should adjust error response if adjustGraphQLExecutionResult is provided', async () => {
+    customGraphQLServer.setOptions({
+        adjustGraphQLExecutionResult: (
+            parameters: StandaloneResponseParameters,
+        ): GraphQLExecutionResult => {
+            const result = parameters.executionResult
+            if (result && result.executionResult) {
+                result.executionResult = {
+                    data: { message: 'test' },
+                }
+            }
+            return (
+                result ?? {
+                    executionResult: {
+                        errors: [new GraphQLError('No result', {})],
+                    },
+                }
+            )
+        },
+        customValidationRules: [NoSchemaIntrospectionCustomRule],
+        logger: LOGGER,
+        removeValidationRecommendations: true,
+        rootValue: userSchemaResolvers,
+        schema: userSchema,
+    })
+    await sendRequest(
+        customGraphQLServer,
+        standaloneGraphQLServerResponse,
+        'doesnotmatter',
+        'PUT',
+    )
+    const responseBody =
+        standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(responseBody.data.message).toBe('test')
+    customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
+})
+
 test(
     'Should get error response if query with unknown field is executed ' +
         'and no custom validation rule is set',
@@ -600,3 +638,39 @@ test(
         customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
     },
 )
+
+test('Should adjust data response if adjustGraphQLExecutionResult is provided', async () => {
+    customGraphQLServer.setOptions({
+        adjustGraphQLExecutionResult: (
+            parameters: StandaloneResponseParameters,
+        ): GraphQLExecutionResult => {
+            const result = parameters.executionResult
+            if (result && result.executionResult) {
+                result.executionResult = {
+                    data: { message: 'test' },
+                }
+            }
+            return (
+                result ?? {
+                    executionResult: {
+                        errors: [new GraphQLError('No result', {})],
+                    },
+                }
+            )
+        },
+        logger: LOGGER,
+        removeValidationRecommendations: false,
+        rootValue: userSchemaResolvers,
+        schema: userSchema,
+    })
+    await sendRequest(
+        customGraphQLServer,
+        standaloneGraphQLServerResponse,
+        `{"query":"${userQuery}", "variables":${userVariables}}`,
+    )
+    const responseBody =
+        standaloneGraphQLServerResponse.getLastResponseAsObject()
+
+    expect(responseBody.data.message).toBe('test')
+    customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
+})

@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
 import { GraphQLError, GraphQLSchema, parse, validate } from 'graphql'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import {
     GraphQLServer,
     SimpleMetricsClient,
+    StandaloneResponseParameters,
     defaultCollectErrorMetrics,
     defaultContextFunction,
     defaultMethodNotAllowedResponse,
@@ -13,6 +15,7 @@ import {
 import { TEXT_LOGGER } from '~/tests/TestHelpers'
 import {
     initialSchemaWithOnlyDescription,
+    loginMutation,
     returnErrorQuery,
     userOne,
     userSchema,
@@ -207,6 +210,44 @@ test('Should set only default options if no options are provided', async () => {
     const graphqlServer = new GraphQLServer()
     const metrics = await graphqlServer.getMetrics()
     expect(metrics).toContain('graphql_server_availability 0')
+})
+
+test('Should adjust execution result with data from mutation context info', async () => {
+    const graphqlServer = new GraphQLServer({
+        adjustGraphQLExecutionResult: (
+            parameters: StandaloneResponseParameters,
+        ): GraphQLExecutionResult => {
+            const result = parameters.executionResult
+            const contextRecord = parameters.context as Record<string, unknown>
+            if (result && contextRecord.jwt) {
+                result.customHeaders = { 'x-jwt': String(contextRecord.jwt) }
+            }
+            return (
+                result ?? {
+                    executionResult: {
+                        errors: [new GraphQLError('No result', {})],
+                    },
+                }
+            )
+        },
+
+        collectErrorMetricsFunction: defaultCollectErrorMetrics,
+        contextFunction: (): unknown => ({ authHeader: '123456789' }),
+        extractInformationFromRequest: extractInformationFromRequest,
+        logger: TEXT_LOGGER,
+        metricsClient: new SimpleMetricsClient(),
+        parseFunction: parse,
+        rootValue: userSchemaResolvers,
+        schema: userSchema,
+        validateFunction: validate,
+    })
+    const result = await graphqlServer.handleRequest({
+        query: loginMutation,
+    })
+    expect(result.executionResult.data?.login).toEqual({ jwt: 'jwt-123456789' })
+    expect(result.customHeaders).toEqual({ 'x-jwt': 'jwt-123456789' })
+    expect(result.statusCode).toBe(200)
+    expect(result.requestInformation?.query).toBe(loginMutation)
 })
 
 function expectRootQueryNotDefined(graphqlServer: GraphQLServer): void {
