@@ -269,17 +269,18 @@ functionality provided by the webserver.
 
 | Framework/Module | Version |       Mapping        |                                             Example                                             |
 | ---------------- | :-----: | :------------------: | :---------------------------------------------------------------------------------------------: |
-| [AdonisJS][6]    |   5.9   |  request, response   |  [AdonisJS example](https://github.com/dreamit-de/adonisjs-example/blob/main/start/routes.ts)   |
+| [AdonisJS][6]    |   6.3   |  request, response   |  [AdonisJS example](https://github.com/dreamit-de/adonisjs-example/blob/main/start/routes.ts)   |
 | [Express][2]     | > = 2.x |         none         |     [Express example](https://github.com/dreamit-de/express-example/blob/main/src/index.ts)     |
-| [fastify][4]     |  4.15   |       response       |     [Fastify example](https://github.com/dreamit-de/fastify-example/blob/main/src/index.ts)     |
-| [hapi][10]       | 21.3.1  | request, no response |        [hapi example](https://github.com/dreamit-de/hapi-example/blob/main/src/index.ts)        |
-| [Koa][5]         | 2.14.1  |       response       |         [Koa example](https://github.com/dreamit-de/koa-example/blob/main/src/index.ts)         |
-| [Next.js][7]     | 13.1.6  |         none         | [Next.js example](https://github.com/dreamit-de/nextjs-example/blob/main/pages/api/graphql.ts)  |
-| [Nitro][8]       |  2.3.3  |       request        |  [Nitro example](https://github.com/dreamit-de/nitro-example/blob/main/routes/graphql.post.ts)  |
-| [NodeJS http][9] |  18.14  |       request        | [NodeJS http example](https://github.com/dreamit-de/nodejs-http-example/blob/main/src/index.ts) |
-| [Socket.IO][13]  |  4.6.1  |       response       |   [Socket.IO example](https://github.com/dreamit-de/socketio-example/blob/main/src/index.ts)    |
+| [fastify][4]     |  4.23   |       response       |     [Fastify example](https://github.com/dreamit-de/fastify-example/blob/main/src/index.ts)     |
+| [hapi][10]       | 21.3.7  | request, no response |        [hapi example](https://github.com/dreamit-de/hapi-example/blob/main/src/index.ts)        |
+| [Koa][5]         | 2.15.2  |       response       |         [Koa example](https://github.com/dreamit-de/koa-example/blob/main/src/index.ts)         |
+| [Next.js][7]     | 14.1.4  |         none         | [Next.js example](https://github.com/dreamit-de/nextjs-example/blob/main/pages/api/graphql.ts)  |
+| [Nitro][8]       |  4.9.5  |       request        |  [Nitro example](https://github.com/dreamit-de/nitro-example/blob/main/routes/graphql.post.ts)  |
+| [NodeJS http][9] |  20.x   |       request        | [NodeJS http example](https://github.com/dreamit-de/nodejs-http-example/blob/main/src/index.ts) |
+| [Socket.IO][13]  |  4.7.5  |       response       |   [Socket.IO example](https://github.com/dreamit-de/socketio-example/blob/main/src/index.ts)    |
 | [gRPC][14]       | 1.8.14  |     no response      |      [gRPC example](https://github.com/dreamit-de/grpc-server-example/blob/main/server.js)      |
-| [Deno][15]       | 0.181.0 | request, no response |     [Deno HTTP example](https://github.com/dreamit-de/deno-graphql/blob/main/webserver.ts)      |
+| [Deno][15]       | 1.42.1  | request, no response |     [Deno HTTP example](https://github.com/dreamit-de/deno-graphql/blob/main/webserver.ts)      |
+| [Bun][16]        |  1.1.0  | request, no response |         [Bun example](https://github.com/dreamit-de/bun-example/blob/main/webserver.ts)         |
 
 **`GraphQLServerRequest` and `GraphQLServerResponse` interfaces**
 
@@ -458,3 +459,4 @@ graphql-server is under [MIT-License](./LICENSE).
 [13]: https://socket.io/
 [14]: https://grpc.io/
 [15]: https://deno.land/
+[16]: https://bun.sh/
