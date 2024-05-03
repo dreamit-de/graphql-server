@@ -19,4 +19,4 @@ jobs:
       - name: Run build
         run: npm run build
       - name: Run mutation tests
-        run: npm run mutationTest
+        run: npm run mutationtest
