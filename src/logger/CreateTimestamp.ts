@@ -1,3 +1,3 @@
-export function createTimestamp(): string {
-    return new Date().toISOString()
+export function createTimestamp(date = new Date()): string {
+    return date.toISOString()
 }

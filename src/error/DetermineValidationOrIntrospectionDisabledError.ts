@@ -14,7 +14,6 @@ export function determineValidationOrIntrospectionDisabledError(
     error: unknown,
 ): string {
     return error instanceof Error &&
-        error.message &&
         ((error.message.includes('introspection') &&
             error.message.includes('disabled')) ||
             error.message.includes('__Directive'))

@@ -122,9 +122,9 @@ export function defaultContextFunction(contextParameters: {
     response?: GraphQLServerResponse
 }): unknown {
     const { serverOptions, request, response } = contextParameters
-
-    if (serverOptions.logger) {
-        serverOptions.logger.debug(
+    const logger = serverOptions.logger
+    if (logger) {
+        logger.debug(
             'Calling defaultRequestResponseContextFunction with ' +
                 `request ${request} and response ${response}`,
             request,
@@ -148,9 +148,9 @@ export function defaultExtensions(extensionParameters: {
 }): ObjMap<unknown> | undefined {
     const { requestInformation, executionResult, serverOptions, context } =
         extensionParameters
-
-    if (serverOptions.logger) {
-        serverOptions.logger.debug(
+    const logger = serverOptions.logger
+    if (logger) {
+        logger.debug(
             `Calling defaultExtensions for requestInfo ${JSON.stringify(requestInformation)}` +
                 ` and executionResult ${JSON.stringify(executionResult)}`,
             context,
@@ -171,15 +171,15 @@ export function defaultCollectErrorMetrics(errorParameters: {
     context?: unknown
 }): void {
     const { errorName, error, serverOptions, context } = errorParameters
-
-    if (serverOptions.logger) {
-        serverOptions.logger.debug(
+    const { logger, metricsClient } = serverOptions
+    if (logger) {
+        logger.debug(
             `Calling defaultCollectErrorMetrics with error ${error} and errorName ${errorName}`,
             context,
         )
     }
-    if (serverOptions.metricsClient) {
-        serverOptions.metricsClient.increaseErrors(errorName, context)
+    if (metricsClient) {
+        metricsClient.increaseErrors(errorName, context)
     }
 }
 

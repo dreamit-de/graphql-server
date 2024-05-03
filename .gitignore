@@ -5,3 +5,6 @@
 /coverage/
 /build/
 *.tgz
+# stryker temp files
+.stryker-tmp
+/reports/

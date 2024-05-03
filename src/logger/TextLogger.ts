@@ -13,9 +13,9 @@ import {
 export class TextLogger implements Logger {
     loggerName: string
     serviceName: string
-    debugEnabled = false
-    truncateLimit = 0
-    truncatedText = '_TRUNCATED_'
+    debugEnabled: boolean
+    truncateLimit: number
+    truncatedText: string
 
     /**
      * Creates a new instance of Logger.
@@ -33,9 +33,9 @@ export class TextLogger implements Logger {
     constructor(
         loggerName: string,
         serviceName: string,
-        debugEnabled = false,
-        truncateLimit = 0,
-        truncatedText = '_TRUNCATED_',
+        debugEnabled: boolean = false,
+        truncateLimit: number = 0,
+        truncatedText: string = '_TRUNCATED_',
     ) {
         this.loggerName = loggerName
         this.serviceName = serviceName

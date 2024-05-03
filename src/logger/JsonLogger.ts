@@ -19,11 +19,11 @@ const loggerConsole: Console = new Console(
  * Can be useful for log aggregation tools.
  */
 export class JsonLogger implements Logger {
-    loggerName = 'test'
-    debugEnabled = false
+    loggerName: string
+    debugEnabled: boolean
     serviceName: string
-    truncateLimit = 0
-    truncatedText = '_TRUNCATED_'
+    truncateLimit: number
+    truncatedText: string
 
     /**
      * Creates a new instance of Logger.

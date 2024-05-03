@@ -11,15 +11,16 @@ export function increaseFetchOrGraphQLErrorMetric(
     serverOptions: GraphQLServerOptions,
     context: unknown,
 ): void {
-    if (serverOptions.logger) {
-        serverOptions.logger.debug(
+    const { collectErrorMetricsFunction, logger } = serverOptions
+    if (logger) {
+        logger.debug(
             'Calling increaseFetchOrGraphQLErrorMetric' +
                 ` with error ${error} and errorIsFetch ${error instanceof Error}`,
             context,
         )
     }
-    if (serverOptions.collectErrorMetricsFunction) {
-        serverOptions.collectErrorMetricsFunction({
+    if (collectErrorMetricsFunction) {
+        collectErrorMetricsFunction({
             context,
             error,
             errorName: determineGraphQLOrFetchError(error),
