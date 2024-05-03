@@ -4,6 +4,7 @@ import { NoLogger } from '~/src'
 
 test('Should be able to use NoLogger without running into errors', () => {
     const logger = new NoLogger('no-logger', 'no-service')
+    expect(logger.debugEnabled).toBe(false)
     const testMessage = 'Test message'
 
     // Then

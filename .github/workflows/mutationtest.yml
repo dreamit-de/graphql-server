@@ -1,0 +1,22 @@
+name: Run mutation tests
+on: workflow_dispatch
+
+jobs:
+  mutationtest:
+    name: Check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Run build
+        run: npm run build
+      - name: Run mutation tests
+        run: npm run mutationTest

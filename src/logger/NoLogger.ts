@@ -7,7 +7,7 @@ import { Logger } from '@dreamit/graphql-server-base'
 export class NoLogger implements Logger {
     loggerName: string
     serviceName: string
-    debugEnabled = false
+    debugEnabled: boolean
 
     /**
      * Creates a new instance of Logger.
@@ -17,6 +17,7 @@ export class NoLogger implements Logger {
     constructor(loggerName: string, serviceName: string) {
         this.loggerName = loggerName
         this.serviceName = serviceName
+        this.debugEnabled = false
     }
     debug(logMessage: string, context?: unknown): void {}
     error(

@@ -1,6 +1,6 @@
 {
     "name": "@dreamit/graphql-server",
-    "version": "4.8.1",
+    "version": "4.8.2",
     "description": "A GraphQL server written in NodeJS/Typescript.",
     "scripts": {
         "build": "tsup-node",
@@ -9,6 +9,7 @@
         "format": "prettier --cache --write .",
         "lint": "eslint src/*.ts src/**/*.ts tests/*.ts tests/**/*.ts",
         "lintfix": "eslint --fix src/*.ts src/**/*.ts tests/*.ts tests/**/*.ts",
+        "mutationtest": "stryker run",
         "prepack": "npm run build",
         "test": "vitest run --coverage"
     },
@@ -40,6 +41,8 @@
     },
     "homepage": "https://github.com/dreamit-de/graphql-server#readme",
     "devDependencies": {
+        "@sgohlke/stryker-log-ignorer": "2.0.2",
+        "@stryker-mutator/vitest-runner": "8.2.6",
         "@types/content-type": "1.1.8",
         "@types/node": "20.11.5",
         "@vitest/coverage-v8": "1.5.3",
