@@ -16,9 +16,9 @@ class FetchError extends Error {
 const customerMessage = '`CustomerPayload` is an extension type'
 const customerQuery = '{\n  customer {\n    dateOfBirth\n  }\n}'
 const messageWithVariables =
-    'Variable \\"$login\\" got invalid value' +
-    ' { email: \\"max@mustermann.de\\", password: \\"12345678\\", abc: \\"def\\" }' +
-    '; Field \\"abc\\" is not defined by type LoginInput.'
+    String.raw`Variable \"$login\" got invalid value` +
+    String.raw` { email: \"max@mustermann.de\", password: \"12345678\", abc: \"def\" }` +
+    String.raw`; Field \"abc\" is not defined by type LoginInput.`
 
 const graphQLError: GraphQLError = new GraphQLError(customerMessage, {
     extensions: {
@@ -100,8 +100,7 @@ const graphQLErrorMessage = 'A GraphQLError message ' + customerMessage
 const fetchErrorMessage =
     'A FetchError message ' +
     'An error occurred while connecting to following endpoint'
-const sanitizedMessage =
-    'Variable \\"$login\\" got invalid value REMOVED BY SANITIZER; Field \\"abc\\" is not defined by type LoginInput.'
+const sanitizedMessage = String.raw`Variable \"$login\" got invalid value REMOVED BY SANITIZER; Field \"abc\" is not defined by type LoginInput.`
 const errorWithVariables = 'A GraphQLError message ' + sanitizedMessage
 
 test.each`
