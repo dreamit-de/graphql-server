@@ -100,8 +100,7 @@ const graphQLErrorMessage = 'A GraphQLError message ' + customerMessage
 const fetchErrorMessage =
     'A FetchError message ' +
     'An error occurred while connecting to following endpoint'
-const sanitizedMessage =
-    String.raw`Variable \"$login\" got invalid value REMOVED BY SANITIZER; Field \"abc\" is not defined by type LoginInput.`
+const sanitizedMessage = String.raw`Variable \"$login\" got invalid value REMOVED BY SANITIZER; Field \"abc\" is not defined by type LoginInput.`
 const errorWithVariables = 'A GraphQLError message ' + sanitizedMessage
 
 test.each`
