@@ -96,6 +96,10 @@ const fetchError = new FetchError(
     'system',
 )
 
+const errorWithoutStacktrace = new Error('error')
+errorWithoutStacktrace.stack = undefined
+const errorMessage = 'A GraphQLError message error'
+
 const graphQLErrorMessage = 'A GraphQLError message ' + customerMessage
 const fetchErrorMessage =
     'A FetchError message ' +
@@ -115,6 +119,7 @@ test.each`
     ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLErrorWithAstNode}            | ${graphQLErrorMessage} | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
     ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLErrorWithSensibleStacktrace} | ${graphQLErrorMessage} | ${'WARN'}        | ${sanitizedMessage}       | ${'customer'} | ${'customer'}
     ${'A GraphQLError message'} | ${LogLevel.error} | ${errorWithSensibleStackInformation}  | ${graphQLErrorMessage} | ${'ERROR'}       | ${sanitizedMessage}       | ${undefined}  | ${'myTestService'}
+    ${'A GraphQLError message'} | ${LogLevel.error} | ${errorWithoutStacktrace}             | ${errorMessage}        | ${'ERROR'}       | ${undefined}              | ${undefined}  | ${'myTestService'}
 `(
     'expects a correct logEntry is created for given $logMessage , $loglevel and $error ',
     ({

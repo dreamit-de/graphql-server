@@ -1,4 +1,6 @@
+import { DateFunction } from '@dreamit/funpara'
 import { Logger } from '@dreamit/graphql-server-base'
+import { Console } from 'node:console'
 import {
     LogEntry,
     LogEntryInput,
@@ -16,6 +18,7 @@ export class TextLogger implements Logger {
     debugEnabled: boolean
     truncateLimit: number
     truncatedText: string
+    loggerConsole: Console
 
     /**
      * Creates a new instance of Logger.
@@ -29,6 +32,7 @@ export class TextLogger implements Logger {
      * @param {number} truncateLimit - The length of the message before the message gets truncated.
      * Default: undefined/0 (off).
      * @param {string} truncatedText - The text to display if a message is truncated.
+     * @param {Console} loggerConsole - The Console to use for logging
      */
     constructor(
         loggerName: string,
@@ -36,18 +40,25 @@ export class TextLogger implements Logger {
         debugEnabled: boolean = false,
         truncateLimit: number = 0,
         truncatedText: string = '_TRUNCATED_',
+        loggerConsole = new Console(process.stdout, process.stderr),
     ) {
         this.loggerName = loggerName
         this.serviceName = serviceName
         this.debugEnabled = debugEnabled
         this.truncateLimit = truncateLimit
         this.truncatedText = truncatedText
+        this.loggerConsole = loggerConsole
     }
 
-    debug(logMessage: string, context?: unknown): void {
+    debug(
+        logMessage: string,
+        context?: unknown,
+        dateFunction?: DateFunction,
+    ): void {
         if (this.debugEnabled) {
             this.logMessage({
                 context,
+                dateFunction,
                 logMessage,
                 loglevel: LogLevel.debug,
             })
@@ -59,27 +70,39 @@ export class TextLogger implements Logger {
         error: Error,
         customErrorName: string,
         context?: unknown,
+        dateFunction?: DateFunction,
     ): void {
         this.logMessage({
             context,
             customErrorName,
+            dateFunction,
             error,
             logMessage,
             loglevel: LogLevel.error,
         })
     }
 
-    info(logMessage: string, context?: unknown): void {
+    info(
+        logMessage: string,
+        context?: unknown,
+        dateFunction?: DateFunction,
+    ): void {
         this.logMessage({
             context,
+            dateFunction,
             logMessage,
             loglevel: LogLevel.info,
         })
     }
 
-    warn(logMessage: string, context?: unknown): void {
+    warn(
+        logMessage: string,
+        context?: unknown,
+        dateFunction?: DateFunction,
+    ): void {
         this.logMessage({
             context,
+            dateFunction,
             logMessage,
             loglevel: LogLevel.warn,
         })
@@ -87,6 +110,7 @@ export class TextLogger implements Logger {
 
     logMessage(logEntryInput: LogEntryInput): void {
         const {
+            dateFunction,
             logMessage,
             loglevel: loglevel,
             error,
@@ -97,6 +121,7 @@ export class TextLogger implements Logger {
         const logEntry: LogEntry = createLogEntry({
             context,
             customErrorName,
+            dateFunction,
             error,
             logMessage,
             loggerName: this.loggerName,
@@ -111,7 +136,7 @@ export class TextLogger implements Logger {
             ),
             context,
         )
-        console.log(`${loglevel?.toUpperCase()} - ${logOutput}`)
+        this.loggerConsole.log(`${loglevel?.toUpperCase()} - ${logOutput}`)
     }
 
     /**
@@ -125,7 +150,8 @@ export class TextLogger implements Logger {
         return (
             `${logEntry.timestamp} [${logEntry.level.toUpperCase()}]` +
             `${this.loggerName}-${this.serviceName} :` +
-            `${logEntry.message} ${logEntry.stacktrace || ''}`
+            logEntry.message +
+            (logEntry.stacktrace ? ` ${logEntry.stacktrace}` : '')
         )
     }
 }

@@ -1,3 +1,4 @@
+import { DateFunction } from '@dreamit/funpara'
 import { Logger } from '@dreamit/graphql-server-base'
 import { Console } from 'node:console'
 import {
@@ -7,12 +8,6 @@ import {
     createLogEntry,
     truncateLogMessage,
 } from '..'
-
-const loggerConsole: Console = new Console(
-    process.stdout,
-    process.stderr,
-    false,
-)
 
 /**
  * Logger implementation that outputs log entries as JSON text to console.
@@ -24,6 +19,7 @@ export class JsonLogger implements Logger {
     serviceName: string
     truncateLimit: number
     truncatedText: string
+    loggerConsole: Console
 
     /**
      * Creates a new instance of Logger.
@@ -37,6 +33,7 @@ export class JsonLogger implements Logger {
      * @param {number} truncateLimit - The length of the message before the message gets truncated.
      * Default: undefined/0 (off).
      * @param {string} truncatedText - The text to display if a message is truncated.
+     * @param {Console} loggerConsole - The Console to use for logging
      */
     constructor(
         loggerName: string,
@@ -44,17 +41,28 @@ export class JsonLogger implements Logger {
         debugEnabled = false,
         truncateLimit = 0,
         truncatedText = '_TRUNCATED_',
+        loggerConsole = new Console(process.stdout, process.stderr),
     ) {
         this.loggerName = loggerName
         this.serviceName = serviceName
         this.debugEnabled = debugEnabled
         this.truncateLimit = truncateLimit
         this.truncatedText = truncatedText
+        this.loggerConsole = loggerConsole
     }
 
-    debug(logMessage: string, context?: unknown): void {
+    debug(
+        logMessage: string,
+        context?: unknown,
+        dateFunction?: DateFunction,
+    ): void {
         if (this.debugEnabled) {
-            this.logMessage({ context, logMessage, loglevel: LogLevel.debug })
+            this.logMessage({
+                context,
+                dateFunction,
+                logMessage,
+                loglevel: LogLevel.debug,
+            })
         }
     }
 
@@ -63,38 +71,65 @@ export class JsonLogger implements Logger {
         error: Error,
         customErrorName: string,
         context?: unknown,
+        dateFunction?: DateFunction,
     ): void {
         this.logMessage({
             context,
             customErrorName,
+            dateFunction,
             error,
             logMessage,
             loglevel: LogLevel.error,
         })
     }
 
-    info(logMessage: string, context?: unknown): void {
-        this.logMessage({ context, logMessage, loglevel: LogLevel.info })
+    info(
+        logMessage: string,
+        context?: unknown,
+        dateFunction?: DateFunction,
+    ): void {
+        this.logMessage({
+            context,
+            dateFunction,
+            logMessage,
+            loglevel: LogLevel.info,
+        })
     }
 
-    warn(logMessage: string, context?: unknown): void {
-        this.logMessage({ context, logMessage, loglevel: LogLevel.warn })
+    warn(
+        logMessage: string,
+        context?: unknown,
+        dateFunction?: DateFunction,
+    ): void {
+        this.logMessage({
+            context,
+            dateFunction,
+            logMessage,
+            loglevel: LogLevel.warn,
+        })
     }
 
     logMessage(logEntryInput: LogEntryInput): void {
-        const { logMessage, loglevel, error, customErrorName, context } =
-            logEntryInput
+        const {
+            dateFunction,
+            logMessage,
+            loglevel,
+            error,
+            customErrorName,
+            context,
+        } = logEntryInput
 
         const logEntry: LogEntry = createLogEntry({
             context,
             customErrorName,
+            dateFunction,
             error,
             logMessage,
             loggerName: this.loggerName,
             loglevel,
             serviceName: this.serviceName,
         })
-        loggerConsole.log(
+        this.loggerConsole.log(
             JSON.stringify(
                 truncateLogMessage(
                     logEntry,

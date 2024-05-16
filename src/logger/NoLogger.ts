@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { DateFunction } from '@dreamit/funpara'
 import { Logger } from '@dreamit/graphql-server-base'
 
 /**
@@ -19,13 +20,26 @@ export class NoLogger implements Logger {
         this.serviceName = serviceName
         this.debugEnabled = false
     }
-    debug(logMessage: string, context?: unknown): void {}
+    debug(
+        logMessage: string,
+        context?: unknown,
+        dateFunction?: DateFunction,
+    ): void {}
     error(
         logMessage: string,
         error: Error,
         customErrorName?: string,
         context?: unknown,
+        dateFunction?: DateFunction,
     ): void {}
-    info(logMessage: string, context?: unknown): void {}
-    warn(logMessage: string, context?: unknown): void {}
+    info(
+        logMessage: string,
+        context?: unknown,
+        dateFunction?: DateFunction,
+    ): void {}
+    warn(
+        logMessage: string,
+        context?: unknown,
+        dateFunction?: DateFunction,
+    ): void {}
 }

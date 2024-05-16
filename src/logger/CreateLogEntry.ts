@@ -3,12 +3,13 @@ import {
     LogEntry,
     LogEntryInput,
     LogLevel,
-    createTimestamp,
+    createISOTimestamp,
     sanitizeMessage,
 } from '..'
 
 export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
     const {
+        dateFunction,
         loggerName,
         logMessage,
         loglevel,
@@ -23,7 +24,7 @@ export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
         logger: loggerName ?? 'fallback-logger',
         message: sanitizeMessage(logMessage),
         serviceName: serviceName ?? 'fallback-service',
-        timestamp: createTimestamp(),
+        timestamp: createISOTimestamp(dateFunction),
     }
 
     // If there is a serviceName in the context, use it as serviceName for the LogEntry
