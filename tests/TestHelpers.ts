@@ -43,7 +43,7 @@ export class StandaloneGraphQLServerResponse implements GraphQLServerResponse {
     }
 }
 
-const JSON_CT_HEADER: IncomingHttpHeaders = {
+export const JSON_CT_HEADER: IncomingHttpHeaders = {
     'content-type': 'application/json',
 }
 export const LOGGER = new NoStacktraceJsonLogger(

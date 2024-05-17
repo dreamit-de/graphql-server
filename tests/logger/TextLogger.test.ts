@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import { Console } from 'node:console'
 import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest'
 import { TextLogger } from '~/src'
 
@@ -9,8 +10,9 @@ class NoLoglevelTextLogger extends TextLogger {
 }
 
 describe('Test TextLogger.logMessage with no given loglevel', () => {
+    const loggerConsole = new Console(process.stdout, process.stderr, false)
     beforeAll(() => {
-        vi.spyOn(console, 'log')
+        vi.spyOn(loggerConsole, 'log')
     })
 
     afterAll(() => {
@@ -18,13 +20,20 @@ describe('Test TextLogger.logMessage with no given loglevel', () => {
     })
 
     test('logMessage should work even if no loglevel is provided', () => {
-        new NoLoglevelTextLogger('test-logger', 'test-service').logMessage({
+        new NoLoglevelTextLogger(
+            'test-logger',
+            'test-service',
+            undefined,
+            undefined,
+            undefined,
+            loggerConsole,
+        ).logMessage({
             context: undefined,
             logMessage: 'test',
         })
         // Then
-        expect(console.log).toHaveBeenCalledTimes(1)
-        expect(console.log).toHaveBeenLastCalledWith(
+        expect(loggerConsole.log).toHaveBeenCalledTimes(1)
+        expect(loggerConsole.log).toHaveBeenLastCalledWith(
             'undefined - doesnotmatter',
         )
     })
