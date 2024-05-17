@@ -22,7 +22,7 @@ on them.
 | ------------------ | :--------------------: | :-------------------------: | :-------------: | :----------------------------------------------------------------------------------------: | ------------------ |
 | ~~^15.2.0~~        |        ~~1.x~~         |          ~~n.a.~~           |    ~~n.a.~~     | [~~legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15) | end of life        |
 | ~~^16.0.0~~        |        ~~2.x~~         |          ~~n.a.~~           |    ~~n.a.~~     | [~~legacy-server-v2~~](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2) | end of life        |
-| ^16.0.0            |          3.x           |           ^1.0.1            |    ~~n.a.~~     |   [legacy-server-v3](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v3)   | maintenance        |
+| ^16.0.0            |          3.x           |           ^1.0.1            |      n.a.       |   [legacy-server-v3](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v3)   | maintenance        |
 | ^16.0.0            |          4.x           |            ^2.0             |      ^1.0       |                    [main](https://github.com/dreamit-de/graphql-server)                    | active             |
 
 ## Features
