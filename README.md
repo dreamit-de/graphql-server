@@ -13,17 +13,17 @@ TypeScript declarations are provided within the project.
 
 ## Compatibility
 
-The following table shows which version of [graphql-js][1] and [@dreamit/graphql-server-base][12] are compatible with which version of
+The following table shows which version of [graphql-js][1], [@dreamit/graphql-server-base][12] and [@dreamit/funpara][17] are compatible with which version of
 `@dreamit/graphql-server`. As `@dreamit/graphql-server` defines them as peerDependency you might want to
 choose a fitting version used in your project and by other libraries depending
 on them.
 
-| graphql-js version | graphql-server version | graphql-server-base version |                                       Github branch                                        | Development Status |
-| ------------------ | :--------------------: | :-------------------------: | :----------------------------------------------------------------------------------------: | :----------------: |
-| ~~^15.2.0~~        |        ~~1.x~~         |          ~~n.a.~~           | [~~legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15) |    end of life     |
-| ~~^16.0.0~~        |        ~~2.x~~         |          ~~n.a.~~           | [~~legacy-server-v2~~](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2) |    end of life     |
-| ^16.0.0            |          3.x           |           ^1.0.1            |   [legacy-server-v3](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v3)   |    maintenance     |
-| ^16.0.0            |          4.x           |            ^2.0             |                    [main](https://github.com/dreamit-de/graphql-server)                    |       active       |
+| graphql-js version | graphql-server version | graphql-server-base version | funpara version |                                       Github branch                                        | Development Status |
+| ------------------ | :--------------------: | :-------------------------: | :-------------: | :----------------------------------------------------------------------------------------: | ------------------ |
+| ~~^15.2.0~~        |        ~~1.x~~         |          ~~n.a.~~           |    ~~n.a.~~     | [~~legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15) | end of life        |
+| ~~^16.0.0~~        |        ~~2.x~~         |          ~~n.a.~~           |    ~~n.a.~~     | [~~legacy-server-v2~~](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2) | end of life        |
+| ^16.0.0            |          3.x           |           ^1.0.1            |    ~~n.a.~~     |   [legacy-server-v3](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v3)   | maintenance        |
+| ^16.0.0            |          4.x           |            ^2.0             |      ^1.0       |                    [main](https://github.com/dreamit-de/graphql-server)                    | active             |
 
 ## Features
 
@@ -32,7 +32,7 @@ on them.
 -   Uses out-of-the-box default options to ease use and keep code short
 -   Provides hot reloading for schema and options
 -   Provides out-of-the-box metrics for GraphQLServer
--   Uses only 2 peerDependencies: [graphql-js][1] version 16 and [graphql-server-base][12] version 2 (no other production
+-   Uses only 3 peerDependencies: [graphql-js][1] version 16, [graphql-server-base][12] version 2 and [funpara][17] version 1 (no other production
     dependencies)
 
 ## Handling and executing requests
@@ -460,3 +460,4 @@ graphql-server is under [MIT-License](./LICENSE).
 [14]: https://grpc.io/
 [15]: https://deno.land/
 [16]: https://bun.sh/
+[17]: https://github.com/dreamit-de/funpara

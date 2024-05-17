@@ -59,13 +59,11 @@
         "vitest": "1.6.0"
     },
     "peerDependencies": {
+        "@dreamit/funpara": "^1.0.0",
         "@dreamit/graphql-server-base": "^2.1.4",
         "graphql": "^16.0.0"
     },
     "engines": {
         "node": ">=v6.13.0"
-    },
-    "dependencies": {
-        "@dreamit/funpara": "^1.0.0"
     }
 }
