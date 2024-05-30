@@ -2,7 +2,7 @@
 import { ResponseParameters } from '@dreamit/graphql-server-base'
 import { Buffer } from 'node:buffer'
 import { expect, test } from 'vitest'
-import { GraphQLServer, JsonLogger, NoStacktraceTextLogger } from '~/src'
+import { GraphQLServer } from '~/src'
 import {
     returnErrorQuery,
     userSchema,
@@ -11,6 +11,7 @@ import {
 } from '../ExampleSchemas'
 import {
     INITIAL_GRAPHQL_SERVER_OPTIONS,
+    NO_LOGGER,
     StandaloneGraphQLServerResponse,
     sendRequest,
 } from '../TestHelpers'
@@ -26,7 +27,7 @@ test('Should return value from context instead of user data ', async () => {
                 serviceName: 'myRemoteService',
             }
         },
-        logger: new JsonLogger('test-logger', 'customGraphQLServer'),
+        logger: NO_LOGGER,
         reassignAggregateError: false,
         rootValue: userSchemaResolvers,
         schema: userSchema,
@@ -57,11 +58,7 @@ test(
                     serviceName: 'myTestServiceAlternative',
                 }
             },
-            logger: new NoStacktraceTextLogger(
-                'test-logger',
-                'customGraphQLServer',
-                true,
-            ),
+            logger: NO_LOGGER,
             reassignAggregateError: false,
             rootValue: userSchemaResolvers,
             schema: userSchema,

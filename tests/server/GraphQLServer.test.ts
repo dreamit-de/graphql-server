@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
 import { GraphQLError, GraphQLSchema, parse, validate } from 'graphql'
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import { expect, test } from 'vitest'
 import {
     GraphQLServer,
+    LogLevel,
     SimpleMetricsClient,
     StandaloneResponseParameters,
     defaultCollectErrorMetrics,
@@ -12,7 +13,7 @@ import {
     defaultOnlyQueryInGetRequestsResponse,
     extractInformationFromRequest,
 } from '~/src'
-import { TEXT_LOGGER } from '~/tests/TestHelpers'
+import { JsonTestLogger, NO_LOGGER } from '~/tests/TestHelpers'
 import {
     initialSchemaWithOnlyDescription,
     loginMutation,
@@ -33,7 +34,7 @@ const graphQLErrorResponse: GraphQLExecutionResult = {
 test('Should create schema on GraphQLServer class creation', () => {
     const graphqlServer = new GraphQLServer({
         invalidSchemaResponse: graphQLErrorResponse,
-        logger: TEXT_LOGGER,
+        logger: NO_LOGGER,
         methodNotAllowedResponse: defaultMethodNotAllowedResponse,
         missingQueryParameterResponse: (): GraphQLExecutionResult =>
             graphQLErrorResponse,
@@ -48,7 +49,7 @@ test('Should create schema on GraphQLServer class creation', () => {
 
 test('Should update schema when calling GraphQLServer updateGraphQLSchema function', () => {
     const graphqlServer = new GraphQLServer({
-        logger: TEXT_LOGGER,
+        logger: NO_LOGGER,
         schema: initialSchemaWithOnlyDescription,
     })
     const updatedSchema = new GraphQLSchema({ description: 'updated' })
@@ -60,8 +61,9 @@ test('Should update schema when calling GraphQLServer updateGraphQLSchema functi
 })
 
 test('Should not update schema when given schema is undefined', () => {
+    const logger = new JsonTestLogger()
     const graphqlServer = new GraphQLServer({
-        logger: TEXT_LOGGER,
+        logger: logger,
         schema: initialSchemaWithOnlyDescription,
     })
     graphqlServer.setSchema()
@@ -69,6 +71,11 @@ test('Should not update schema when given schema is undefined', () => {
     expect(schema).toBeDefined()
     expect(schema?.description).toBe('initial')
     expectRootQueryNotDefined(graphqlServer)
+    const warnLogEntry = logger.logEntries.pop()
+    expect(warnLogEntry?.message).toBe(
+        'Schema update was rejected because condition set in "shouldUpdateSchema" check was not fulfilled.',
+    )
+    expect(warnLogEntry?.level).toBe(LogLevel.warn)
 })
 
 test(
@@ -76,7 +83,7 @@ test(
         'and shouldUpdateSchemaFunction is true',
     () => {
         const graphqlServer = new GraphQLServer({
-            logger: TEXT_LOGGER,
+            logger: NO_LOGGER,
             schema: initialSchemaWithOnlyDescription,
             shouldUpdateSchemaFunction: (): boolean => true,
         })
@@ -91,13 +98,15 @@ test('Should execute query without server', async () => {
         collectErrorMetricsFunction: defaultCollectErrorMetrics,
         contextFunction: defaultContextFunction,
         extractInformationFromRequest: extractInformationFromRequest,
-        logger: TEXT_LOGGER,
+        logger: NO_LOGGER,
         metricsClient: new SimpleMetricsClient(),
         parseFunction: parse,
         rootValue: userSchemaResolvers,
         schema: userSchema,
         validateFunction: validate,
     })
+    expect(graphqlServer.schemaValidationErrors.length).toBe(0)
+
     const result = await graphqlServer.handleRequest({
         query: usersQuery,
     })
@@ -106,44 +115,40 @@ test('Should execute query without server', async () => {
     expect(result.requestInformation?.query).toBe(usersQuery)
 })
 
-describe('Test using custom error messages', () => {
+test('Should receive correct error message if response contains a GraphQLError', async () => {
+    const logger = new JsonTestLogger()
     const graphqlServer = new GraphQLServer({
         executionResultErrorMessage: 'Error:',
-        logger: TEXT_LOGGER,
+        logger: logger,
         metricsClient: new SimpleMetricsClient(),
         rootValue: userSchemaResolvers,
         schema: userSchema,
         validationErrorMessage: 'ValidationError:',
     })
-    beforeEach(() => {
-        vi.spyOn(TEXT_LOGGER, 'prepareLogOutput')
-            // We return only the message here so it can be asserted in the tests
-            .mockImplementation((logEntry) => logEntry.message)
+    await graphqlServer.handleRequest({
+        query: returnErrorQuery,
     })
+    expect(logger.logEntries.at(1)?.message).toBe(
+        'Error: Something went wrong!',
+    )
+})
 
-    afterEach(() => {
-        vi.restoreAllMocks()
+test('Should receive correct error message if request validation fails', async () => {
+    const logger = new JsonTestLogger()
+    const graphqlServer = new GraphQLServer({
+        executionResultErrorMessage: 'Error:',
+        logger: logger,
+        metricsClient: new SimpleMetricsClient(),
+        rootValue: userSchemaResolvers,
+        schema: userSchema,
+        validationErrorMessage: 'ValidationError:',
     })
-
-    test('Should receive correct error message if response contains a GraphQLError', async () => {
-        await graphqlServer.handleRequest({
-            query: returnErrorQuery,
-        })
-        expect(TEXT_LOGGER.prepareLogOutput).toHaveBeenCalledTimes(1)
-        expect(TEXT_LOGGER.prepareLogOutput).toHaveLastReturnedWith(
-            'Error: Something went wrong!',
-        )
+    await graphqlServer.handleRequest({
+        query: 'query users{ users { unknownField } }',
     })
-
-    test('Should receive correct error message if request validation fails', async () => {
-        await graphqlServer.handleRequest({
-            query: 'query users{ users { unknownField } }',
-        })
-        expect(TEXT_LOGGER.prepareLogOutput).toHaveBeenCalledTimes(1)
-        expect(TEXT_LOGGER.prepareLogOutput).toHaveLastReturnedWith(
-            'ValidationError: Cannot query field "unknownField" on type "User".',
-        )
-    })
+    expect(logger.logEntries.at(1)?.message).toBe(
+        'ValidationError: Cannot query field "unknownField" on type "User".',
+    )
 })
 
 test('Should use SimpleMetricsClient as fallback if cpuUsage is not available', async () => {
@@ -155,6 +160,7 @@ test('Should use SimpleMetricsClient as fallback if cpuUsage is not available', 
     process.hrtime = savedProcess.hrtime
 
     const graphqlServer = new GraphQLServer({
+        logger: NO_LOGGER,
         rootValue: userSchemaResolvers,
         schema: userSchema,
     })
@@ -171,7 +177,7 @@ test(
         ' should not intervene with metrics collection of first server',
     async () => {
         const graphqlServerMain = new GraphQLServer({
-            logger: TEXT_LOGGER,
+            logger: NO_LOGGER,
             rootValue: userSchemaResolvers,
             schema: userSchema,
         })
@@ -187,7 +193,7 @@ test(
         expect(metrics).toContain('graphql_server_request_throughput 2')
 
         const graphqlServerSecond = new GraphQLServer({
-            logger: TEXT_LOGGER,
+            logger: NO_LOGGER,
             metricsClient: new SimpleMetricsClient(),
             rootValue: userSchemaResolvers,
             schema: userSchema,
@@ -234,7 +240,7 @@ test('Should adjust execution result with data from mutation context info', asyn
         collectErrorMetricsFunction: defaultCollectErrorMetrics,
         contextFunction: (): unknown => ({ authHeader: '123456789' }),
         extractInformationFromRequest: extractInformationFromRequest,
-        logger: TEXT_LOGGER,
+        logger: NO_LOGGER,
         metricsClient: new SimpleMetricsClient(),
         parseFunction: parse,
         rootValue: userSchemaResolvers,

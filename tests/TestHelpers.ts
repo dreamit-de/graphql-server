@@ -7,11 +7,16 @@ import {
 import {
     GraphQLServer,
     GraphQLServerOptions,
+    JsonLogger,
+    LogEntry,
+    LogEntryInput,
+    NoLogger,
     NoStacktraceJsonLogger,
-    NoStacktraceTextLogger,
 } from '~/src'
 import { userSchema, userSchemaResolvers } from './ExampleSchemas'
 
+import { testDateString } from '@dreamit/funpara'
+import { Console } from 'node:console'
 import { IncomingHttpHeaders } from 'node:http'
 
 export class StandaloneGraphQLServerResponse implements GraphQLServerResponse {
@@ -43,21 +48,48 @@ export class StandaloneGraphQLServerResponse implements GraphQLServerResponse {
     }
 }
 
+export const NO_CONSOLE = new Console(process.stdout)
+NO_CONSOLE.log = (): void => {
+    return
+}
+
+export class JsonTestLogger extends JsonLogger {
+    logEntries: Array<LogEntry> = new Array<LogEntry>()
+
+    constructor(debugEnabled = false) {
+        super(
+            'test-logger',
+            'myTestService',
+            debugEnabled,
+            undefined,
+            undefined,
+            NO_CONSOLE,
+        )
+    }
+
+    createLogEntry(logEntryInput: LogEntryInput): LogEntry {
+        const logEntry = super.createLogEntry(logEntryInput)
+        logEntry.stacktrace = logEntry.stacktrace ? 'stacktrace' : undefined
+        logEntry.timestamp = testDateString
+        this.logEntries.push(logEntry)
+        return logEntry
+    }
+}
+
 export const JSON_CT_HEADER: IncomingHttpHeaders = {
     'content-type': 'application/json',
 }
+
+export const NO_LOGGER = new NoLogger('no-logger', 'myTestService')
+
 export const LOGGER = new NoStacktraceJsonLogger(
     'nostack-logger',
     'myTestService',
     false,
 )
-export const TEXT_LOGGER = new NoStacktraceTextLogger(
-    'nostack-logger',
-    'myTestService',
-    false,
-)
+
 export const INITIAL_GRAPHQL_SERVER_OPTIONS: GraphQLServerOptions = {
-    logger: LOGGER,
+    logger: NO_LOGGER,
     rootValue: userSchemaResolvers,
     schema: userSchema,
 }

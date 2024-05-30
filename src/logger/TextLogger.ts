@@ -128,15 +128,16 @@ export class TextLogger implements Logger {
             loglevel: loglevel,
             serviceName: this.serviceName,
         })
-        const logOutput = this.prepareLogOutput(
-            truncateLogMessage(
-                logEntry,
-                this.truncateLimit,
-                this.truncatedText,
+        this.loggerConsole.log(
+            this.prepareLogOutput(
+                truncateLogMessage(
+                    logEntry,
+                    this.truncateLimit,
+                    this.truncatedText,
+                ),
+                context,
             ),
-            context,
         )
-        this.loggerConsole.log(`${loglevel?.toUpperCase()} - ${logOutput}`)
     }
 
     /**

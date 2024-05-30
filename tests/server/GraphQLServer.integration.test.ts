@@ -22,7 +22,7 @@ import {
 } from '../ExampleSchemas'
 import {
     INITIAL_GRAPHQL_SERVER_OPTIONS,
-    LOGGER,
+    NO_LOGGER,
     StandaloneGraphQLServerResponse,
     generateGetParametersFromGraphQLRequestInfo,
     sendRequest,
@@ -184,7 +184,7 @@ test(
         ' validation error occurs and removeValidationRecommendations is enabled',
     async () => {
         customGraphQLServer.setOptions({
-            logger: LOGGER,
+            logger: NO_LOGGER,
             removeValidationRecommendations: false,
             rootValue: userSchemaResolvers,
             schema: userSchema,
@@ -230,7 +230,7 @@ test(
             executeFunction: () => {
                 throw new GraphQLError('A GraphQL context error occurred!', {})
             },
-            logger: LOGGER,
+            logger: NO_LOGGER,
             rootValue: userSchemaResolvers,
             schema: userSchema,
         })
@@ -265,7 +265,7 @@ test(
     async () => {
         customGraphQLServer.setOptions({
             formatErrorFunction: testFormatErrorFunction,
-            logger: LOGGER,
+            logger: NO_LOGGER,
             rootValue: userSchemaResolvers,
             schema: userSchema,
         })
@@ -405,7 +405,7 @@ test('Should get data response for application graphql request', async () => {
 test('Should get error response if invalid schema is used', async () => {
     // Change options to use schema validation function that always returns a validation error
     customGraphQLServer.setOptions({
-        logger: LOGGER,
+        logger: NO_LOGGER,
         rootValue: userSchemaResolvers,
         schema: userSchema,
         schemaValidationFunction: () => [
@@ -445,7 +445,7 @@ test('Should get error response if invalid method is used', async () => {
 test('Should get extensions in GraphQL response if extension function is defined ', async () => {
     customGraphQLServer.setOptions({
         extensionFunction: () => extensionTestData,
-        logger: LOGGER,
+        logger: NO_LOGGER,
         removeValidationRecommendations: true,
         rootValue: userSchemaResolvers,
         schema: userSchema,
@@ -483,7 +483,7 @@ test(
     async () => {
         customGraphQLServer.setOptions({
             customValidationRules: [NoSchemaIntrospectionCustomRule],
-            logger: LOGGER,
+            logger: NO_LOGGER,
             removeValidationRecommendations: true,
             rootValue: userSchemaResolvers,
             schema: userSchema,
@@ -509,7 +509,7 @@ test(
     async () => {
         customGraphQLServer.setOptions({
             customValidationRules: [NoSchemaIntrospectionCustomRule],
-            logger: LOGGER,
+            logger: NO_LOGGER,
             removeValidationRecommendations: true,
             rootValue: userSchemaResolvers,
             schema: userSchema,
@@ -548,7 +548,7 @@ test('Should adjust error response if adjustGraphQLExecutionResult is provided',
             )
         },
         customValidationRules: [NoSchemaIntrospectionCustomRule],
-        logger: LOGGER,
+        logger: NO_LOGGER,
         removeValidationRecommendations: true,
         rootValue: userSchemaResolvers,
         schema: userSchema,
@@ -571,7 +571,7 @@ test(
     async () => {
         customGraphQLServer.setOptions({
             customValidationRules: [],
-            logger: LOGGER,
+            logger: NO_LOGGER,
             removeValidationRecommendations: true,
             rootValue: userSchemaResolvers,
             schema: userSchema,
@@ -597,7 +597,7 @@ test(
         customGraphQLServer.setOptions({
             customValidationRules: [],
             defaultValidationRules: [],
-            logger: LOGGER,
+            logger: NO_LOGGER,
             removeValidationRecommendations: true,
             rootValue: userSchemaResolvers,
             schema: userSchema,
@@ -620,7 +620,7 @@ test(
     async () => {
         customGraphQLServer.setOptions({
             executeFunction: () => multipleErrorResponse,
-            logger: LOGGER,
+            logger: NO_LOGGER,
             reassignAggregateError: false,
             rootValue: userSchemaResolvers,
             schema: userSchema,
@@ -658,7 +658,7 @@ test('Should adjust data response if adjustGraphQLExecutionResult is provided', 
                 }
             )
         },
-        logger: LOGGER,
+        logger: NO_LOGGER,
         removeValidationRecommendations: false,
         rootValue: userSchemaResolvers,
         schema: userSchema,

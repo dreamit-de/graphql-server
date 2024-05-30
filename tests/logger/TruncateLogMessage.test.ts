@@ -10,6 +10,7 @@ test.each`
     ${timeoutMessage} | ${undefined}  | ${undefined}  | ${`${timeoutMessage}`}
     ${timeoutMessage} | ${undefined}  | ${20}         | ${'{"stack":_TRUNCATED_'}
     ${timeoutMessage} | ${'_TRUNC_'}  | ${20}         | ${'{"stack":"Err_TRUNC_'}
+    ${timeoutMessage} | ${'_TRUNC_'}  | ${7}          | ${'{"stack'}
     ${timeoutMessage} | ${undefined}  | ${2}          | ${'{"'}
     ${timeoutMessage} | ${undefined}  | ${2000}       | ${`${timeoutMessage}`}
     ${timeoutMessage} | ${undefined}  | ${48}         | ${`${timeoutMessage}`}

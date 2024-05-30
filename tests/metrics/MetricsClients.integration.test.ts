@@ -27,7 +27,7 @@ import {
     usersQuery,
 } from '../ExampleSchemas'
 
-import { LOGGER } from '../TestHelpers'
+import { NO_LOGGER } from '../TestHelpers'
 
 const customGraphQLServer = new GraphQLServer(
     getInitialGraphQLServerOptions(new NoMetricsClient()),
@@ -113,7 +113,7 @@ async function testInvalidSchemaMetrics(
     isNoMetricsClient: boolean,
 ): Promise<void> {
     customGraphQLServer.setOptions({
-        logger: LOGGER,
+        logger: NO_LOGGER,
         metricsClient: metricsClient,
         rootValue: userSchemaResolvers,
         schema: initialSchemaWithOnlyDescription,
@@ -312,7 +312,7 @@ async function testFetchErrorResponseMetrics(
                 {},
             )
         },
-        logger: LOGGER,
+        logger: NO_LOGGER,
         metricsClient: metricsClient,
         rootValue: userSchemaResolvers,
         schema: userSchema,
@@ -363,7 +363,7 @@ function getInitialGraphQLServerOptions(
 ): GraphQLServerOptions {
     return {
         customValidationRules: [NoSchemaIntrospectionCustomRule],
-        logger: LOGGER,
+        logger: NO_LOGGER,
         metricsClient: metricsClient,
         rootValue: userSchemaResolvers,
         schema: userSchema,

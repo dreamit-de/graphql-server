@@ -71,8 +71,9 @@ export class GraphQLServer {
     }
 
     setSchema(schema?: GraphQLSchema): void {
-        this.options.logger.info('Trying to set graphql schema')
-        this.options.logger.debug(`Schema is  ${JSON.stringify(schema)}`)
+        const logger = this.options.logger
+        logger.info('Trying to set graphql schema')
+        logger.debug(`Schema is  ${JSON.stringify(schema)}`)
         if (this.options.shouldUpdateSchemaFunction(schema)) {
             this.options.schema = schema
             // Validate schema
@@ -80,12 +81,12 @@ export class GraphQLServer {
                 this.schemaValidationErrors =
                     this.options.schemaValidationFunction(this.options.schema)
                 if (this.schemaValidationErrors.length > 0) {
-                    this.options.logger.warn(
+                    logger.warn(
                         'Schema validation failed with errors. ' +
                             'Please check the GraphQL schema and fix potential issues.',
                     )
                     for (const error of this.schemaValidationErrors) {
-                        this.options.logger.error(
+                        logger.error(
                             'A schema validation error occurred: ',
                             error,
                             SCHEMA_VALIDATION_ERROR,
@@ -99,7 +100,7 @@ export class GraphQLServer {
                 }
             }
         } else {
-            this.options.logger.warn(
+            logger.warn(
                 'Schema update was rejected because condition' +
                     ' set in "shouldUpdateSchema" check was not fulfilled.',
             )

@@ -6,10 +6,9 @@ import {
     defaultFormatErrorFunction,
     defaultOnlyQueryInGetRequestsResponse,
 } from '@/index'
-import { Logger } from '@dreamit/graphql-server-base'
 import { GraphQLError } from 'graphql'
-import { expect, test, vi } from 'vitest'
-import { JSON_CT_HEADER, LOGGER } from '../TestHelpers'
+import { expect, test } from 'vitest'
+import { JSON_CT_HEADER, JsonTestLogger } from '../TestHelpers'
 
 test('Creating DefaultGraphQLServerOptions should provide useful defaults', () => {
     const defaultGraphqlServerOptions = new DefaultGraphQLServerOptions()
@@ -28,13 +27,9 @@ test('defaultFormatErrorFunction should return the expected formatted error', ()
     })
 })
 
-test.each([undefined, LOGGER])(
+test.each([undefined, new JsonTestLogger(true)])(
     'defaultContextFunction should return the expected formatted error',
-    (logger: Logger | undefined) => {
-        if (logger) {
-            vi.spyOn(logger, 'debug')
-        }
-
+    (logger: JsonTestLogger | undefined) => {
         expect(
             defaultContextFunction({
                 request: {
@@ -47,23 +42,16 @@ test.each([undefined, LOGGER])(
         ).toStrictEqual({ headers: JSON_CT_HEADER })
 
         if (logger) {
-            expect(logger.debug).toHaveBeenLastCalledWith(
+            expect(logger.logEntries.at(0)?.message).toBe(
                 'Calling defaultRequestResponseContextFunction with request [object Object] and response undefined',
-                {
-                    headers: JSON_CT_HEADER,
-                },
             )
         }
     },
 )
 
-test.each([undefined, LOGGER])(
+test.each([undefined, new JsonTestLogger(true)])(
     'defaultExtensions should return undefined',
-    (logger: Logger | undefined) => {
-        if (logger) {
-            vi.spyOn(logger, 'debug')
-        }
-
+    (logger: JsonTestLogger | undefined) => {
         expect(
             defaultExtensions({
                 executionResult: {},
@@ -75,22 +63,16 @@ test.each([undefined, LOGGER])(
         ).toBeUndefined()
 
         if (logger) {
-            expect(logger.debug).toHaveBeenLastCalledWith(
+            expect(logger.logEntries.at(0)?.message).toBe(
                 'Calling defaultExtensions for requestInfo {} and executionResult {}',
-                // eslint-disable-next-line unicorn/no-useless-undefined
-                undefined,
             )
         }
     },
 )
 
-test.each([undefined, LOGGER])(
+test.each([undefined, new JsonTestLogger(true)])(
     'defaultCollectErrorMetrics should log a debug message if logger is available',
-    (logger: Logger | undefined) => {
-        if (logger) {
-            vi.spyOn(logger, 'debug')
-        }
-
+    (logger: JsonTestLogger | undefined) => {
         expect(
             defaultCollectErrorMetrics({
                 error: undefined,
@@ -102,10 +84,8 @@ test.each([undefined, LOGGER])(
         ).toBeUndefined()
 
         if (logger) {
-            expect(logger.debug).toHaveBeenLastCalledWith(
+            expect(logger.logEntries.at(0)?.message).toBe(
                 'Calling defaultCollectErrorMetrics with error undefined and errorName test',
-                // eslint-disable-next-line unicorn/no-useless-undefined
-                undefined,
             )
         }
     },
