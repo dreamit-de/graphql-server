@@ -10,6 +10,13 @@ export default defineConfig({
             provider: 'v8',
             reporter: ['text'],
         },
-        exclude: ['.stryker-tmp', 'node_modules', 'build', '.idea', '.git', '.cache'],
+        exclude: [
+            '.stryker-tmp',
+            'node_modules',
+            'build',
+            '.idea',
+            '.git',
+            '.cache',
+        ],
     },
 })

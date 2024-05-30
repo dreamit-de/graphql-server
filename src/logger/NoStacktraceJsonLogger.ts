@@ -1,27 +1,9 @@
-import { JsonLogger, LogEntry, LogEntryInput, createLogEntry } from '..'
+import { JsonLogger, LogEntry, LogEntryInput } from '..'
 
 export class NoStacktraceJsonLogger extends JsonLogger {
-    logMessage(logEntryInput: LogEntryInput): void {
-        const {
-            dateFunction,
-            logMessage,
-            loglevel,
-            error,
-            customErrorName,
-            context,
-        } = logEntryInput
-
-        const logEntry: LogEntry = createLogEntry({
-            context,
-            customErrorName,
-            dateFunction,
-            error,
-            logMessage,
-            loggerName: this.loggerName,
-            loglevel,
-            serviceName: this.serviceName,
-        })
+    createLogEntry(logEntryInput: LogEntryInput): LogEntry {
+        const logEntry = super.createLogEntry(logEntryInput)
         logEntry.stacktrace = undefined
-        this.loggerConsole.log(JSON.stringify(logEntry))
+        return logEntry
     }
 }

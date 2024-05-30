@@ -7,11 +7,15 @@ import {
 import {
     GraphQLServer,
     GraphQLServerOptions,
+    JsonLogger,
+    LogEntry,
+    LogEntryInput,
     NoStacktraceJsonLogger,
     NoStacktraceTextLogger,
 } from '~/src'
 import { userSchema, userSchemaResolvers } from './ExampleSchemas'
 
+import { testDateString } from '@dreamit/funpara'
 import { IncomingHttpHeaders } from 'node:http'
 
 export class StandaloneGraphQLServerResponse implements GraphQLServerResponse {
@@ -40,6 +44,22 @@ export class StandaloneGraphQLServerResponse implements GraphQLServerResponse {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getLastResponseAsObject(): any {
         return JSON.parse(this.getLastResponse())
+    }
+}
+
+export class JsonTestLogger extends JsonLogger {
+    logEntries: Array<LogEntry> = new Array<LogEntry>()
+
+    constructor(debugEnabled = false) {
+        super('test-logger', 'myTestService', debugEnabled)
+    }
+
+    createLogEntry(logEntryInput: LogEntryInput): LogEntry {
+        const logEntry = super.createLogEntry(logEntryInput)
+        logEntry.stacktrace = logEntry.stacktrace ? 'stacktrace' : undefined
+        logEntry.timestamp = testDateString
+        this.logEntries.push(logEntry)
+        return logEntry
     }
 }
 

@@ -1,21 +1,29 @@
 import {
+    GraphQLServerOptions,
     defaultCollectErrorMetrics,
     increaseFetchOrGraphQLErrorMetric,
 } from '@/index'
 import { expect, test } from 'vitest'
-import { LOGGER } from '../TestHelpers'
+import { JsonTestLogger, LOGGER } from '../TestHelpers'
 
 test.each([
     {},
     { collectErrorMetricsFunction: defaultCollectErrorMetrics },
-    { logger: LOGGER },
+    { logger: new JsonTestLogger(true) },
     { collectErrorMetricsFunction: defaultCollectErrorMetrics, logger: LOGGER },
 ])(
-    'Should not throw an error when increasing metrics' +
-        ' if logger or collect function are undefined',
-    (serverOptions) => {
+    'Test that increaseFetchOrGraphQLErrorMetric does not throw an error' +
+        ' logs a debug message if a logger is defined',
+    (serverOptions: GraphQLServerOptions) => {
         expect(
             increaseFetchOrGraphQLErrorMetric(undefined, serverOptions, {}),
         ).toBe(undefined)
+        const { logger } = serverOptions
+
+        if (logger && logger instanceof JsonTestLogger) {
+            expect(logger.logEntries.at(0)?.message).toBe(
+                'Calling increaseFetchOrGraphQLErrorMetric with error undefined and errorIsFetch false',
+            )
+        }
     },
 )

@@ -210,3 +210,57 @@ test('Should remove white spaces at the beginning of the message', () => {
     })
     expect(logEntry.message).toBe(customerMessage)
 })
+
+test('Test downgrading loglevel based on service name', () => {
+    expect(
+        createLogEntry({
+            context: { serviceName: 'myRemoteService' },
+            error: errorWithoutStacktrace,
+            logMessage: '',
+            loglevel: LogLevel.error,
+            serviceName: 'myTestService',
+        }).level,
+    ).toBe(LogLevel.warn)
+    expect(
+        createLogEntry({
+            context: { serviceName: 'myTestService' },
+            error: errorWithoutStacktrace,
+            logMessage: '',
+            loglevel: LogLevel.error,
+            serviceName: 'myTestService',
+        }).level,
+    ).toBe(LogLevel.error)
+    expect(
+        createLogEntry({
+            context: { serviceName: 'myTestService' },
+            error: errorWithoutStacktrace,
+            logMessage: '',
+            loglevel: LogLevel.info,
+            serviceName: 'myTestService',
+        }).level,
+    ).toBe(LogLevel.info)
+    expect(
+        createLogEntry({
+            context: { serviceName: 'myRemoteService' },
+            error: errorWithoutStacktrace,
+            logMessage: '',
+            loglevel: LogLevel.info,
+            serviceName: 'myTestService',
+        }).level,
+    ).toBe(LogLevel.info)
+})
+
+test(
+    'Should not downgrade error to warn if the service name' +
+        'in error extensions and serviceName match',
+    () => {
+        const logEntry = createLogEntry({
+            context: undefined,
+            error: graphQLError,
+            logMessage: '',
+            loglevel: LogLevel.error,
+            serviceName: 'customer',
+        })
+        expect(logEntry.level).toBe(LogLevel.error)
+    },
+)

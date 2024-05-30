@@ -109,7 +109,7 @@ export class JsonLogger implements Logger {
         })
     }
 
-    logMessage(logEntryInput: LogEntryInput): void {
+    createLogEntry(logEntryInput: LogEntryInput): LogEntry {
         const {
             dateFunction,
             logMessage,
@@ -119,24 +119,25 @@ export class JsonLogger implements Logger {
             context,
         } = logEntryInput
 
-        const logEntry: LogEntry = createLogEntry({
-            context,
-            customErrorName,
-            dateFunction,
-            error,
-            logMessage,
-            loggerName: this.loggerName,
-            loglevel,
-            serviceName: this.serviceName,
-        })
+        return truncateLogMessage(
+            createLogEntry({
+                context,
+                customErrorName,
+                dateFunction,
+                error,
+                logMessage,
+                loggerName: this.loggerName,
+                loglevel,
+                serviceName: this.serviceName,
+            }),
+            this.truncateLimit,
+            this.truncatedText,
+        )
+    }
+
+    logMessage(logEntryInput: LogEntryInput): void {
         this.loggerConsole.log(
-            JSON.stringify(
-                truncateLogMessage(
-                    logEntry,
-                    this.truncateLimit,
-                    this.truncatedText,
-                ),
-            ),
+            JSON.stringify(this.createLogEntry(logEntryInput)),
         )
     }
 }
