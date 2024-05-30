@@ -160,6 +160,7 @@ test('Should use SimpleMetricsClient as fallback if cpuUsage is not available', 
     process.hrtime = savedProcess.hrtime
 
     const graphqlServer = new GraphQLServer({
+        logger: NO_LOGGER,
         rootValue: userSchemaResolvers,
         schema: userSchema,
     })
