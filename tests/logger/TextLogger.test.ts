@@ -2,12 +2,20 @@
 import { testDateFunction, testDateString } from '@dreamit/funpara'
 import { expect, test } from 'vitest'
 import { LogEntry, NoStacktraceTextLogger, TextLogger } from '~/src'
+import { NO_CONSOLE } from '../TestHelpers'
 
 class TextTestLogger extends TextLogger {
     logEntries: Array<string> = new Array<string>()
 
     constructor(debugEnabled = false) {
-        super('test-logger', 'test-service', debugEnabled)
+        super(
+            'test-logger',
+            'test-service',
+            debugEnabled,
+            undefined,
+            undefined,
+            NO_CONSOLE,
+        )
     }
 
     prepareLogOutput(logEntry: LogEntry, context?: unknown): string {
@@ -23,7 +31,14 @@ class NoStacktraceTextTestLogger extends NoStacktraceTextLogger {
     logEntries: Array<string> = new Array<string>()
 
     constructor(debugEnabled = false) {
-        super('test-logger', 'test-service', debugEnabled)
+        super(
+            'test-logger',
+            'test-service',
+            debugEnabled,
+            undefined,
+            undefined,
+            NO_CONSOLE,
+        )
     }
 
     prepareLogOutput(logEntry: LogEntry, context: unknown): string {

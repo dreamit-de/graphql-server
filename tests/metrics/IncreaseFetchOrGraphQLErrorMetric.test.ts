@@ -4,13 +4,16 @@ import {
     increaseFetchOrGraphQLErrorMetric,
 } from '@/index'
 import { expect, test } from 'vitest'
-import { JsonTestLogger, LOGGER } from '../TestHelpers'
+import { JsonTestLogger } from '../TestHelpers'
 
 test.each([
     {},
     { collectErrorMetricsFunction: defaultCollectErrorMetrics },
     { logger: new JsonTestLogger(true) },
-    { collectErrorMetricsFunction: defaultCollectErrorMetrics, logger: LOGGER },
+    {
+        collectErrorMetricsFunction: defaultCollectErrorMetrics,
+        logger: new JsonTestLogger(true),
+    },
 ])(
     'Test that increaseFetchOrGraphQLErrorMetric does not throw an error' +
         ' logs a debug message if a logger is defined',

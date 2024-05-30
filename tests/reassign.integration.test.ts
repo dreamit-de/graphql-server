@@ -2,14 +2,18 @@
 import { ExecutionResult } from 'graphql'
 import { PromiseOrValue } from 'graphql/jsutils/PromiseOrValue'
 import { expect, test } from 'vitest'
-import { GraphQLServer, NoStacktraceJsonLogger } from '~/src'
+import { GraphQLServer } from '~/src'
 import {
     multipleErrorResponse,
     userQuery,
     userSchema,
     userSchemaResolvers,
 } from './ExampleSchemas'
-import { StandaloneGraphQLServerResponse, sendRequest } from './TestHelpers'
+import {
+    NO_LOGGER,
+    StandaloneGraphQLServerResponse,
+    sendRequest,
+} from './TestHelpers'
 
 const standaloneGraphQLServerResponse = new StandaloneGraphQLServerResponse()
 
@@ -24,11 +28,7 @@ test(
         const customGraphQLServer = new GraphQLServer({
             executeFunction: (): PromiseOrValue<ExecutionResult> =>
                 multipleErrorResponse,
-            logger: new NoStacktraceJsonLogger(
-                'nostack-logger',
-                'reassign-service',
-                true,
-            ),
+            logger: NO_LOGGER,
             reassignAggregateError: true,
             rootValue: userSchemaResolvers,
             schema: userSchema,

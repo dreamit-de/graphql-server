@@ -8,13 +8,20 @@ import {
 } from '@/index'
 import { testDateFunction, testDateString } from '@dreamit/funpara'
 import { expect, test } from 'vitest'
-import { JsonTestLogger } from '../TestHelpers'
+import { JsonTestLogger, NO_CONSOLE } from '../TestHelpers'
 
 export class NoStacktraceJsonTestLogger extends NoStacktraceJsonLogger {
     logEntries: Array<LogEntry> = new Array<LogEntry>()
 
     constructor(debugEnabled = false) {
-        super('test-logger', 'myTestService', debugEnabled)
+        super(
+            'test-logger',
+            'myTestService',
+            debugEnabled,
+            undefined,
+            undefined,
+            NO_CONSOLE,
+        )
     }
 
     createLogEntry(logEntryInput: LogEntryInput): LogEntry {

@@ -2,7 +2,7 @@
 import { GraphQLError, GraphQLFormattedError } from 'graphql'
 import { expect, test } from 'vitest'
 import { sendResponse } from '~/src'
-import { StandaloneGraphQLServerResponse, TEXT_LOGGER } from '../TestHelpers'
+import { NO_LOGGER, StandaloneGraphQLServerResponse } from '../TestHelpers'
 
 const standaloneGraphQLServerResponse = new StandaloneGraphQLServerResponse()
 
@@ -17,7 +17,7 @@ test('Should use default response.end behavior if no responseEndChunkFunction if
         ): GraphQLFormattedError {
             return error
         },
-        logger: TEXT_LOGGER,
+        logger: NO_LOGGER,
         response: standaloneGraphQLServerResponse,
         statusCode: 401,
     })

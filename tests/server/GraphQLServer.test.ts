@@ -13,7 +13,7 @@ import {
     defaultOnlyQueryInGetRequestsResponse,
     extractInformationFromRequest,
 } from '~/src'
-import { JsonTestLogger, TEXT_LOGGER } from '~/tests/TestHelpers'
+import { JsonTestLogger, NO_LOGGER } from '~/tests/TestHelpers'
 import {
     initialSchemaWithOnlyDescription,
     loginMutation,
@@ -34,7 +34,7 @@ const graphQLErrorResponse: GraphQLExecutionResult = {
 test('Should create schema on GraphQLServer class creation', () => {
     const graphqlServer = new GraphQLServer({
         invalidSchemaResponse: graphQLErrorResponse,
-        logger: TEXT_LOGGER,
+        logger: NO_LOGGER,
         methodNotAllowedResponse: defaultMethodNotAllowedResponse,
         missingQueryParameterResponse: (): GraphQLExecutionResult =>
             graphQLErrorResponse,
@@ -49,7 +49,7 @@ test('Should create schema on GraphQLServer class creation', () => {
 
 test('Should update schema when calling GraphQLServer updateGraphQLSchema function', () => {
     const graphqlServer = new GraphQLServer({
-        logger: TEXT_LOGGER,
+        logger: NO_LOGGER,
         schema: initialSchemaWithOnlyDescription,
     })
     const updatedSchema = new GraphQLSchema({ description: 'updated' })
@@ -83,7 +83,7 @@ test(
         'and shouldUpdateSchemaFunction is true',
     () => {
         const graphqlServer = new GraphQLServer({
-            logger: TEXT_LOGGER,
+            logger: NO_LOGGER,
             schema: initialSchemaWithOnlyDescription,
             shouldUpdateSchemaFunction: (): boolean => true,
         })
@@ -98,7 +98,7 @@ test('Should execute query without server', async () => {
         collectErrorMetricsFunction: defaultCollectErrorMetrics,
         contextFunction: defaultContextFunction,
         extractInformationFromRequest: extractInformationFromRequest,
-        logger: TEXT_LOGGER,
+        logger: NO_LOGGER,
         metricsClient: new SimpleMetricsClient(),
         parseFunction: parse,
         rootValue: userSchemaResolvers,
@@ -176,7 +176,7 @@ test(
         ' should not intervene with metrics collection of first server',
     async () => {
         const graphqlServerMain = new GraphQLServer({
-            logger: TEXT_LOGGER,
+            logger: NO_LOGGER,
             rootValue: userSchemaResolvers,
             schema: userSchema,
         })
@@ -192,7 +192,7 @@ test(
         expect(metrics).toContain('graphql_server_request_throughput 2')
 
         const graphqlServerSecond = new GraphQLServer({
-            logger: TEXT_LOGGER,
+            logger: NO_LOGGER,
             metricsClient: new SimpleMetricsClient(),
             rootValue: userSchemaResolvers,
             schema: userSchema,
@@ -239,7 +239,7 @@ test('Should adjust execution result with data from mutation context info', asyn
         collectErrorMetricsFunction: defaultCollectErrorMetrics,
         contextFunction: (): unknown => ({ authHeader: '123456789' }),
         extractInformationFromRequest: extractInformationFromRequest,
-        logger: TEXT_LOGGER,
+        logger: NO_LOGGER,
         metricsClient: new SimpleMetricsClient(),
         parseFunction: parse,
         rootValue: userSchemaResolvers,
