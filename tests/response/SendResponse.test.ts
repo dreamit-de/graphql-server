@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { GraphQLError, GraphQLFormattedError } from 'graphql'
+import { sendResponse } from 'src'
 import { expect, test } from 'vitest'
-import { sendResponse } from '~/src'
 import { NO_LOGGER, StandaloneGraphQLServerResponse } from '../TestHelpers'
 
 const standaloneGraphQLServerResponse = new StandaloneGraphQLServerResponse()

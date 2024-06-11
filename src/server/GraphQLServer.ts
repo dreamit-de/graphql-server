@@ -30,13 +30,13 @@ import {
     increaseFetchOrGraphQLErrorMetric,
     isAggregateError,
     removeValidationRecommendationsFromErrors,
-} from '..'
+} from '../'
 
 const requestCouldNotBeProcessed = 'Request could not be processed: '
 const defaultOptions = new DefaultGraphQLServerOptions()
 
 export class GraphQLServer {
-    options = new DefaultGraphQLServerOptions()
+    options: DefaultGraphQLServerOptions = new DefaultGraphQLServerOptions()
     schemaValidationErrors: ReadonlyArray<GraphQLError> = []
 
     constructor(optionsParameter?: GraphQLServerOptions) {

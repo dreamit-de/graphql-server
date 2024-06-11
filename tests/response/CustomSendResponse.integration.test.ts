@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { ResponseParameters } from '@dreamit/graphql-server-base'
 import { Buffer } from 'node:buffer'
+import { GraphQLServer } from 'src'
 import { expect, test } from 'vitest'
-import { GraphQLServer } from '~/src'
 import {
     returnErrorQuery,
     userSchema,

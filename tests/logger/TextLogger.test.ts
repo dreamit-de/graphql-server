@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import { testDateFunction, testDateString } from '@dreamit/funpara'
+import { LogEntry, NoStacktraceTextLogger, TextLogger } from 'src'
 import { expect, test } from 'vitest'
-import { LogEntry, NoStacktraceTextLogger, TextLogger } from '~/src'
 import { NO_CONSOLE } from '../TestHelpers'
 
 class TextTestLogger extends TextLogger {

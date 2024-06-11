@@ -1,5 +1,5 @@
 import { DateFunction } from '@dreamit/funpara'
-import { LogLevel } from '..'
+import { LogLevel } from '../'
 
 export interface LogEntryInput {
     context: unknown

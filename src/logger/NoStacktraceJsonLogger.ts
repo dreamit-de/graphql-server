@@ -1,4 +1,4 @@
-import { JsonLogger, LogEntry, LogEntryInput } from '..'
+import { JsonLogger, LogEntry, LogEntryInput } from '../'
 
 export class NoStacktraceJsonLogger extends JsonLogger {
     createLogEntry(logEntryInput: LogEntryInput): LogEntry {

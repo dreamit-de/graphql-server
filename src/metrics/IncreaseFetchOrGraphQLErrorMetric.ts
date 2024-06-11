@@ -1,4 +1,4 @@
-import { GraphQLServerOptions, determineGraphQLOrFetchError } from '..'
+import { GraphQLServerOptions, determineGraphQLOrFetchError } from '../'
 
 /**
  * Increases the error metric with either a FetchError or GraphQLError label

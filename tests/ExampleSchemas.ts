@@ -1,6 +1,6 @@
 import { GraphQLRequestInfo } from '@dreamit/graphql-server-base'
 import { GraphQLError, GraphQLSchema, buildSchema } from 'graphql'
-import { AggregateError } from '~/src'
+import { AggregateError } from 'src'
 
 // Contains example schemas and data that can be used across tests
 

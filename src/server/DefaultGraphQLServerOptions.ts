@@ -10,22 +10,18 @@ import {
 import {
     ExecutionResult,
     GraphQLError,
+    GraphQLFieldResolver,
     GraphQLFormattedError,
     GraphQLSchema,
+    GraphQLTypeResolver,
+    TypeInfo,
+    ValidationRule,
     execute,
     parse,
     specifiedRules,
     validate,
     validateSchema,
 } from 'graphql'
-import { Maybe } from 'graphql/jsutils/Maybe'
-import { ObjMap } from 'graphql/jsutils/ObjMap'
-import {
-    GraphQLFieldResolver,
-    GraphQLTypeResolver,
-} from 'graphql/type/definition'
-import { TypeInfo } from 'graphql/utilities/TypeInfo'
-import { ValidationRule } from 'graphql/validation/ValidationContext'
 import { Buffer } from 'node:buffer'
 import {
     GraphQLServerOptions,
@@ -34,7 +30,7 @@ import {
     TextLogger,
     extractInformationFromRequest,
     sendResponse,
-} from '..'
+} from '../'
 
 export const defaultGraphqlExecutionErrorMessage =
     'While processing the request a GraphQL execution error occurred: '
@@ -43,7 +39,7 @@ export const defaultExecutionResultErrorMessage =
 export const defaultValidationErrorMessage =
     'While processing the request the following validation error occurred: '
 
-export const fallbackTextLogger = new TextLogger(
+export const fallbackTextLogger: Logger = new TextLogger(
     'fallback-logger',
     'fallback-service',
 )
@@ -83,8 +79,8 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     validationTypeInfo?: TypeInfo
     validationOptions?: { maxErrors?: number }
     rootValue?: unknown
-    fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
-    typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
+    fieldResolver?: null | undefined | GraphQLFieldResolver<unknown, unknown>
+    typeResolver?: null | undefined | GraphQLTypeResolver<unknown, unknown>
     schema?: GraphQLSchema
     invalidSchemaResponse = invalidSchemaResponse
     missingQueryParameterResponse = defaultMissingQueryParameterResponse
@@ -137,7 +133,7 @@ export function defaultContextFunction(contextParameters: {
  * Default extension function that can be used
  * to fill extensions field of GraphQL response. Can be set in options.
  * @param extensionParameters - The extensions parameters
- * @returns {ObjMap<unknown>}
+ * @returns {Record<string, unknown>}
  * A key-value map to be added as extensions in response
  */
 export function defaultExtensions(extensionParameters: {
@@ -145,7 +141,7 @@ export function defaultExtensions(extensionParameters: {
     executionResult: ExecutionResult
     serverOptions: GraphQLServerOptions
     context?: unknown
-}): ObjMap<unknown> | undefined {
+}): Record<string, unknown> | undefined {
     const { requestInformation, executionResult, serverOptions, context } =
         extensionParameters
     const logger = serverOptions.logger

@@ -5,7 +5,7 @@ import {
     LogLevel,
     createISOTimestamp,
     sanitizeMessage,
-} from '..'
+} from '../'
 
 export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
     const {

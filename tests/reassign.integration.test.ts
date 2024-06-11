@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { ExecutionResult } from 'graphql'
 import { PromiseOrValue } from 'graphql/jsutils/PromiseOrValue'
+import { GraphQLServer } from 'src'
 import { expect, test } from 'vitest'
-import { GraphQLServer } from '~/src'
 import {
     multipleErrorResponse,
     userQuery,

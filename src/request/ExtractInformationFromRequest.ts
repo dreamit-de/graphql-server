@@ -6,7 +6,7 @@ import {
 import { GraphQLError } from 'graphql'
 import { Buffer } from 'node:buffer'
 import { URLSearchParams } from 'node:url'
-import { getContentType } from '..'
+import { getContentType } from '../'
 
 export function extractInformationFromRequest(
     request: GraphQLServerRequest,

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
 import { GraphQLError, GraphQLSchema, parse, validate } from 'graphql'
-import { expect, test } from 'vitest'
 import {
     GraphQLServer,
     LogLevel,
@@ -12,8 +11,8 @@ import {
     defaultMethodNotAllowedResponse,
     defaultOnlyQueryInGetRequestsResponse,
     extractInformationFromRequest,
-} from '~/src'
-import { JsonTestLogger, NO_LOGGER } from '~/tests/TestHelpers'
+} from 'src'
+import { expect, test } from 'vitest'
 import {
     initialSchemaWithOnlyDescription,
     loginMutation,
@@ -24,6 +23,7 @@ import {
     userTwo,
     usersQuery,
 } from '../ExampleSchemas'
+import { JsonTestLogger, NO_LOGGER } from '../TestHelpers'
 
 const graphQLErrorResponse: GraphQLExecutionResult = {
     executionResult: {

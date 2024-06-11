@@ -12,21 +12,16 @@ import {
     ExecutionArgs,
     ExecutionResult,
     GraphQLError,
+    GraphQLFieldResolver,
     GraphQLFormattedError,
     GraphQLSchema,
+    GraphQLTypeResolver,
     ParseOptions,
     Source,
+    TypeInfo,
+    ValidationRule,
 } from 'graphql'
-import { Maybe } from 'graphql/jsutils/Maybe'
-import { ObjMap } from 'graphql/jsutils/ObjMap'
-import { PromiseOrValue } from 'graphql/jsutils/PromiseOrValue'
-import {
-    GraphQLFieldResolver,
-    GraphQLTypeResolver,
-} from 'graphql/type/definition'
-import { TypeInfo } from 'graphql/utilities/TypeInfo'
-import { ValidationRule } from 'graphql/validation/ValidationContext'
-import { StandaloneResponseParameters } from '..'
+import { StandaloneResponseParameters } from '../'
 
 /**
  * Interface for creating new GraphQLServer instances.
@@ -77,17 +72,23 @@ export interface GraphQLServerOptions {
         request?: GraphQLServerRequest
         response?: GraphQLServerResponse
     }) => unknown
-    readonly fieldResolver?: Maybe<GraphQLFieldResolver<unknown, unknown>>
-    readonly typeResolver?: Maybe<GraphQLTypeResolver<unknown, unknown>>
+    readonly fieldResolver?:
+        | null
+        | undefined
+        | GraphQLFieldResolver<unknown, unknown>
+    readonly typeResolver?:
+        | null
+        | undefined
+        | GraphQLTypeResolver<unknown, unknown>
     readonly executeFunction?: (
         arguments_: ExecutionArgs,
-    ) => PromiseOrValue<ExecutionResult>
+    ) => Promise<ExecutionResult> | ExecutionResult
     readonly extensionFunction?: (extensionParameters: {
         requestInformation: GraphQLRequestInfo
         executionResult: ExecutionResult
         serverOptions: GraphQLServerOptions
         context?: unknown
-    }) => ObjMap<unknown> | undefined
+    }) => Record<string, unknown> | undefined
     readonly methodNotAllowedResponse?: (
         method?: string,
     ) => GraphQLExecutionResult

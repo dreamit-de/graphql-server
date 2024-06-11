@@ -1,9 +1,9 @@
 /* eslint-disable unicorn/error-message */
-import { determineValidationOrIntrospectionDisabledError } from '@/index'
 import {
     INTROSPECTION_DISABLED_ERROR,
     VALIDATION_ERROR,
 } from '@dreamit/graphql-server-base'
+import { determineValidationOrIntrospectionDisabledError } from 'src'
 import { expect, test } from 'vitest'
 
 const introspectionDisabledMessage = 'GraphQL introspection is disabled'

@@ -1,6 +1,6 @@
 /* eslint-disable deprecation/deprecation */
-import { createISOTimestamp, createTimestamp } from '@/index'
 import { testDateFunction, testDateString } from '@dreamit/funpara'
+import { createISOTimestamp, createTimestamp } from 'src'
 import { expect, test } from 'vitest'
 
 test('CreateTimestamp should create timestamp in ISO format', () => {

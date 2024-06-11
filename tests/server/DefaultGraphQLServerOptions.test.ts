@@ -1,3 +1,4 @@
+import { GraphQLError } from 'graphql'
 import {
     DefaultGraphQLServerOptions,
     defaultCollectErrorMetrics,
@@ -5,8 +6,7 @@ import {
     defaultExtensions,
     defaultFormatErrorFunction,
     defaultOnlyQueryInGetRequestsResponse,
-} from '@/index'
-import { GraphQLError } from 'graphql'
+} from 'src'
 import { expect, test } from 'vitest'
 import { JSON_CT_HEADER, JsonTestLogger } from '../TestHelpers'
 
