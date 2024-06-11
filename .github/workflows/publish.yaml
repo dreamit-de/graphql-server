@@ -42,6 +42,7 @@ jobs:
   publish-jsr:
     runs-on: ubuntu-latest
     needs: buildcheck
+    if: false
     permissions:
       contents: read
       id-token: write
