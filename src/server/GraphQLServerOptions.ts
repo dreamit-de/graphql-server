@@ -72,11 +72,17 @@ export interface GraphQLServerOptions {
         request?: GraphQLServerRequest
         response?: GraphQLServerResponse
     }) => unknown
-    readonly fieldResolver?: null | undefined | GraphQLFieldResolver<unknown, unknown>
-    readonly typeResolver?: null | undefined | GraphQLTypeResolver<unknown, unknown>
+    readonly fieldResolver?:
+        | null
+        | undefined
+        | GraphQLFieldResolver<unknown, unknown>
+    readonly typeResolver?:
+        | null
+        | undefined
+        | GraphQLTypeResolver<unknown, unknown>
     readonly executeFunction?: (
         arguments_: ExecutionArgs,
-    ) =>  Promise<ExecutionResult> | ExecutionResult 
+    ) => Promise<ExecutionResult> | ExecutionResult
     readonly extensionFunction?: (extensionParameters: {
         requestInformation: GraphQLRequestInfo
         executionResult: ExecutionResult

@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import { testDateFunction, testDateString } from '@dreamit/funpara'
 import {
     JsonLogger,
     LogEntry,
@@ -6,7 +7,6 @@ import {
     LogLevel,
     NoStacktraceJsonLogger,
 } from 'src'
-import { testDateFunction, testDateString } from '@dreamit/funpara'
 import { expect, test } from 'vitest'
 import { JsonTestLogger, NO_CONSOLE } from '../TestHelpers'
 

@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
-import { expect, test } from 'vitest'
 import { NoLogger } from 'src'
+import { expect, test } from 'vitest'
 
 test('Should be able to use NoLogger without running into errors', () => {
     const logger = new NoLogger('no-logger', 'no-service')

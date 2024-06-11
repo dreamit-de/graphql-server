@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
 import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql'
-import { expect, test } from 'vitest'
 import { GraphQLServer, StandaloneResponseParameters } from 'src'
+import { expect, test } from 'vitest'
 import {
     fetchErrorQuery,
     introspectionQuery,

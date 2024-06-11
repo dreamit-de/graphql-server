@@ -32,7 +32,6 @@ import {
     sendResponse,
 } from '../'
 
-
 export const defaultGraphqlExecutionErrorMessage =
     'While processing the request a GraphQL execution error occurred: '
 export const defaultExecutionResultErrorMessage =
