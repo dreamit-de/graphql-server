@@ -12,7 +12,7 @@ import {
     LogEntryInput,
     NoLogger,
     NoStacktraceJsonLogger,
-} from '~/src'
+} from 'src'
 import { userSchema, userSchemaResolvers } from './ExampleSchemas'
 
 import { testDateString } from '@dreamit/funpara'

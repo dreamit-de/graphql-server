@@ -2,7 +2,7 @@ import {
     GraphQLServerOptions,
     defaultCollectErrorMetrics,
     increaseFetchOrGraphQLErrorMetric,
-} from '@/index'
+} from 'src'
 import { expect, test } from 'vitest'
 import { JsonTestLogger } from '../TestHelpers'
 

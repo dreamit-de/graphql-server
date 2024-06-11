@@ -1,5 +1,5 @@
 /* eslint-disable deprecation/deprecation */
-import { createISOTimestamp, createTimestamp } from '@/index'
+import { createISOTimestamp, createTimestamp } from 'src'
 import { testDateFunction, testDateString } from '@dreamit/funpara'
 import { expect, test } from 'vitest'
 

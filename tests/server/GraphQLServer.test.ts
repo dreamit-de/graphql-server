@@ -12,8 +12,8 @@ import {
     defaultMethodNotAllowedResponse,
     defaultOnlyQueryInGetRequestsResponse,
     extractInformationFromRequest,
-} from '~/src'
-import { JsonTestLogger, NO_LOGGER } from '~/tests/TestHelpers'
+} from 'src'
+import { JsonTestLogger, NO_LOGGER } from '../TestHelpers'
 import {
     initialSchemaWithOnlyDescription,
     loginMutation,

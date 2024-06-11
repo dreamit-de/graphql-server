@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import { GraphQLError, Kind } from 'graphql'
 import { expect, test } from 'vitest'
-import { LogLevel, createLogEntry } from '~/src'
+import { LogLevel, createLogEntry } from 'src'
 
 // Created based upon implementation in node-fetch to avoid importing whole package for this class
 class FetchError extends Error {

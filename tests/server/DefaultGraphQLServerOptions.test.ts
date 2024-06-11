@@ -5,7 +5,7 @@ import {
     defaultExtensions,
     defaultFormatErrorFunction,
     defaultOnlyQueryInGetRequestsResponse,
-} from '@/index'
+} from 'src'
 import { GraphQLError } from 'graphql'
 import { expect, test } from 'vitest'
 import { JSON_CT_HEADER, JsonTestLogger } from '../TestHelpers'

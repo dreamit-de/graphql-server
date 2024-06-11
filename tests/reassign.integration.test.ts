@@ -2,7 +2,7 @@
 import { ExecutionResult } from 'graphql'
 import { PromiseOrValue } from 'graphql/jsutils/PromiseOrValue'
 import { expect, test } from 'vitest'
-import { GraphQLServer } from '~/src'
+import { GraphQLServer } from 'src'
 import {
     multipleErrorResponse,
     userQuery,

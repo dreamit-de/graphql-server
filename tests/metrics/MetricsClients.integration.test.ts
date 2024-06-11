@@ -17,7 +17,7 @@ import {
     GraphQLServerOptions,
     NoMetricsClient,
     SimpleMetricsClient,
-} from '~/src'
+} from 'src'
 import {
     initialSchemaWithOnlyDescription,
     returnErrorQuery,

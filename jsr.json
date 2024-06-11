@@ -1,0 +1,5 @@
+{
+    "name": "@dreamit/graphql-server",
+    "version": "4.10.0",
+    "exports": "./src/index.ts"
+  }

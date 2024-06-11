@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import { GraphQLError } from 'graphql'
 import { expect, test } from 'vitest'
-import { getFirstErrorFromExecutionResult } from '~/src'
+import { getFirstErrorFromExecutionResult } from 'src'
 
 test('Should get first error from ExecutionResult', () => {
     const result = getFirstErrorFromExecutionResult({

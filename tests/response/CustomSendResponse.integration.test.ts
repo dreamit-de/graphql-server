@@ -2,7 +2,7 @@
 import { ResponseParameters } from '@dreamit/graphql-server-base'
 import { Buffer } from 'node:buffer'
 import { expect, test } from 'vitest'
-import { GraphQLServer } from '~/src'
+import { GraphQLServer } from 'src'
 import {
     returnErrorQuery,
     userSchema,

@@ -3,7 +3,7 @@ import { DateFunction, nowDateFunction } from '@dreamit/funpara'
 /**
  * @deprecated Use createISOTimestamp instead
  */
-export function createTimestamp(date = new Date()): string {
+export function createTimestamp(date: Date = new Date()): string {
     return date.toISOString()
 }
 

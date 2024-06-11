@@ -7,7 +7,7 @@ import {
     LogLevel,
     createLogEntry,
     truncateLogMessage,
-} from '..'
+} from '../'
 
 /**
  * Logger implementation that outputs log entries as JSON text to console.
@@ -41,7 +41,7 @@ export class JsonLogger implements Logger {
         debugEnabled = false,
         truncateLimit = 0,
         truncatedText = '_TRUNCATED_',
-        loggerConsole = new Console(process.stdout, process.stderr),
+        loggerConsole: Console = new Console(process.stdout, process.stderr),
     ) {
         this.loggerName = loggerName
         this.serviceName = serviceName

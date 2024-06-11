@@ -10,11 +10,7 @@
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "declaration": true,
-        "baseUrl": ".",
-        "paths": {
-            "@/*": ["src/*"],
-            "~/*": ["./*"]
-        }
+        "baseUrl": "."
     },
     "include": ["vitest.config.js", "tsup.config.ts", "src/**/*", "tests/**/*"],
     "exclude": ["node_modules"]

@@ -4,7 +4,7 @@ import {
     extractInformationFromBody,
     extractInformationFromRequest,
     extractInformationFromUrlParameters,
-} from '~/src'
+} from 'src'
 import {
     usersRequest,
     usersRequestWithoutOperationName,
