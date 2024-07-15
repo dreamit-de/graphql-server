@@ -6,7 +6,7 @@ export default defineConfig({
     resolve: { alias: { graphql: 'graphql/index.js' } },
     test: {
         coverage: {
-            exclude: ['.stryker-tmp', 'build', 'tests'],
+            exclude: ['.stryker-tmp', 'tsup.config.ts', 'vitest.config.ts', 'build', 'tests'],
             provider: 'v8',
             reporter: ['text'],
         },
