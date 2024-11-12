@@ -6,4 +6,3 @@ jobs:
     uses: dreamit-de/workflows/.github/workflows/nodejs-ci-libs.yml@main
     with:
       runMutationTests: true
-
