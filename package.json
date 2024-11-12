@@ -1,6 +1,6 @@
 {
     "name": "@dreamit/graphql-server",
-    "version": "4.11.0",
+    "version": "4.11.1",
     "description": "A GraphQL server written in NodeJS/Typescript.",
     "scripts": {
         "build": "tsup-node",
@@ -10,6 +10,7 @@
         "lint": "eslint src/*.ts src/**/*.ts tests/*.ts tests/**/*.ts",
         "lintfix": "eslint --fix src/*.ts src/**/*.ts tests/*.ts tests/**/*.ts",
         "mutationtest": "stryker run",
+        "mutationtestCI": "stryker run --incremental --incrementalFile stryker-incremental.json",
         "prepack": "npm run build",
         "test": "vitest run --coverage"
     },

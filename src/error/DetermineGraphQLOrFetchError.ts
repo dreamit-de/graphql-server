@@ -17,8 +17,7 @@ export function determineGraphQLOrFetchError(error: unknown): string {
             error.message.includes('network timeout') ||
             error.message.includes('invalid redirect URL') ||
             error.message.includes(
-                'uri requested responds with a redirect' +
-                    ', redirect mode is set to error',
+                'uri requested responds with a redirect, redirect mode is set to error',
             ) ||
             error.message.includes('maximum redirect reached') ||
             error.message.includes('Cannot follow redirect') ||
