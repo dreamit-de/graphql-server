@@ -20,9 +20,9 @@ export class SimpleMetricsClient implements MetricsClient {
     readonly requestThroughputMetricName: string
     readonly availabilityMetricName: string
     readonly errorsMetricName: string
-    graphQLServerAvailabilityGauge!: number
-    requestThroughput!: number
-    graphQLServerErrorCounter!: Map<string, number>
+    graphQLServerAvailabilityGauge = 0
+    requestThroughput = 0
+    graphQLServerErrorCounter: Map<string, number> = new Map<string, number>()
 
     constructor(
         requestThroughputMetricName = 'graphql_server_request_throughput',
@@ -36,22 +36,7 @@ export class SimpleMetricsClient implements MetricsClient {
     }
 
     initMetrics(): void {
-        this.createRequestThroughputCounter()
-        this.createServerAvailabilityGauge()
-        this.createServerErrorCounter()
         this.initErrorCounterLabels()
-    }
-
-    createServerErrorCounter(): void {
-        this.graphQLServerErrorCounter = new Map<string, number>()
-    }
-
-    createServerAvailabilityGauge(): void {
-        this.graphQLServerAvailabilityGauge = 0
-    }
-
-    createRequestThroughputCounter(): void {
-        this.requestThroughput = 0
     }
 
     /**

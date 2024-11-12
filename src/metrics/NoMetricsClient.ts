@@ -5,9 +5,7 @@ import { MetricsClient } from '@dreamit/graphql-server-base'
  * Metrics client that does not collect any metrics.
  */
 export class NoMetricsClient implements MetricsClient {
-    constructor() {
-        this.initMetrics()
-    }
+    constructor() {}
     initMetrics(): void {}
     setAvailability(): void {}
     increaseRequestThroughput(): void {}
