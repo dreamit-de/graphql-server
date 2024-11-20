@@ -22,6 +22,7 @@ import {
 } from '../ExampleSchemas'
 import {
     INITIAL_GRAPHQL_SERVER_OPTIONS,
+    JsonTestLogger,
     NO_LOGGER,
     StandaloneGraphQLServerResponse,
     generateGetParametersFromGraphQLRequestInfo,
@@ -225,12 +226,13 @@ test(
     'Should get error response when GraphQL context error' +
         ' occurs when calling execute function',
     async () => {
+        const testLogger = new JsonTestLogger()
         // Change options to let executeFunction return an error
         customGraphQLServer.setOptions({
             executeFunction: () => {
                 throw new GraphQLError('A GraphQL context error occurred!', {})
             },
-            logger: NO_LOGGER,
+            logger: testLogger,
             rootValue: userSchemaResolvers,
             schema: userSchema,
         })
@@ -244,6 +246,7 @@ test(
         expect(responseBody.errors[0].message).toBe(
             'A GraphQL context error occurred!',
         )
+        expect(testLogger.logEntries.at(1)?.query).toBe(usersQuery)
         customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
     },
 )

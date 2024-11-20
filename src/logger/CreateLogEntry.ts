@@ -38,6 +38,9 @@ export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
             logEntry.level = LogLevel.warn
         }
     }
+    if (contextRecord && contextRecord.query) {
+        logEntry.query = contextRecord.query as string
+    }
 
     if (error) {
         logEntry.errorName = customErrorName ?? error.name
