@@ -27,25 +27,25 @@ on them.
 
 ## Features
 
--   Creates GraphQL responses
--   Can be used with many webservers (see [Webserver compatibility](#webserver-compatibility)).
--   Uses out-of-the-box default options to ease use and keep code short
--   Provides hot reloading for schema and options
--   Provides out-of-the-box metrics for GraphQLServer
--   Uses only 3 peerDependencies: [graphql-js][1] version 16, [graphql-server-base][12] version 2 and [funpara][17] version 1 (no other production
-    dependencies)
+- Creates GraphQL responses
+- Can be used with many webservers (see [Webserver compatibility](#webserver-compatibility)).
+- Uses out-of-the-box default options to ease use and keep code short
+- Provides hot reloading for schema and options
+- Provides out-of-the-box metrics for GraphQLServer
+- Uses only 3 peerDependencies: [graphql-js][1] version 16, [graphql-server-base][12] version 2 and [funpara][17] version 1 (no other production
+  dependencies)
 
 ## Handling and executing requests
 
 `GraphQLServer` provides the function `handleRequest` to handle and execute requests.
 Depending on the provided parameters different actions will be executed in order to send or return the `ExecutionResult`
 
--   request: If the request is a `GraphQLServerRequest` the `extractInformationFromRequest` function will be used to
-    extract information from the request (url and/or body) and be available as `GraphQLRequestInfo`. If the request already
-    is a `GraphQLRequestInfo` this information will be used without extracting information from the server request.
--   response: If a response is provided (i.e. not undefined), a response will be sent using `sendResponse` function and
-    the `GraphQLExecutionResult` will be returned. If response is undefined, no response will be sent and
-    the `GraphQLExecutionResult` will be returned.
+- request: If the request is a `GraphQLServerRequest` the `extractInformationFromRequest` function will be used to
+  extract information from the request (url and/or body) and be available as `GraphQLRequestInfo`. If the request already
+  is a `GraphQLRequestInfo` this information will be used without extracting information from the server request.
+- response: If a response is provided (i.e. not undefined), a response will be sent using `sendResponse` function and
+  the `GraphQLExecutionResult` will be returned. If response is undefined, no response will be sent and
+  the `GraphQLExecutionResult` will be returned.
 
 ```typescript
 class GraphQLServer {
@@ -62,21 +62,21 @@ The `handleRequest` function can be used for many use cases. The following part 
 description. It is possible to use `handleRequest` with different parameters with a single `GraphQLServer` instance,
 e.g. when using a webserver with websockets or messaging.
 
--   `handleRequest` with `GraphQLServerRequest` and `GraphQLServerResponse`: Use as webserver middleware.
-    Create an instance of `GraphQLServer` and use the request
-    and response provided by the webserver as parameters. You might need to wrap one or both values,
-    see [Webserver compatibility](#webserver-compatibility)
--   `handleRequest` with `GraphQLRequestInfo`: Use for flexible GraphQL execution, e.g. for websockets or messaging.
-    Create an instance of `GraphQLServer` and given a `GraphQLRequestInfo` the request can be executed and the returned
-    `GraphQLExecutionResult` can be used for multiple purposes like sending a message or responding to a websocket
-    request.
--   `handleRequest` with `GraphQLServerRequest`: Use as alternative webserver middleware or if custom actions should be
-    done before sending back a response. Create an instance of `GraphQLServer` and use the request provided by the
-    webserver as parameter for this function. You might need request values,
-    see [Webserver compatibility](#webserver-compatibility). The returned `GraphQLExecutionResult` can be used to execute
-    custom logic with the result and/or prepare or send a response.
--   `handleRequest` with `GraphQLRequestInfo` and `GraphQLServerResponse`: Use if a `GraphQLRequestInfo` is available and
-    a response should be sent from this request.
+- `handleRequest` with `GraphQLServerRequest` and `GraphQLServerResponse`: Use as webserver middleware.
+  Create an instance of `GraphQLServer` and use the request
+  and response provided by the webserver as parameters. You might need to wrap one or both values,
+  see [Webserver compatibility](#webserver-compatibility)
+- `handleRequest` with `GraphQLRequestInfo`: Use for flexible GraphQL execution, e.g. for websockets or messaging.
+  Create an instance of `GraphQLServer` and given a `GraphQLRequestInfo` the request can be executed and the returned
+  `GraphQLExecutionResult` can be used for multiple purposes like sending a message or responding to a websocket
+  request.
+- `handleRequest` with `GraphQLServerRequest`: Use as alternative webserver middleware or if custom actions should be
+  done before sending back a response. Create an instance of `GraphQLServer` and use the request provided by the
+  webserver as parameter for this function. You might need request values,
+  see [Webserver compatibility](#webserver-compatibility). The returned `GraphQLExecutionResult` can be used to execute
+  custom logic with the result and/or prepare or send a response.
+- `handleRequest` with `GraphQLRequestInfo` and `GraphQLServerResponse`: Use if a `GraphQLRequestInfo` is available and
+  a response should be sent from this request.
 
 ## Usage as webserver middleware
 
@@ -88,10 +88,10 @@ You can create a new instance of `GraphQLServer` with the options necessary for 
 graphql-server version 3 and higher try to extract the request information from the `request.body` field. Some webserver
 frameworks like [Express][2] might need a fitting body parser in order to populate this `body` field.
 
--   parse body as `string/text` (recommended): graphql-server will handle reading content and parsing it to JSON.
--   parse body as `object/JSON`: graphql-server will read JSON and try to assign it to matching fields. This might cause
-    FetchErrors if the body contains invalid JSON. We recommend using text parsers instead so graphql-server can respond
-    with a fitting GraphQL error response if JSON is invalid.
+- parse body as `string/text` (recommended): graphql-server will handle reading content and parsing it to JSON.
+- parse body as `object/JSON`: graphql-server will read JSON and try to assign it to matching fields. This might cause
+  FetchErrors if the body contains invalid JSON. We recommend using text parsers instead so graphql-server can respond
+  with a fitting GraphQL error response if JSON is invalid.
 
 ```typescript
 const graphQLServerPort = 3592
@@ -195,25 +195,25 @@ console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 
 There are 2 builtin `MetricsClient` implementations available.
 
--   **SimpleMetricsClient**: Used as default `MetricsClient`. Provides GraphQLServer related metrics without but does not provide NodeJS metrics like cpu and memory usage.
--   **NoMetricsClient**: Does not collect any metrics. Can be used to disable metrics collection/increase performance.
+- **SimpleMetricsClient**: Used as default `MetricsClient`. Provides GraphQLServer related metrics without but does not provide NodeJS metrics like cpu and memory usage.
+- **NoMetricsClient**: Does not collect any metrics. Can be used to disable metrics collection/increase performance.
 
 The **SimpleMetricsClient** provides three custom metrics for the GraphQL server:
 
--   **graphql_server_availability**: Availability gauge with status 0 (unavailable) and 1 (available)
--   **graphql_server_request_throughput**: The number of incoming requests
--   **graphql_server_errors**: The number of errors that are encountered while running the GraphQLServer. The counter uses
-    the _errorName_ field as label so errors could be differentiated. At the moment the following labels are available and
-    initialized with 0:
-    -   FetchError
-    -   GraphQLError
-    -   SchemaValidationError
-    -   MethodNotAllowedError
-    -   InvalidSchemaError
-    -   MissingQueryParameterError
-    -   ValidationError
-    -   SyntaxError
-    -   IntrospectionDisabledError
+- **graphql_server_availability**: Availability gauge with status 0 (unavailable) and 1 (available)
+- **graphql_server_request_throughput**: The number of incoming requests
+- **graphql_server_errors**: The number of errors that are encountered while running the GraphQLServer. The counter uses
+  the _errorName_ field as label so errors could be differentiated. At the moment the following labels are available and
+  initialized with 0:
+    - FetchError
+    - GraphQLError
+    - SchemaValidationError
+    - MethodNotAllowedError
+    - InvalidSchemaError
+    - MissingQueryParameterError
+    - ValidationError
+    - SyntaxError
+    - IntrospectionDisabledError
 
 A simple metrics endpoint can be created by using `getMetricsContentType` and `getMetrics` functions from
 the `GraphQLServer` instance. In the example below a second route is used to return metrics data.
@@ -330,97 +330,97 @@ the `setOptions` function of the `GraphQLServer` instance.
 
 ### GraphQL related options
 
--   **`schema`**: The schema that is used to handle the request and send a response. If undefined the `GraphQLServer` will
-    reject responses with a GraphQL error response with status code 500.
--   **`shouldUpdateSchemaFunction`**: Function that can be used to determine whether a schema update should be executed.
--   **`formatErrorFunction`**: Function that can be used to format occurring GraphQL errors. Given a `GraphQLError` it
-    should return a `GraphQLFormattedError`. By default `defaultFormatErrorFunction` is called that uses `error.toJSON` to
-    format the error.
--   **`schemaValidationFunction`**: Function that is called when a schema is set or updated. Given a `GraphQLSchema` it
-    can return a `ReadonlyArray<GraphQLError>` or an empty array if no errors occurred/should be returned. By
-    default `validateSchema` from [graphql-js][1] library is called.
--   **`parseFunction`**: Function that is called to create a `DocumentNode` with the extracted query in the request
-    information. Given a `source` and `ParseOptions` it should return a `DocumentNode`. By default `parse`
-    from [graphql-js][1] library is called.
--   **`defaultValidationRules`**: Default validation rules that are used when `validateSchemaFunction` is called.
-    Both `defaultValidationRules` and `customValidationRules` will be merged together when `validateSchemaFunction`
-    is called. By default `specifiedRules` from [graphql-js][1] are used. Can be overwritten if no or other default rules
-    should be used.
--   **`customValidationRules`**: Custom validation rules that are used when `validateSchemaFunction` is called.
-    Both `defaultValidationRules` and `customValidationRules` will be merged together when `validateSchemaFunction`
-    is called. By default, an empty array is set. Can be overwritten to add additional rules
-    like `NoSchemaIntrospectionCustomRule`.
--   **`validationTypeInfo`**: Validation type info that is used when `validateSchemaFunction` is called.
--   **`validationOptions`**: Validation options containing `{ maxErrors?: number }` that is used
-    when `validateSchemaFunction` is called.
--   **`removeValidationRecommendations`**: If `true` removes validation recommendations like "users not found. Did you
-    mean user?". For non-production environments it is usually safe to allow recommendations. For production environments
-    when not providing access to third-party users it is considered good practice to remove these recommendations so users
-    can not circumvent disabled introspection request by using recommendations to explore the schema.
--   **`validateFunction`**: Validation function that validates the extracted request against the available schema. By
-    default `validate` from [graphql-js][1] library is called.
--   **`rootValue`**: Root value that is used when `executeFunction` is called. Can be used to define resolvers that handle
-    how defined queries and/or mutations should be resolved (e.g. fetch object from database and return entity).
--   **`fieldResolver`**: Field resolver function that is used when `executeFunction` is called. Default is undefined, if
-    custom logic is necessary it can be added.
--   **`typeResolver`**: Type resolver function that is used when `executeFunction` is called. Default is undefined, if
-    custom logic is necessary it can be added.
--   **`executeFunction`**: Execute function that executes the parsed `DocumentNode` (created in `parseFunction`) using
-    given schema, values and resolvers. Returns a Promise or value of an `ExecutionResult`. By default `execute`
-    from [graphql-js][1] library is called.
--   **`extensionFunction`**: Extension function that can be used to add additional information to the `extensions` field
-    of the response. Given a `GraphQLRequestInfo`, `ExecutionResult`, `GraphQLServerOptions` and context it should return undefined or an ObjMap
-    of key-value-pairs that are added to the`extensions` field. By default `defaultExtensions`
-    is used and returns undefined.
--   **`reassignAggregateError`**: If `true` and the `ExecutionResult` created by the `executeFunction` contains
-    an `AggregateError`
-    (e.g. an error containing a comma-separated list of errors in the message and an `originalError` containing multiple
-    errors)
-    this function will reassign the `originalError.errors` to the `ExecutionResult.errors` field. This is helpful if
-    another application creates `AggregateErrors` while the initiator of the request (e.g. a Frontend app) does not expect
-    or know how to handle `AggregateErrors`.
+- **`schema`**: The schema that is used to handle the request and send a response. If undefined the `GraphQLServer` will
+  reject responses with a GraphQL error response with status code 500.
+- **`shouldUpdateSchemaFunction`**: Function that can be used to determine whether a schema update should be executed.
+- **`formatErrorFunction`**: Function that can be used to format occurring GraphQL errors. Given a `GraphQLError` it
+  should return a `GraphQLFormattedError`. By default `defaultFormatErrorFunction` is called that uses `error.toJSON` to
+  format the error.
+- **`schemaValidationFunction`**: Function that is called when a schema is set or updated. Given a `GraphQLSchema` it
+  can return a `ReadonlyArray<GraphQLError>` or an empty array if no errors occurred/should be returned. By
+  default `validateSchema` from [graphql-js][1] library is called.
+- **`parseFunction`**: Function that is called to create a `DocumentNode` with the extracted query in the request
+  information. Given a `source` and `ParseOptions` it should return a `DocumentNode`. By default `parse`
+  from [graphql-js][1] library is called.
+- **`defaultValidationRules`**: Default validation rules that are used when `validateSchemaFunction` is called.
+  Both `defaultValidationRules` and `customValidationRules` will be merged together when `validateSchemaFunction`
+  is called. By default `specifiedRules` from [graphql-js][1] are used. Can be overwritten if no or other default rules
+  should be used.
+- **`customValidationRules`**: Custom validation rules that are used when `validateSchemaFunction` is called.
+  Both `defaultValidationRules` and `customValidationRules` will be merged together when `validateSchemaFunction`
+  is called. By default, an empty array is set. Can be overwritten to add additional rules
+  like `NoSchemaIntrospectionCustomRule`.
+- **`validationTypeInfo`**: Validation type info that is used when `validateSchemaFunction` is called.
+- **`validationOptions`**: Validation options containing `{ maxErrors?: number }` that is used
+  when `validateSchemaFunction` is called.
+- **`removeValidationRecommendations`**: If `true` removes validation recommendations like "users not found. Did you
+  mean user?". For non-production environments it is usually safe to allow recommendations. For production environments
+  when not providing access to third-party users it is considered good practice to remove these recommendations so users
+  can not circumvent disabled introspection request by using recommendations to explore the schema.
+- **`validateFunction`**: Validation function that validates the extracted request against the available schema. By
+  default `validate` from [graphql-js][1] library is called.
+- **`rootValue`**: Root value that is used when `executeFunction` is called. Can be used to define resolvers that handle
+  how defined queries and/or mutations should be resolved (e.g. fetch object from database and return entity).
+- **`fieldResolver`**: Field resolver function that is used when `executeFunction` is called. Default is undefined, if
+  custom logic is necessary it can be added.
+- **`typeResolver`**: Type resolver function that is used when `executeFunction` is called. Default is undefined, if
+  custom logic is necessary it can be added.
+- **`executeFunction`**: Execute function that executes the parsed `DocumentNode` (created in `parseFunction`) using
+  given schema, values and resolvers. Returns a Promise or value of an `ExecutionResult`. By default `execute`
+  from [graphql-js][1] library is called.
+- **`extensionFunction`**: Extension function that can be used to add additional information to the `extensions` field
+  of the response. Given a `GraphQLRequestInfo`, `ExecutionResult`, `GraphQLServerOptions` and context it should return undefined or an ObjMap
+  of key-value-pairs that are added to the`extensions` field. By default `defaultExtensions`
+  is used and returns undefined.
+- **`reassignAggregateError`**: If `true` and the `ExecutionResult` created by the `executeFunction` contains
+  an `AggregateError`
+  (e.g. an error containing a comma-separated list of errors in the message and an `originalError` containing multiple
+  errors)
+  this function will reassign the `originalError.errors` to the `ExecutionResult.errors` field. This is helpful if
+  another application creates `AggregateErrors` while the initiator of the request (e.g. a Frontend app) does not expect
+  or know how to handle `AggregateErrors`.
 
 ### Context function
 
--   **`contextFunction`**: Given `GraphQLServerOptions`, `GraphQLServerRequest` and `GraphQLServerResponse` this function is used to create a context value that is available in the whole request flow.
-    Default implementation is `defaultContextFunction` that returns the given `GraphQLServerRequest`.
-    Can be used to extract information from the request and/or response and return them as context.
-    This is often used to extract headers like 'Authorization' and set them in the execute function.
+- **`contextFunction`**: Given `GraphQLServerOptions`, `GraphQLServerRequest` and `GraphQLServerResponse` this function is used to create a context value that is available in the whole request flow.
+  Default implementation is `defaultContextFunction` that returns the given `GraphQLServerRequest`.
+  Can be used to extract information from the request and/or response and return them as context.
+  This is often used to extract headers like 'Authorization' and set them in the execute function.
 
 ### Error messages
 
--   **`executionResultErrorMessage:`**: Error message that is used in logging if a response contains an `errors` element.
--   **`fetchErrorMessage:`**: If provided and not set to undefined, used as fixed error message if a FetchError occurs.
--   **`graphqlExecutionErrorMessage:`**: Error message that is used in logging if an error is thrown when `execute` function is called.
--   **`validationErrorMessage:`**: Error message that is used in logging if one or more errors occurred when calling the `validate` function.
+- **`executionResultErrorMessage:`**: Error message that is used in logging if a response contains an `errors` element.
+- **`fetchErrorMessage:`**: If provided and not set to undefined, used as fixed error message if a FetchError occurs.
+- **`graphqlExecutionErrorMessage:`**: Error message that is used in logging if an error is thrown when `execute` function is called.
+- **`validationErrorMessage:`**: Error message that is used in logging if one or more errors occurred when calling the `validate` function.
 
 ### Error responses
 
--   **`methodNotAllowedResponse:`**: Function given a method as `string` returns an error that the used method is not allowed by `GraphQLServer`.
--   **`invalidSchemaResponse:`**: Default error that is returned with set schema is invalid.
--   **`missingQueryParameterResponse:`**: Default error that is returned if no query is available in the `GraphQLRequestInfo`.
--   **`onlyQueryInGetRequestsResponse:`**: Function given an operation as `string` returns an error that the used operation is not allowed for `GET` requests.
+- **`methodNotAllowedResponse:`**: Function given a method as `string` returns an error that the used method is not allowed by `GraphQLServer`.
+- **`invalidSchemaResponse:`**: Default error that is returned with set schema is invalid.
+- **`missingQueryParameterResponse:`**: Default error that is returned if no query is available in the `GraphQLRequestInfo`.
+- **`onlyQueryInGetRequestsResponse:`**: Function given an operation as `string` returns an error that the used operation is not allowed for `GET` requests.
 
 ### Metrics options
 
--   **`collectErrorMetricsFunction:`**: Given an error name as string, error as `unknown`, `GraphQLServerOptions` and context as `unknown` this function
-    can be used to trigger collecting error metrics. Default implementation is `defaultCollectErrorMetrics` that increase
-    the error counter for the given errorName or Error by 1.
+- **`collectErrorMetricsFunction:`**: Given an error name as string, error as `unknown`, `GraphQLServerOptions` and context as `unknown` this function
+  can be used to trigger collecting error metrics. Default implementation is `defaultCollectErrorMetrics` that increase
+  the error counter for the given errorName or Error by 1.
 
 ### Technical components
 
--   **`logger`**: Logger to be used in the GraphQL server. `TextLogger` and `JsonLogger` as well as `NoStacktraceTextLogger` and `NoStacktraceJsonLogger` (useful for tests without the need for a stacktrace) and `NoLogger` (useful if no logging should be done but logger is required) are available in the module. Own
-    Logger can be created by implementing `Logger` interface.
--   **`extractInformationFromRequest`**: Function that can be used to extract information from the `GraphQLServerRequest`
-    and return a `Promise<GraphQLRequestInfo>`. By default, the `extractInformationFromRequest` function is used that tries to
-    extract the information from the body (using `request.body` field) and URL params of the request.
--   **`sendResponse`**: Function used to send a fitting response being either a `data` or `error` response.
-    By default, the `sendResponse` is used that tries to create and send a response using the functions provided
-    by the given `GraphQLServerResponse`.
--   **`metricsClient`**: The `MetricsClient` used to collect metrics from the GraphQLServer. By default,
-    the `SimpleMetricsClient` is used that collects three custom metrics. Own MetricsClient can be used by implementing `MetricsClient` interface.
--   **`responseEndChunkFunction`**: Function used to adjust the chunk/body before it is used in the `response.end` function call in the `sendResponse` function. By default it stringifies the ExecutionResult and creates a Buffer from this string.
--   **`adjustGraphQLExecutionResult`**: Function used to adjust the `GraphQLExecutionResult` before it is returned.
+- **`logger`**: Logger to be used in the GraphQL server. `TextLogger` and `JsonLogger` as well as `NoStacktraceTextLogger` and `NoStacktraceJsonLogger` (useful for tests without the need for a stacktrace) and `NoLogger` (useful if no logging should be done but logger is required) are available in the module. Own
+  Logger can be created by implementing `Logger` interface.
+- **`extractInformationFromRequest`**: Function that can be used to extract information from the `GraphQLServerRequest`
+  and return a `Promise<GraphQLRequestInfo>`. By default, the `extractInformationFromRequest` function is used that tries to
+  extract the information from the body (using `request.body` field) and URL params of the request.
+- **`sendResponse`**: Function used to send a fitting response being either a `data` or `error` response.
+  By default, the `sendResponse` is used that tries to create and send a response using the functions provided
+  by the given `GraphQLServerResponse`.
+- **`metricsClient`**: The `MetricsClient` used to collect metrics from the GraphQLServer. By default,
+  the `SimpleMetricsClient` is used that collects three custom metrics. Own MetricsClient can be used by implementing `MetricsClient` interface.
+- **`responseEndChunkFunction`**: Function used to adjust the chunk/body before it is used in the `response.end` function call in the `sendResponse` function. By default it stringifies the ExecutionResult and creates a Buffer from this string.
+- **`adjustGraphQLExecutionResult`**: Function used to adjust the `GraphQLExecutionResult` before it is returned.
 
 ## Customize and extend GraphQLServer
 
