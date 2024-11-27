@@ -46,18 +46,18 @@
         "@stryker-mutator/vitest-runner": "8.6.0",
         "@types/content-type": "1.1.8",
         "@types/node": "22.10.0",
-        "@vitest/coverage-v8": "2.1.5",
+        "@vitest/coverage-v8": "2.1.6",
         "eslint-plugin-deprecation": "3.0.0",
         "eslint-plugin-import": "2.31.0",
         "eslint-plugin-security": "3.0.1",
         "eslint-plugin-unicorn": "56.0.1",
-        "prettier": "3.3.3",
+        "prettier": "3.4.1",
         "prettier-plugin-organize-imports": "4.1.0",
         "tsup": "8.3.5",
         "typescript": "5.7.2",
         "typescript-eslint": "8.16.0",
         "vite-tsconfig-paths": "5.1.3",
-        "vitest": "2.1.5"
+        "vitest": "2.1.6"
     },
     "peerDependencies": {
         "@dreamit/funpara": "^1.0.0",
