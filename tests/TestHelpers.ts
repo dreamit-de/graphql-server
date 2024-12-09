@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable max-classes-per-file */
 import {
     GraphQLExecutionResult,
     GraphQLRequestInfo,
@@ -22,7 +22,7 @@ import { IncomingHttpHeaders } from 'node:http'
 export class StandaloneGraphQLServerResponse implements GraphQLServerResponse {
     statusCode = 400
     headers = new Map<string, string | number | readonly string[]>()
-    responses: Array<unknown> = new Array<unknown>()
+    responses: unknown[] = new Array<unknown>()
 
     setHeader(name: string, value: string | number | readonly string[]): this {
         this.headers.set(name, value)
@@ -42,7 +42,7 @@ export class StandaloneGraphQLServerResponse implements GraphQLServerResponse {
         }
         return ''
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line no-explicit-any
     getLastResponseAsObject(): any {
         return JSON.parse(this.getLastResponse())
     }
@@ -54,7 +54,7 @@ NO_CONSOLE.log = (): void => {
 }
 
 export class JsonTestLogger extends JsonLogger {
-    logEntries: Array<LogEntry> = new Array<LogEntry>()
+    logEntries: LogEntry[] = new Array<LogEntry>()
 
     constructor(debugEnabled = false) {
         super(

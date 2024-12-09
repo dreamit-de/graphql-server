@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-empty-function, no-unused-vars */
 import { DateFunction } from '@dreamit/funpara'
 import { Logger } from '@dreamit/graphql-server-base'
 

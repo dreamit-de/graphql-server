@@ -1,11 +1,11 @@
-/* eslint-disable max-len */
+/* eslint-disable max-len, max-classes-per-file */
 import { testDateFunction, testDateString } from '@dreamit/funpara'
 import { LogEntry, NoStacktraceTextLogger, TextLogger } from 'src'
 import { expect, test } from 'vitest'
 import { NO_CONSOLE } from '../TestHelpers'
 
 class TextTestLogger extends TextLogger {
-    logEntries: Array<string> = new Array<string>()
+    logEntries: string[] = new Array<string>()
 
     constructor(debugEnabled = false) {
         super(
@@ -28,7 +28,7 @@ class TextTestLogger extends TextLogger {
 }
 
 class NoStacktraceTextTestLogger extends NoStacktraceTextLogger {
-    logEntries: Array<string> = new Array<string>()
+    logEntries: string[] = new Array<string>()
 
     constructor(debugEnabled = false) {
         super(

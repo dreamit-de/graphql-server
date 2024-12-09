@@ -1,4 +1,5 @@
-import { LogEntry, TextLogger } from '../'
+import { LogEntry } from './LogEntry'
+import { TextLogger } from './TextLogger'
 
 export class NoStacktraceTextLogger extends TextLogger {
     prepareLogOutput(logEntry: LogEntry, context: unknown): string {

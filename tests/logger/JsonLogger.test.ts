@@ -11,7 +11,7 @@ import { expect, test } from 'vitest'
 import { JsonTestLogger, NO_CONSOLE } from '../TestHelpers'
 
 export class NoStacktraceJsonTestLogger extends NoStacktraceJsonLogger {
-    logEntries: Array<LogEntry> = new Array<LogEntry>()
+    logEntries: LogEntry[] = new Array<LogEntry>()
 
     constructor(debugEnabled = false) {
         super(

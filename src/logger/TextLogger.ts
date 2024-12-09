@@ -1,13 +1,11 @@
 import { DateFunction } from '@dreamit/funpara'
 import { Logger } from '@dreamit/graphql-server-base'
 import { Console } from 'node:console'
-import {
-    LogEntry,
-    LogEntryInput,
-    LogLevel,
-    createLogEntry,
-    truncateLogMessage,
-} from '../'
+import { createLogEntry } from './CreateLogEntry'
+import { LogEntry } from './LogEntry'
+import { LogEntryInput } from './LogEntryInput'
+import { LogLevel } from './LogLevel'
+import { truncateLogMessage } from './TruncateLogMessage'
 
 /**
  * Logger implementation that outputs log entries as text to console.
@@ -37,9 +35,9 @@ export class TextLogger implements Logger {
     constructor(
         loggerName: string,
         serviceName: string,
-        debugEnabled: boolean = false,
-        truncateLimit: number = 0,
-        truncatedText: string = '_TRUNCATED_',
+        debugEnabled = false,
+        truncateLimit = 0,
+        truncatedText = '_TRUNCATED_',
         loggerConsole: Console = new Console(process.stdout, process.stderr),
     ) {
         this.loggerName = loggerName
@@ -112,7 +110,7 @@ export class TextLogger implements Logger {
         const {
             dateFunction,
             logMessage,
-            loglevel: loglevel,
+            loglevel,
             error,
             customErrorName,
             context,
@@ -146,7 +144,7 @@ export class TextLogger implements Logger {
      * @param {LogEntry} logEntry - The extracted log information.
      * @param {unknown} context - The context information
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     prepareLogOutput(logEntry: LogEntry, context?: unknown): string {
         return (
             `${logEntry.timestamp} [${logEntry.level.toUpperCase()}]` +

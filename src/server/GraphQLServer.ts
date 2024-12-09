@@ -20,24 +20,23 @@ import {
     Source,
     getOperationAST,
 } from 'graphql'
-import {
-    DefaultGraphQLServerOptions,
-    GraphQLServerOptions,
-    SimpleMetricsClient,
-    determineGraphQLOrFetchError,
-    determineValidationOrIntrospectionDisabledError,
-    getFirstErrorFromExecutionResult,
-    increaseFetchOrGraphQLErrorMetric,
-    isAggregateError,
-    removeValidationRecommendationsFromErrors,
-} from '../'
+import { isAggregateError } from '../error/AggregateError'
+import { determineGraphQLOrFetchError } from '../error/DetermineGraphQLOrFetchError'
+import { determineValidationOrIntrospectionDisabledError } from '../error/DetermineValidationOrIntrospectionDisabledError'
+import { removeValidationRecommendationsFromErrors } from '../error/RemoveValidationRecommendationsFromErrors'
+import { increaseFetchOrGraphQLErrorMetric } from '../metrics/IncreaseFetchOrGraphQLErrorMetric'
+import { SimpleMetricsClient } from '../metrics/SimpleMetricsClient'
+import { requestCouldNotBeProcessed } from '../request/RequestConstants'
+import { getFirstErrorFromExecutionResult } from '../response/GraphQLExecutionResult'
+import { getRequestInformation as getRequestInformationFunction } from '../server/GetRequestInformation'
+import { DefaultGraphQLServerOptions } from './DefaultGraphQLServerOptions'
+import { GraphQLServerOptions } from './GraphQLServerOptions'
 
-const requestCouldNotBeProcessed = 'Request could not be processed: '
 const defaultOptions = new DefaultGraphQLServerOptions()
 
 export class GraphQLServer {
     options: DefaultGraphQLServerOptions = new DefaultGraphQLServerOptions()
-    schemaValidationErrors: ReadonlyArray<GraphQLError> = []
+    schemaValidationErrors: readonly GraphQLError[] = []
 
     constructor(optionsParameter?: GraphQLServerOptions) {
         this.setOptions(optionsParameter)
@@ -82,8 +81,7 @@ export class GraphQLServer {
                     this.options.schemaValidationFunction(this.options.schema)
                 if (this.schemaValidationErrors.length > 0) {
                     logger.warn(
-                        'Schema validation failed with errors. ' +
-                            'Please check the GraphQL schema and fix potential issues.',
+                        'Schema validation failed with errors. Please check the GraphQL schema and fix potential issues.',
                     )
                     for (const error of this.schemaValidationErrors) {
                         logger.error(
@@ -101,8 +99,7 @@ export class GraphQLServer {
             }
         } else {
             logger.warn(
-                'Schema update was rejected because condition' +
-                    ' set in "shouldUpdateSchema" check was not fulfilled.',
+                'Schema update was rejected because condition set in "shouldUpdateSchema" check was not fulfilled.',
             )
         }
         this.options.metricsClient.setAvailability(
@@ -226,43 +223,19 @@ export class GraphQLServer {
         return result
     }
 
+    /**
+     * Extracts the request information from a given request
+     * @deprecated Use getRequestInformation function instead
+     * @param {GraphQLServerRequest} request - The server request
+     * @param {unknown} context - The context to be used
+     * @returns {GraphQLRequestInfo | GraphQLExecutionResult} The request information
+     * or an execution result if an error occurred
+     */
     getRequestInformation(
         request: GraphQLServerRequest,
         context: unknown,
     ): GraphQLRequestInfo | GraphQLExecutionResult {
-        const {
-            logger,
-            methodNotAllowedResponse,
-            collectErrorMetricsFunction,
-            extractInformationFromRequest,
-        } = this.options
-
-        // Reject requests that do not use GET and POST methods.
-        if (request.method !== 'GET' && request.method !== 'POST') {
-            const response = methodNotAllowedResponse(request.method)
-            const error = getFirstErrorFromExecutionResult(response)
-            logger.error(
-                requestCouldNotBeProcessed,
-                error,
-                METHOD_NOT_ALLOWED_ERROR,
-                context,
-            )
-            collectErrorMetricsFunction({
-                context,
-                error,
-                errorName: METHOD_NOT_ALLOWED_ERROR,
-                serverOptions: this.options,
-            })
-            return response
-        }
-
-        // Extract graphql request information (query, variables, operationName) from request
-        const requestInformation = extractInformationFromRequest(request)
-        logger.debug(
-            `Extracted request information is ${JSON.stringify(requestInformation)}`,
-            context,
-        )
-        return requestInformation
+        return getRequestInformationFunction(request, context, this.options)
     }
 
     async executeRequestWithInfo(
@@ -506,9 +479,7 @@ export class GraphQLServer {
                         isAggregateError(error.originalError)
                     ) {
                         logger.debug(
-                            'Error is AggregateError and ' +
-                                'reassignAggregateError feature is enabled. AggregateError ' +
-                                'will be reassigned to original errors field.',
+                            'Error is AggregateError and reassignAggregateError feature is enabled. AggregateError will be reassigned to original errors field.',
                             context,
                         )
                         executionResult.errors = error.originalError.errors

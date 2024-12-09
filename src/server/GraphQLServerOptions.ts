@@ -21,7 +21,7 @@ import {
     TypeInfo,
     ValidationRule,
 } from 'graphql'
-import { StandaloneResponseParameters } from '../'
+import { StandaloneResponseParameters } from '../response/StandaloneResponseParameters'
 
 /**
  * Interface for creating new GraphQLServer instances.
@@ -48,13 +48,13 @@ export interface GraphQLServerOptions {
     }) => void
     readonly schemaValidationFunction?: (
         schema: GraphQLSchema,
-    ) => ReadonlyArray<GraphQLError>
+    ) => readonly GraphQLError[]
     readonly parseFunction?: (
         source: string | Source,
         options?: ParseOptions,
     ) => DocumentNode
-    readonly defaultValidationRules?: ReadonlyArray<ValidationRule>
-    readonly customValidationRules?: ReadonlyArray<ValidationRule>
+    readonly defaultValidationRules?: readonly ValidationRule[]
+    readonly customValidationRules?: readonly ValidationRule[]
     readonly validationTypeInfo?: TypeInfo
     readonly validationOptions?: { maxErrors?: number }
     readonly removeValidationRecommendations?: boolean
@@ -62,10 +62,10 @@ export interface GraphQLServerOptions {
     readonly validateFunction?: (
         schema: GraphQLSchema,
         documentAST: DocumentNode,
-        rules?: ReadonlyArray<ValidationRule>,
+        rules?: readonly ValidationRule[],
         options?: { maxErrors?: number },
         typeInfo?: TypeInfo,
-    ) => ReadonlyArray<GraphQLError>
+    ) => readonly GraphQLError[]
     readonly rootValue?: unknown
     readonly contextFunction?: (contextParameters: {
         serverOptions: GraphQLServerOptions

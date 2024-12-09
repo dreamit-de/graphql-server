@@ -1,4 +1,4 @@
-import { LogLevel } from '../'
+import { LogLevel } from './LogLevel'
 
 export interface LogEntry {
     logger: string

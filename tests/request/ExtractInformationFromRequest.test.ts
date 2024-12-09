@@ -64,7 +64,6 @@ test('Should properly extract variables from url', () => {
     const request = {
         body: { query: 'doesnotmatter' },
         headers: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
             'content-type': 'application/json',
         },
         url: '/graphql?query=mutation&variables=findme',
@@ -77,7 +76,6 @@ test('Should properly extract query from body for graphql request', () => {
     const request = {
         body: { query: 'findTheQuery' },
         headers: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
             'content-type': 'application/graphql',
         },
         url: 'pengpeng',
@@ -90,7 +88,6 @@ test('Should read body even if url is not set', () => {
     const request = {
         body: { query: 'findTheQuery' },
         headers: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
             'content-type': 'application/graphql',
         },
     }
