@@ -1,13 +1,11 @@
 import { DateFunction } from '@dreamit/funpara'
 import { Logger } from '@dreamit/graphql-server-base'
 import { Console } from 'node:console'
-import {
-    LogEntry,
-    LogEntryInput,
-    LogLevel,
-    createLogEntry,
-    truncateLogMessage,
-} from '../'
+import { createLogEntry } from './CreateLogEntry'
+import { LogEntry } from './LogEntry'
+import { LogEntryInput } from './LogEntryInput'
+import { LogLevel } from './LogLevel'
+import { truncateLogMessage } from './TruncateLogMessage'
 
 /**
  * Logger implementation that outputs log entries as JSON text to console.

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
 import { GraphQLError, GraphQLSchema, parse, validate } from 'graphql'
 import {

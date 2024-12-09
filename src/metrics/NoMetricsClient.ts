@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable no-empty-function, no-useless-constructor */
 import { MetricsClient } from '@dreamit/graphql-server-base'
 
 /**

@@ -4,8 +4,8 @@ import { GraphQLError } from 'graphql'
 export const recommendationText = 'Did you mean'
 
 export function removeValidationRecommendationsFromErrors(
-    validationErrors: ReadonlyArray<GraphQLError>,
-): ReadonlyArray<GraphQLError> {
+    validationErrors: readonly GraphQLError[],
+): readonly GraphQLError[] {
     for (const validationError of validationErrors) {
         if (validationError.message.includes(recommendationText)) {
             validationError.message = validationError.message.slice(

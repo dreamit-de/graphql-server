@@ -1,6 +1,4 @@
-export const VARIABLES_IN_MESSAGE_REGEX: RegExp = new RegExp(
-    /got invalid value (.*); Field/gm,
-)
+export const VARIABLES_IN_MESSAGE_REGEX = /got invalid value (.*); Field/gm
 
 /**
  * Removes sensible information that might occur when

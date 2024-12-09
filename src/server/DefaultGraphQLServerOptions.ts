@@ -23,14 +23,12 @@ import {
     validateSchema,
 } from 'graphql'
 import { Buffer } from 'node:buffer'
-import {
-    GraphQLServerOptions,
-    SimpleMetricsClient,
-    StandaloneResponseParameters,
-    TextLogger,
-    extractInformationFromRequest,
-    sendResponse,
-} from '../'
+import { TextLogger } from '../logger/TextLogger'
+import { SimpleMetricsClient } from '../metrics/SimpleMetricsClient'
+import { extractInformationFromRequest } from '../request/ExtractInformationFromRequest'
+import { sendResponse } from '../response/SendResponse'
+import { StandaloneResponseParameters } from '../response/StandaloneResponseParameters'
+import { GraphQLServerOptions } from './GraphQLServerOptions'
 
 export const defaultGraphqlExecutionErrorMessage =
     'While processing the request a GraphQL execution error occurred: '
@@ -68,7 +66,7 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     schemaValidationFunction = validateSchema
     parseFunction = parse
     defaultValidationRules = specifiedRules
-    customValidationRules: ReadonlyArray<ValidationRule> = []
+    customValidationRules: readonly ValidationRule[] = []
     removeValidationRecommendations = true
     reassignAggregateError = false
     validateFunction = validate

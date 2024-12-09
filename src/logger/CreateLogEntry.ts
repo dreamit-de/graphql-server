@@ -1,11 +1,9 @@
 import { GraphQLError } from 'graphql'
-import {
-    LogEntry,
-    LogEntryInput,
-    LogLevel,
-    createISOTimestamp,
-    sanitizeMessage,
-} from '../'
+import { createISOTimestamp } from './CreateTimestamp'
+import { LogEntry } from './LogEntry'
+import { LogEntryInput } from './LogEntryInput'
+import { LogLevel } from './LogLevel'
+import { sanitizeMessage } from './SanitizeMessage'
 
 export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
     const {

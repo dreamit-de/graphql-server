@@ -1,4 +1,4 @@
-import { LogEntry } from '../'
+import { LogEntry } from './LogEntry'
 
 export function truncateLogMessage(
     logEntry: LogEntry,

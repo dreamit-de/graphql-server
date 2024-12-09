@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import {
     FETCH_ERROR,
     GRAPHQL_ERROR,

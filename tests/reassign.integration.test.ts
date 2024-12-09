@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { ExecutionResult } from 'graphql'
 import { PromiseOrValue } from 'graphql/jsutils/PromiseOrValue'
 import { GraphQLServer } from 'src'

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { GraphQLError, GraphQLFormattedError } from 'graphql'
 import { sendResponse } from 'src'
 import { expect, test } from 'vitest'
@@ -12,7 +11,7 @@ test('Should use default response.end behavior if no responseEndChunkFunction if
         executionResult: {
             data: { message: 'Did work!' },
         },
-        formatErrorFunction: function (
+        formatErrorFunction: function testFormatErrorFunction(
             error: GraphQLError,
         ): GraphQLFormattedError {
             return error

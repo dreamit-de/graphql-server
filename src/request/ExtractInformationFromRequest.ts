@@ -6,7 +6,7 @@ import {
 import { GraphQLError } from 'graphql'
 import { Buffer } from 'node:buffer'
 import { URLSearchParams } from 'node:url'
-import { getContentType } from '../'
+import { getContentType } from './GetContentType'
 
 export function extractInformationFromRequest(
     request: GraphQLServerRequest,
@@ -118,7 +118,7 @@ export function extractInformationFromBody(
                     return {
                         error: {
                             graphQLError: new GraphQLError(
-                                'POST body' + ' contains invalid JSON.',
+                                'POST body contains invalid JSON.',
                                 {},
                             ),
                             statusCode: 400,
@@ -140,7 +140,7 @@ export function extractInformationFromBody(
         case ContentType.urlencoded: {
             return extractInformationFromUrlParameters(`host?${body}.`)
         }
-        case ContentType.unknown: {
+        default: {
             return {
                 error: {
                     graphQLError: new GraphQLError(

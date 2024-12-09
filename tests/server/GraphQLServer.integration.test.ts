@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable max-lines */
+
 import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
 import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql'
 import { GraphQLServer, StandaloneResponseParameters } from 'src'
