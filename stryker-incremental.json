@@ -12352,32 +12352,6 @@
           }
         },
         {
-          "id": "309",
-          "mutatorName": "ObjectLiteral",
-          "replacement": "{}",
-          "statusReason": "expected { error: undefined, …(3) } to strictly equal { error: undefined, …(3) }",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 2,
-          "killedBy": [
-            "119"
-          ],
-          "coveredBy": [
-            "70",
-            "119"
-          ],
-          "location": {
-            "end": {
-              "column": 18,
-              "line": 137
-            },
-            "start": {
-              "column": 24,
-              "line": 130
-            }
-          }
-        },
-        {
           "id": "311",
           "mutatorName": "ConditionalExpression",
           "replacement": "false",
@@ -12452,6 +12426,32 @@
             "start": {
               "column": 25,
               "line": 134
+            }
+          }
+        },
+        {
+          "id": "309",
+          "mutatorName": "ObjectLiteral",
+          "replacement": "{}",
+          "statusReason": "expected { error: undefined, …(3) } to strictly equal { error: undefined, …(3) }",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 2,
+          "killedBy": [
+            "119"
+          ],
+          "coveredBy": [
+            "70",
+            "119"
+          ],
+          "location": {
+            "end": {
+              "column": 18,
+              "line": 137
+            },
+            "start": {
+              "column": 24,
+              "line": 130
             }
           }
         },
@@ -17578,9 +17578,9 @@
           }
         },
         {
-          "id": "434",
+          "id": "435",
           "mutatorName": "LogicalOperator",
-          "replacement": "options.collectErrorMetricsFunction && defaultCollectErrorMetrics",
+          "replacement": "options.methodNotAllowedResponse && defaultMethodNotAllowedResponse",
           "status": "Survived",
           "static": false,
           "testsCompleted": 38,
@@ -17625,73 +17625,12 @@
           ],
           "location": {
             "end": {
-              "column": 74,
-              "line": 24
+              "column": 76,
+              "line": 26
             },
             "start": {
               "column": 9,
-              "line": 24
-            }
-          }
-        },
-        {
-          "id": "433",
-          "mutatorName": "LogicalOperator",
-          "replacement": "options.logger && fallbackTextLogger",
-          "statusReason": "Cannot read properties of undefined (reading 'debug')",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 38,
-          "killedBy": [
-            "119"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-            "19",
-            "20",
-            "21",
-            "22",
-            "23",
-            "24",
-            "25",
-            "26",
-            "27",
-            "28",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "85",
-            "86",
-            "87",
-            "119"
-          ],
-          "location": {
-            "end": {
-              "column": 56,
-              "line": 22
-            },
-            "start": {
-              "column": 20,
-              "line": 22
+              "line": 26
             }
           }
         },
@@ -17757,9 +17696,70 @@
           }
         },
         {
-          "id": "435",
+          "id": "433",
           "mutatorName": "LogicalOperator",
-          "replacement": "options.methodNotAllowedResponse && defaultMethodNotAllowedResponse",
+          "replacement": "options.logger && fallbackTextLogger",
+          "statusReason": "Cannot read properties of undefined (reading 'debug')",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 38,
+          "killedBy": [
+            "119"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "23",
+            "24",
+            "25",
+            "26",
+            "27",
+            "28",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "85",
+            "86",
+            "87",
+            "119"
+          ],
+          "location": {
+            "end": {
+              "column": 56,
+              "line": 22
+            },
+            "start": {
+              "column": 20,
+              "line": 22
+            }
+          }
+        },
+        {
+          "id": "434",
+          "mutatorName": "LogicalOperator",
+          "replacement": "options.collectErrorMetricsFunction && defaultCollectErrorMetrics",
           "status": "Survived",
           "static": false,
           "testsCompleted": 38,
@@ -17804,12 +17804,12 @@
           ],
           "location": {
             "end": {
-              "column": 76,
-              "line": 26
+              "column": 74,
+              "line": 24
             },
             "start": {
               "column": 9,
-              "line": 26
+              "line": 24
             }
           }
         }
@@ -25081,7 +25081,7 @@
           "name": "Should get Request information when options are not set"
         }
       ],
-      "source": "/* eslint-disable max-len */\nimport { getRequestInformation } from 'src'\nimport { usersQuery } from 'tests/ExampleSchemas'\nimport { JSON_CT_HEADER } from 'tests/TestHelpers'\nimport { expect, test } from 'vitest'\n\ntest('Should get Request information when options are not set', () => {\n    expect(\n        getRequestInformation(\n            {\n                headers: JSON_CT_HEADER,\n                body: {\n                    query: usersQuery,\n                },\n                method: 'POST',\n            },\n            {},\n            {},\n        ),\n    ).toStrictEqual({\n        error: undefined,\n        operationName: undefined,\n        query: 'query users{ users { userId userName } }',\n        variables: undefined,\n    })\n})\n"
+      "source": "/* eslint-disable max-len */\nimport { getRequestInformation } from 'src'\nimport { usersQuery } from 'tests/ExampleSchemas'\nimport { JSON_CT_HEADER } from 'tests/TestHelpers'\nimport { expect, test } from 'vitest'\n\ntest('Should get Request information when options are not set', () => {\n    expect(\n        getRequestInformation(\n            {\n                body: {\n                    query: usersQuery,\n                },\n                headers: JSON_CT_HEADER,\n                method: 'POST',\n            },\n            {},\n            {},\n        ),\n    ).toStrictEqual({\n        error: undefined,\n        operationName: undefined,\n        query: 'query users{ users { userId userName } }',\n        variables: undefined,\n    })\n})\n"
     },
     "tests/logger/CreateTimestamp.test.ts": {
       "tests": [

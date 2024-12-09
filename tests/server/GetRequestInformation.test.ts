@@ -8,10 +8,10 @@ test('Should get Request information when options are not set', () => {
     expect(
         getRequestInformation(
             {
-                headers: JSON_CT_HEADER,
                 body: {
                     query: usersQuery,
                 },
+                headers: JSON_CT_HEADER,
                 method: 'POST',
             },
             {},
