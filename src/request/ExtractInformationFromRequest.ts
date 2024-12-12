@@ -57,7 +57,7 @@ export function extractInformationFromBody(
     const bodyIsString = typeof body === 'string'
     const bodyIsObject = typeof body === 'object'
 
-    if (!bodyIsString && !bodyIsObject) {
+    if (!body || (!bodyIsString && !bodyIsObject)) {
         return {
             error: {
                 graphQLError: new GraphQLError(
