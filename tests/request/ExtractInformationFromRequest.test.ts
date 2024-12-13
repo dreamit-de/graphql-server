@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import { fc, test as propertyTest } from '@fast-check/vitest'
 import {
     extractInformationFromBody,
     extractInformationFromRequest,
@@ -94,3 +95,32 @@ test('Should read body even if url is not set', () => {
     const response = extractInformationFromRequest(request)
     expect(response.query).toBe('{"query":"findTheQuery"}')
 })
+
+propertyTest.prop([fc.string()])(
+    'should extract any given query from request',
+    (queryToTest) => {
+        const request = {
+            body: { query: queryToTest },
+            headers: {
+                'content-type': 'application/json',
+            },
+        }
+        const response = extractInformationFromRequest(request)
+        return response.query === queryToTest
+    },
+)
+
+propertyTest.prop([fc.jsonValue()])(
+    'should not throw an error if body json is invalid',
+    (bodyToTest) => {
+        const request = {
+            body: bodyToTest,
+            headers: {
+                'content-type': 'application/json',
+            },
+        }
+        extractInformationFromRequest(request)
+        // If an error is thrown the test will fail
+        return true
+    },
+)
