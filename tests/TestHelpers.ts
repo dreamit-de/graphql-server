@@ -1,7 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import {
     GraphQLExecutionResult,
-    GraphQLRequestInfo,
     GraphQLServerResponse,
 } from '@dreamit/graphql-server-base'
 import {
@@ -10,48 +9,18 @@ import {
     JsonLogger,
     LogEntry,
     LogEntryInput,
-    NoLogger,
     NoStacktraceJsonLogger,
 } from 'src'
-import { userSchema, userSchemaResolvers } from './ExampleSchemas'
 
 import { testDateString } from '@dreamit/funpara'
-import { Console } from 'node:console'
+import {
+    JsonContentTypeHeader,
+    NoConsole,
+    NoOpTestLogger,
+    userSchema,
+    userSchemaResolvers,
+} from '@dreamit/graphql-testing'
 import { IncomingHttpHeaders } from 'node:http'
-
-export class StandaloneGraphQLServerResponse implements GraphQLServerResponse {
-    statusCode = 400
-    headers = new Map<string, string | number | readonly string[]>()
-    responses: unknown[] = new Array<unknown>()
-
-    setHeader(name: string, value: string | number | readonly string[]): this {
-        this.headers.set(name, value)
-        return this
-    }
-    end(chunk: unknown): this {
-        this.responses.push(chunk)
-        return this
-    }
-    removeHeader(name: string): void {
-        this.headers.delete(name)
-    }
-    getLastResponse(): string {
-        const bufferedResponse = this.responses.at(-1)
-        if (bufferedResponse && bufferedResponse instanceof Buffer) {
-            return bufferedResponse.toString('utf8')
-        }
-        return ''
-    }
-    // eslint-disable-next-line no-explicit-any
-    getLastResponseAsObject(): any {
-        return JSON.parse(this.getLastResponse())
-    }
-}
-
-export const NO_CONSOLE = new Console(process.stdout)
-NO_CONSOLE.log = (): void => {
-    return
-}
 
 export class JsonTestLogger extends JsonLogger {
     logEntries: LogEntry[] = new Array<LogEntry>()
@@ -63,7 +32,7 @@ export class JsonTestLogger extends JsonLogger {
             debugEnabled,
             undefined,
             undefined,
-            NO_CONSOLE,
+            NoConsole,
         )
     }
 
@@ -76,12 +45,6 @@ export class JsonTestLogger extends JsonLogger {
     }
 }
 
-export const JSON_CT_HEADER: IncomingHttpHeaders = {
-    'content-type': 'application/json',
-}
-
-export const NO_LOGGER = new NoLogger('no-logger', 'myTestService')
-
 export const LOGGER = new NoStacktraceJsonLogger(
     'nostack-logger',
     'myTestService',
@@ -89,25 +52,9 @@ export const LOGGER = new NoStacktraceJsonLogger(
 )
 
 export const INITIAL_GRAPHQL_SERVER_OPTIONS: GraphQLServerOptions = {
-    logger: NO_LOGGER,
+    logger: NoOpTestLogger,
     rootValue: userSchemaResolvers,
     schema: userSchema,
-}
-
-export function generateGetParametersFromGraphQLRequestInfo(
-    requestInfo: GraphQLRequestInfo,
-): string {
-    let result = ''
-    if (requestInfo.query) {
-        result += `query=${requestInfo.query}&`
-    }
-    if (requestInfo.operationName) {
-        result += `operationName=${requestInfo.operationName}&`
-    }
-    if (requestInfo.variables) {
-        result += `variables=${JSON.stringify(requestInfo.variables)}`
-    }
-    return encodeURI(result)
 }
 
 export function sendRequest(
@@ -116,7 +63,7 @@ export function sendRequest(
     body: BodyInit,
     method = 'POST',
     // eslint-disable-next-line unicorn/no-object-as-default-parameter
-    headers: IncomingHttpHeaders = JSON_CT_HEADER,
+    headers: IncomingHttpHeaders = JsonContentTypeHeader,
 ): Promise<GraphQLExecutionResult> {
     return graphqlServer.handleRequest(
         {
@@ -133,7 +80,7 @@ export function sendRequestWithURL(
     response: GraphQLServerResponse,
     url: string,
     // eslint-disable-next-line unicorn/no-object-as-default-parameter
-    headers: IncomingHttpHeaders = JSON_CT_HEADER,
+    headers: IncomingHttpHeaders = JsonContentTypeHeader,
 ): Promise<GraphQLExecutionResult> {
     return graphqlServer.handleRequest(
         {

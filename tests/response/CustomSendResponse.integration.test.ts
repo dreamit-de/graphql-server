@@ -1,19 +1,16 @@
 import { ResponseParameters } from '@dreamit/graphql-server-base'
-import { Buffer } from 'node:buffer'
-import { GraphQLServer } from 'src'
-import { expect, test } from 'vitest'
 import {
+    NoOpTestLogger,
     returnErrorQuery,
+    StandaloneGraphQLServerResponse,
     userSchema,
     userSchemaResolvers,
     usersQuery,
-} from '../ExampleSchemas'
-import {
-    INITIAL_GRAPHQL_SERVER_OPTIONS,
-    NO_LOGGER,
-    StandaloneGraphQLServerResponse,
-    sendRequest,
-} from '../TestHelpers'
+} from '@dreamit/graphql-testing'
+import { Buffer } from 'node:buffer'
+import { GraphQLServer } from 'src'
+import { expect, test } from 'vitest'
+import { INITIAL_GRAPHQL_SERVER_OPTIONS, sendRequest } from '../TestHelpers'
 
 const customGraphQLServer = new GraphQLServer(INITIAL_GRAPHQL_SERVER_OPTIONS)
 const standaloneGraphQLServerResponse = new StandaloneGraphQLServerResponse()
@@ -26,7 +23,7 @@ test('Should return value from context instead of user data ', async () => {
                 serviceName: 'myRemoteService',
             }
         },
-        logger: NO_LOGGER,
+        logger: NoOpTestLogger,
         reassignAggregateError: false,
         rootValue: userSchemaResolvers,
         schema: userSchema,
@@ -57,7 +54,7 @@ test(
                     serviceName: 'myTestServiceAlternative',
                 }
             },
-            logger: NO_LOGGER,
+            logger: NoOpTestLogger,
             reassignAggregateError: false,
             rootValue: userSchemaResolvers,
             schema: userSchema,

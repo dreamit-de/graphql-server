@@ -1,8 +1,8 @@
 /* eslint-disable max-len, max-classes-per-file */
 import { testDateFunction, testDateString } from '@dreamit/funpara'
+import { NoConsole } from '@dreamit/graphql-testing'
 import { LogEntry, NoStacktraceTextLogger, TextLogger } from 'src'
 import { expect, test } from 'vitest'
-import { NO_CONSOLE } from '../TestHelpers'
 
 class TextTestLogger extends TextLogger {
     logEntries: string[] = new Array<string>()
@@ -14,7 +14,7 @@ class TextTestLogger extends TextLogger {
             debugEnabled,
             undefined,
             undefined,
-            NO_CONSOLE,
+            NoConsole,
         )
     }
 
@@ -37,7 +37,7 @@ class NoStacktraceTextTestLogger extends NoStacktraceTextLogger {
             debugEnabled,
             undefined,
             undefined,
-            NO_CONSOLE,
+            NoConsole,
         )
     }
 

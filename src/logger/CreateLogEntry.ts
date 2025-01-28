@@ -1,8 +1,6 @@
+import { LogEntry, LogEntryInput, LogLevel } from '@dreamit/graphql-server-base'
 import { GraphQLError } from 'graphql'
 import { createISOTimestamp } from './CreateTimestamp'
-import { LogEntry } from './LogEntry'
-import { LogEntryInput } from './LogEntryInput'
-import { LogLevel } from './LogLevel'
 import { sanitizeMessage } from './SanitizeMessage'
 
 export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {

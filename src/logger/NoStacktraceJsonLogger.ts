@@ -1,6 +1,5 @@
+import { LogEntry, LogEntryInput } from '@dreamit/graphql-server-base'
 import { JsonLogger } from './JsonLogger'
-import { LogEntry } from './LogEntry'
-import { LogEntryInput } from './LogEntryInput'
 
 export class NoStacktraceJsonLogger extends JsonLogger {
     createLogEntry(logEntryInput: LogEntryInput): LogEntry {

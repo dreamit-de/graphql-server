@@ -1,18 +1,16 @@
+import {
+    aggregateErrorResponse,
+    NoOpTestLogger,
+    StandaloneGraphQLServerResponse,
+    userQuery,
+    userSchema,
+    userSchemaResolvers,
+} from '@dreamit/graphql-testing'
 import { ExecutionResult } from 'graphql'
 import { PromiseOrValue } from 'graphql/jsutils/PromiseOrValue'
 import { GraphQLServer } from 'src'
 import { expect, test } from 'vitest'
-import {
-    multipleErrorResponse,
-    userQuery,
-    userSchema,
-    userSchemaResolvers,
-} from './ExampleSchemas'
-import {
-    NO_LOGGER,
-    StandaloneGraphQLServerResponse,
-    sendRequest,
-} from './TestHelpers'
+import { sendRequest } from './TestHelpers'
 
 const standaloneGraphQLServerResponse = new StandaloneGraphQLServerResponse()
 
@@ -26,8 +24,8 @@ test(
     async () => {
         const customGraphQLServer = new GraphQLServer({
             executeFunction: (): PromiseOrValue<ExecutionResult> =>
-                multipleErrorResponse,
-            logger: NO_LOGGER,
+                aggregateErrorResponse,
+            logger: NoOpTestLogger,
             reassignAggregateError: true,
             rootValue: userSchemaResolvers,
             schema: userSchema,

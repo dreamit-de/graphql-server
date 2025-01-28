@@ -11,6 +11,7 @@ import {
     MetricsClient,
     SCHEMA_VALIDATION_ERROR,
     SYNTAX_ERROR,
+    isAggregateError,
     isGraphQLServerRequest,
 } from '@dreamit/graphql-server-base'
 import {
@@ -20,7 +21,6 @@ import {
     Source,
     getOperationAST,
 } from 'graphql'
-import { isAggregateError } from '../error/AggregateError'
 import { determineGraphQLOrFetchError } from '../error/DetermineGraphQLOrFetchError'
 import { determineValidationOrIntrospectionDisabledError } from '../error/DetermineValidationOrIntrospectionDisabledError'
 import { removeValidationRecommendationsFromErrors } from '../error/RemoveValidationRecommendationsFromErrors'
