@@ -1,28 +1,29 @@
 import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
+import {
+    initialSchemaWithOnlyDescription,
+    loginMutation,
+    NoOpTestLogger,
+    returnErrorQuery,
+    userOne,
+    userSchema,
+    userSchemaResolvers,
+    usersQuery,
+    userTwo,
+} from '@dreamit/graphql-testing'
 import { GraphQLError, GraphQLSchema, parse, validate } from 'graphql'
 import {
-    GraphQLServer,
-    LogLevel,
-    SimpleMetricsClient,
-    StandaloneResponseParameters,
     defaultCollectErrorMetrics,
     defaultContextFunction,
     defaultMethodNotAllowedResponse,
     defaultOnlyQueryInGetRequestsResponse,
     extractInformationFromRequest,
+    GraphQLServer,
+    LogLevel,
+    SimpleMetricsClient,
+    StandaloneResponseParameters,
 } from 'src'
 import { expect, test } from 'vitest'
-import {
-    initialSchemaWithOnlyDescription,
-    loginMutation,
-    returnErrorQuery,
-    userOne,
-    userSchema,
-    userSchemaResolvers,
-    userTwo,
-    usersQuery,
-} from '../ExampleSchemas'
-import { JsonTestLogger, NO_LOGGER } from '../TestHelpers'
+import { JsonTestLogger } from '../TestHelpers'
 
 const graphQLErrorResponse: GraphQLExecutionResult = {
     executionResult: {
@@ -33,7 +34,7 @@ const graphQLErrorResponse: GraphQLExecutionResult = {
 test('Should create schema on GraphQLServer class creation', () => {
     const graphqlServer = new GraphQLServer({
         invalidSchemaResponse: graphQLErrorResponse,
-        logger: NO_LOGGER,
+        logger: NoOpTestLogger,
         methodNotAllowedResponse: defaultMethodNotAllowedResponse,
         missingQueryParameterResponse: (): GraphQLExecutionResult =>
             graphQLErrorResponse,
@@ -48,7 +49,7 @@ test('Should create schema on GraphQLServer class creation', () => {
 
 test('Should update schema when calling GraphQLServer updateGraphQLSchema function', () => {
     const graphqlServer = new GraphQLServer({
-        logger: NO_LOGGER,
+        logger: NoOpTestLogger,
         schema: initialSchemaWithOnlyDescription,
     })
     const updatedSchema = new GraphQLSchema({ description: 'updated' })
@@ -82,7 +83,7 @@ test(
         'and shouldUpdateSchemaFunction is true',
     () => {
         const graphqlServer = new GraphQLServer({
-            logger: NO_LOGGER,
+            logger: NoOpTestLogger,
             schema: initialSchemaWithOnlyDescription,
             shouldUpdateSchemaFunction: (): boolean => true,
         })
@@ -97,7 +98,7 @@ test('Should execute query without server', async () => {
         collectErrorMetricsFunction: defaultCollectErrorMetrics,
         contextFunction: defaultContextFunction,
         extractInformationFromRequest: extractInformationFromRequest,
-        logger: NO_LOGGER,
+        logger: NoOpTestLogger,
         metricsClient: new SimpleMetricsClient(),
         parseFunction: parse,
         rootValue: userSchemaResolvers,
@@ -159,7 +160,7 @@ test('Should use SimpleMetricsClient as fallback if cpuUsage is not available', 
     process.hrtime = savedProcess.hrtime
 
     const graphqlServer = new GraphQLServer({
-        logger: NO_LOGGER,
+        logger: NoOpTestLogger,
         rootValue: userSchemaResolvers,
         schema: userSchema,
     })
@@ -176,7 +177,7 @@ test(
         ' should not intervene with metrics collection of first server',
     async () => {
         const graphqlServerMain = new GraphQLServer({
-            logger: NO_LOGGER,
+            logger: NoOpTestLogger,
             rootValue: userSchemaResolvers,
             schema: userSchema,
         })
@@ -192,7 +193,7 @@ test(
         expect(metrics).toContain('graphql_server_request_throughput 2')
 
         const graphqlServerSecond = new GraphQLServer({
-            logger: NO_LOGGER,
+            logger: NoOpTestLogger,
             metricsClient: new SimpleMetricsClient(),
             rootValue: userSchemaResolvers,
             schema: userSchema,
@@ -239,7 +240,7 @@ test('Should adjust execution result with data from mutation context info', asyn
         collectErrorMetricsFunction: defaultCollectErrorMetrics,
         contextFunction: (): unknown => ({ authHeader: '123456789' }),
         extractInformationFromRequest: extractInformationFromRequest,
-        logger: NO_LOGGER,
+        logger: NoOpTestLogger,
         metricsClient: new SimpleMetricsClient(),
         parseFunction: parse,
         rootValue: userSchemaResolvers,

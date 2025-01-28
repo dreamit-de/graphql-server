@@ -3,12 +3,21 @@ import {
     GRAPHQL_ERROR,
     INVALID_SCHEMA_ERROR,
     METHOD_NOT_ALLOWED_ERROR,
-    MISSING_QUERY_PARAMETER_ERROR,
     MetricsClient,
+    MISSING_QUERY_PARAMETER_ERROR,
     SCHEMA_VALIDATION_ERROR,
     SYNTAX_ERROR,
     VALIDATION_ERROR,
 } from '@dreamit/graphql-server-base'
+import {
+    initialSchemaWithOnlyDescription,
+    NoOpTestLogger,
+    returnErrorQuery,
+    userQuery,
+    userSchema,
+    userSchemaResolvers,
+    usersQuery,
+} from '@dreamit/graphql-testing'
 import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql'
 import {
     GraphQLServer,
@@ -17,16 +26,6 @@ import {
     SimpleMetricsClient,
 } from 'src'
 import { expect, test } from 'vitest'
-import {
-    initialSchemaWithOnlyDescription,
-    returnErrorQuery,
-    userQuery,
-    userSchema,
-    userSchemaResolvers,
-    usersQuery,
-} from '../ExampleSchemas'
-
-import { NO_LOGGER } from '../TestHelpers'
 
 const customGraphQLServer = new GraphQLServer(
     getInitialGraphQLServerOptions(new NoMetricsClient()),
@@ -112,7 +111,7 @@ async function testInvalidSchemaMetrics(
     isNoMetricsClient: boolean,
 ): Promise<void> {
     customGraphQLServer.setOptions({
-        logger: NO_LOGGER,
+        logger: NoOpTestLogger,
         metricsClient: metricsClient,
         rootValue: userSchemaResolvers,
         schema: initialSchemaWithOnlyDescription,
@@ -311,7 +310,7 @@ async function testFetchErrorResponseMetrics(
                 {},
             )
         },
-        logger: NO_LOGGER,
+        logger: NoOpTestLogger,
         metricsClient: metricsClient,
         rootValue: userSchemaResolvers,
         schema: userSchema,
@@ -362,7 +361,7 @@ function getInitialGraphQLServerOptions(
 ): GraphQLServerOptions {
     return {
         customValidationRules: [NoSchemaIntrospectionCustomRule],
-        logger: NO_LOGGER,
+        logger: NoOpTestLogger,
         metricsClient: metricsClient,
         rootValue: userSchemaResolvers,
         schema: userSchema,

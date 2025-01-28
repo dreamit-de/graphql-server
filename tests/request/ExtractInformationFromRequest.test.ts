@@ -1,4 +1,10 @@
 /* eslint-disable max-len */
+import {
+    generateGetParametersFromGraphQLRequestInfo,
+    usersRequest,
+    usersRequestWithoutOperationName,
+    usersRequestWithoutVariables,
+} from '@dreamit/graphql-testing'
 import { fc, test as propertyTest } from '@fast-check/vitest'
 import {
     extractInformationFromBody,
@@ -6,12 +12,6 @@ import {
     extractInformationFromUrlParameters,
 } from 'src'
 import { describe, expect, test } from 'vitest'
-import {
-    usersRequest,
-    usersRequestWithoutOperationName,
-    usersRequestWithoutVariables,
-} from '../ExampleSchemas'
-import { generateGetParametersFromGraphQLRequestInfo } from '../TestHelpers'
 
 describe('Test that request information is extracted correctly from url parameters', () => {
     test.each`

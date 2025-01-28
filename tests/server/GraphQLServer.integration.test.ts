@@ -1,15 +1,15 @@
 /* eslint-disable max-lines */
 
 import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
-import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql'
-import { GraphQLServer, StandaloneResponseParameters } from 'src'
-import { expect, test } from 'vitest'
 import {
+    NoOpTestLogger,
+    StandaloneGraphQLServerResponse,
+    aggregateErrorResponse,
     fetchErrorQuery,
+    generateGetParametersFromGraphQLRequestInfo,
     introspectionQuery,
     loginRequest,
     logoutMutation,
-    multipleErrorResponse,
     returnErrorQuery,
     userOne,
     userQuery,
@@ -20,13 +20,13 @@ import {
     usersQuery,
     usersQueryWithUnknownField,
     usersRequest,
-} from '../ExampleSchemas'
+} from '@dreamit/graphql-testing'
+import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql'
+import { GraphQLServer, StandaloneResponseParameters } from 'src'
+import { expect, test } from 'vitest'
 import {
     INITIAL_GRAPHQL_SERVER_OPTIONS,
     JsonTestLogger,
-    NO_LOGGER,
-    StandaloneGraphQLServerResponse,
-    generateGetParametersFromGraphQLRequestInfo,
     sendRequest,
     sendRequestWithURL,
 } from '../TestHelpers'
@@ -186,7 +186,7 @@ test(
         ' validation error occurs and removeValidationRecommendations is enabled',
     async () => {
         customGraphQLServer.setOptions({
-            logger: NO_LOGGER,
+            logger: NoOpTestLogger,
             removeValidationRecommendations: false,
             rootValue: userSchemaResolvers,
             schema: userSchema,
@@ -269,7 +269,7 @@ test(
     async () => {
         customGraphQLServer.setOptions({
             formatErrorFunction: testFormatErrorFunction,
-            logger: NO_LOGGER,
+            logger: NoOpTestLogger,
             rootValue: userSchemaResolvers,
             schema: userSchema,
         })
@@ -360,7 +360,8 @@ test('Should get data response when using urlencoded request', async () => {
     await sendRequest(
         customGraphQLServer,
         standaloneGraphQLServerResponse,
-        generateGetParametersFromGraphQLRequestInfo(usersRequest),
+        // This should be investigated, it does not seem to be correct hat a AND sign is necessary here
+        generateGetParametersFromGraphQLRequestInfo(usersRequest) + '&',
         'POST',
         {
             connection: 'close',
@@ -409,7 +410,7 @@ test('Should get data response for application graphql request', async () => {
 test('Should get error response if invalid schema is used', async () => {
     // Change options to use schema validation function that always returns a validation error
     customGraphQLServer.setOptions({
-        logger: NO_LOGGER,
+        logger: NoOpTestLogger,
         rootValue: userSchemaResolvers,
         schema: userSchema,
         schemaValidationFunction: () => [
@@ -449,7 +450,7 @@ test('Should get error response if invalid method is used', async () => {
 test('Should get extensions in GraphQL response if extension function is defined ', async () => {
     customGraphQLServer.setOptions({
         extensionFunction: () => extensionTestData,
-        logger: NO_LOGGER,
+        logger: NoOpTestLogger,
         removeValidationRecommendations: true,
         rootValue: userSchemaResolvers,
         schema: userSchema,
@@ -487,7 +488,7 @@ test(
     async () => {
         customGraphQLServer.setOptions({
             customValidationRules: [NoSchemaIntrospectionCustomRule],
-            logger: NO_LOGGER,
+            logger: NoOpTestLogger,
             removeValidationRecommendations: true,
             rootValue: userSchemaResolvers,
             schema: userSchema,
@@ -513,7 +514,7 @@ test(
     async () => {
         customGraphQLServer.setOptions({
             customValidationRules: [NoSchemaIntrospectionCustomRule],
-            logger: NO_LOGGER,
+            logger: NoOpTestLogger,
             removeValidationRecommendations: true,
             rootValue: userSchemaResolvers,
             schema: userSchema,
@@ -552,7 +553,7 @@ test('Should adjust error response if adjustGraphQLExecutionResult is provided',
             )
         },
         customValidationRules: [NoSchemaIntrospectionCustomRule],
-        logger: NO_LOGGER,
+        logger: NoOpTestLogger,
         removeValidationRecommendations: true,
         rootValue: userSchemaResolvers,
         schema: userSchema,
@@ -575,7 +576,7 @@ test(
     async () => {
         customGraphQLServer.setOptions({
             customValidationRules: [],
-            logger: NO_LOGGER,
+            logger: NoOpTestLogger,
             removeValidationRecommendations: true,
             rootValue: userSchemaResolvers,
             schema: userSchema,
@@ -601,7 +602,7 @@ test(
         customGraphQLServer.setOptions({
             customValidationRules: [],
             defaultValidationRules: [],
-            logger: NO_LOGGER,
+            logger: NoOpTestLogger,
             removeValidationRecommendations: true,
             rootValue: userSchemaResolvers,
             schema: userSchema,
@@ -623,8 +624,8 @@ test(
         ' when reassignAggregateError is disabled',
     async () => {
         customGraphQLServer.setOptions({
-            executeFunction: () => multipleErrorResponse,
-            logger: NO_LOGGER,
+            executeFunction: () => aggregateErrorResponse,
+            logger: NoOpTestLogger,
             reassignAggregateError: false,
             rootValue: userSchemaResolvers,
             schema: userSchema,
@@ -662,7 +663,7 @@ test('Should adjust data response if adjustGraphQLExecutionResult is provided', 
                 }
             )
         },
-        logger: NO_LOGGER,
+        logger: NoOpTestLogger,
         removeValidationRecommendations: false,
         rootValue: userSchemaResolvers,
         schema: userSchema,

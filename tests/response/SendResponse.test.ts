@@ -1,8 +1,11 @@
+import {
+    NoOpTestLogger,
+    StandaloneGraphQLServerResponse,
+} from '@dreamit/graphql-testing'
 import { fc, test as propertyTest } from '@fast-check/vitest'
 import { GraphQLError, GraphQLFormattedError } from 'graphql'
 import { sendResponse } from 'src'
 import { expect, test } from 'vitest'
-import { NO_LOGGER, StandaloneGraphQLServerResponse } from '../TestHelpers'
 
 test('Should use default response.end behavior if no responseEndChunkFunction if defined', () => {
     const standaloneGraphQLServerResponse =
@@ -17,7 +20,7 @@ test('Should use default response.end behavior if no responseEndChunkFunction if
         ): GraphQLFormattedError {
             return error
         },
-        logger: NO_LOGGER,
+        logger: NoOpTestLogger,
         response: standaloneGraphQLServerResponse,
         statusCode: 401,
     })
@@ -26,7 +29,7 @@ test('Should use default response.end behavior if no responseEndChunkFunction if
         standaloneGraphQLServerResponse.getLastResponseAsObject()
     expect(lastResponse.data.message).toStrictEqual('Did work!')
     expect(standaloneGraphQLServerResponse.statusCode).toBe(401)
-    expect(standaloneGraphQLServerResponse.headers.get('Content-Type')).toBe(
+    expect(standaloneGraphQLServerResponse.headers.get('content-type')).toBe(
         'application/json; charset=utf-8',
     )
 })
@@ -47,7 +50,7 @@ propertyTest.prop([fc.string()])(
             ): GraphQLFormattedError {
                 return error
             },
-            logger: NO_LOGGER,
+            logger: NoOpTestLogger,
             response: standaloneGraphQLServerResponse,
             statusCode: 200,
         })
@@ -58,7 +61,7 @@ propertyTest.prop([fc.string()])(
         return (
             lastResponse.data.message === messageToTest &&
             standaloneGraphQLServerResponse.statusCode === 200 &&
-            standaloneGraphQLServerResponse.headers.get('Content-Type') ===
+            standaloneGraphQLServerResponse.headers.get('content-type') ===
                 'application/json; charset=utf-8'
         )
     },

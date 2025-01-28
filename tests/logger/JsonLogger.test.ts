@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import { testDateFunction, testDateString } from '@dreamit/funpara'
+import { NoConsole } from '@dreamit/graphql-testing'
 import {
     JsonLogger,
     LogEntry,
@@ -8,7 +9,7 @@ import {
     NoStacktraceJsonLogger,
 } from 'src'
 import { expect, test } from 'vitest'
-import { JsonTestLogger, NO_CONSOLE } from '../TestHelpers'
+import { JsonTestLogger } from '../TestHelpers'
 
 export class NoStacktraceJsonTestLogger extends NoStacktraceJsonLogger {
     logEntries: LogEntry[] = new Array<LogEntry>()
@@ -20,7 +21,7 @@ export class NoStacktraceJsonTestLogger extends NoStacktraceJsonLogger {
             debugEnabled,
             undefined,
             undefined,
-            NO_CONSOLE,
+            NoConsole,
         )
     }
 

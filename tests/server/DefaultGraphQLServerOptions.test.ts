@@ -1,3 +1,4 @@
+import { JsonContentTypeHeader } from '@dreamit/graphql-testing'
 import { GraphQLError } from 'graphql'
 import {
     DefaultGraphQLServerOptions,
@@ -8,7 +9,7 @@ import {
     defaultOnlyQueryInGetRequestsResponse,
 } from 'src'
 import { expect, test } from 'vitest'
-import { JSON_CT_HEADER, JsonTestLogger } from '../TestHelpers'
+import { JsonTestLogger } from '../TestHelpers'
 
 test('Creating DefaultGraphQLServerOptions should provide useful defaults', () => {
     const defaultGraphqlServerOptions = new DefaultGraphQLServerOptions()
@@ -33,13 +34,13 @@ test.each([undefined, new JsonTestLogger(true)])(
         expect(
             defaultContextFunction({
                 request: {
-                    headers: JSON_CT_HEADER,
+                    headers: JsonContentTypeHeader,
                 },
                 serverOptions: {
                     logger,
                 },
             }),
-        ).toStrictEqual({ headers: JSON_CT_HEADER })
+        ).toStrictEqual({ headers: JsonContentTypeHeader })
 
         if (logger) {
             expect(logger.logEntries.at(0)?.message).toBe(
