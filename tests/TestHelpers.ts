@@ -2,13 +2,13 @@
 import {
     GraphQLExecutionResult,
     GraphQLServerResponse,
+    LogEntry,
+    LogEntryInput,
 } from '@dreamit/graphql-server-base'
 import {
     GraphQLServer,
     GraphQLServerOptions,
     JsonLogger,
-    LogEntry,
-    LogEntryInput,
     NoStacktraceJsonLogger,
 } from 'src'
 

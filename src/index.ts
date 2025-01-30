@@ -62,12 +62,3 @@ export {
 export { getRequestInformation } from './server/GetRequestInformation'
 export { GraphQLServer } from './server/GraphQLServer'
 export { GraphQLServerOptions } from './server/GraphQLServerOptions'
-
-// These exports are exported for compatibility with graphql-server v4 and will be removed in v5
-export {
-    AggregateError,
-    LogEntry,
-    LogEntryInput,
-    LogLevel,
-    isAggregateError,
-} from '@dreamit/graphql-server-base'

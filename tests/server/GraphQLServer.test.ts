@@ -1,4 +1,4 @@
-import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
+import { GraphQLExecutionResult, LogLevel } from '@dreamit/graphql-server-base'
 import {
     initialSchemaWithOnlyDescription,
     loginMutation,
@@ -18,7 +18,6 @@ import {
     defaultOnlyQueryInGetRequestsResponse,
     extractInformationFromRequest,
     GraphQLServer,
-    LogLevel,
     SimpleMetricsClient,
     StandaloneResponseParameters,
 } from 'src'
