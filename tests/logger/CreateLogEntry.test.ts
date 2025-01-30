@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
+import { LogLevel } from '@dreamit/graphql-server-base'
 import { GraphQLError, Kind } from 'graphql'
-import { LogLevel, createLogEntry } from 'src'
+import { createLogEntry } from 'src'
 import { expect, test } from 'vitest'
 
 // Created based upon implementation in node-fetch to avoid importing whole package for this class

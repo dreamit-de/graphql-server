@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
-import { LogLevel, truncateLogMessage } from 'src'
+import { LogLevel } from '@dreamit/graphql-server-base'
+import { truncateLogMessage } from 'src'
 import { expect, test } from 'vitest'
 
 const timeoutMessage =
