@@ -99,10 +99,9 @@ export function extractInformationFromBody(
 
     const contentType = getContentType(contentTypeFromHeader)
     switch (contentType) {
-        case ContentType.graphql: {
+        case ContentType.graphql:
             return { query: bodyIsString ? body : JSON.stringify(body) }
-        }
-        case ContentType.json: {
+        case ContentType.json:
             if (bodyIsString) {
                 try {
                     const bodyAsJson = JSON.parse(body)
@@ -136,11 +135,9 @@ export function extractInformationFromBody(
                         > | null) || undefined,
                 }
             }
-        }
-        case ContentType.urlencoded: {
+        case ContentType.urlencoded:
             return extractInformationFromUrlParameters(`host?${body}.`)
-        }
-        default: {
+        default:
             return {
                 error: {
                     graphQLError: new GraphQLError(
@@ -152,6 +149,5 @@ export function extractInformationFromBody(
                     statusCode: 400,
                 },
             }
-        }
     }
 }
