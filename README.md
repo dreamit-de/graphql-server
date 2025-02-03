@@ -439,7 +439,7 @@ export class SecretApplicationTextLogger extends TextLogger {
 
 ## Contact
 
-If you have questions or issues please visit our [Issue page](https://github.com/dreamit-de/graphql-server/issues)
+If you have problems, questions or issues please visit our [Issue page](https://github.com/dreamit-de/graphql-server/issues)
 and open a new issue if there are no fitting issues for your topic yet.
 
 ## License
