@@ -50,7 +50,7 @@
         "@types/node": "22.13.1",
         "@vitest/coverage-v8": "2.1.9",
         "fast-check": "3.23.2",
-        "oxlint": "0.15.9",
+        "oxlint": "0.15.10",
         "prettier": "3.4.2",
         "prettier-plugin-organize-imports": "4.1.0",
         "tsup": "8.3.6",
