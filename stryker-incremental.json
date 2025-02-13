@@ -9418,6 +9418,72 @@
           }
         },
         {
+          "id": "246",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "Cannot read properties of undefined (reading 'error')",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "0"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "61",
+            "62",
+            "63",
+            "64",
+            "65",
+            "66",
+            "67",
+            "87",
+            "88",
+            "99",
+            "125"
+          ],
+          "location": {
+            "end": {
+              "column": 2,
+              "line": 153
+            },
+            "start": {
+              "column": 23,
+              "line": 50
+            }
+          }
+        },
+        {
           "id": "247",
           "mutatorName": "ConditionalExpression",
           "replacement": "true",
@@ -11609,6 +11675,33 @@
           }
         },
         {
+          "id": "292",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "case ContentType.graphql:",
+          "statusReason": "Cannot read properties of undefined (reading 'users')",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "21"
+          ],
+          "coveredBy": [
+            "21",
+            "64",
+            "65"
+          ],
+          "location": {
+            "end": {
+              "column": 73,
+              "line": 103
+            },
+            "start": {
+              "column": 9,
+              "line": 102
+            }
+          }
+        },
+        {
           "id": "293",
           "mutatorName": "ObjectLiteral",
           "replacement": "{}",
@@ -11632,6 +11725,57 @@
             "start": {
               "column": 20,
               "line": 103
+            }
+          }
+        },
+        {
+          "id": "294",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "case ContentType.json:",
+          "statusReason": "Cannot read properties of undefined (reading 'users')",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "0"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "9",
+            "10",
+            "12",
+            "13",
+            "14",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "63",
+            "66",
+            "67",
+            "87",
+            "88",
+            "99",
+            "125"
+          ],
+          "location": {
+            "end": {
+              "column": 14,
+              "line": 137
+            },
+            "start": {
+              "column": 9,
+              "line": 104
             }
           }
         },
@@ -12077,6 +12221,32 @@
           }
         },
         {
+          "id": "312",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "case ContentType.urlencoded:",
+          "statusReason": "Cannot read properties of undefined (reading 'users')",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "19"
+          ],
+          "coveredBy": [
+            "19",
+            "20"
+          ],
+          "location": {
+            "end": {
+              "column": 72,
+              "line": 139
+            },
+            "start": {
+              "column": 9,
+              "line": 138
+            }
+          }
+        },
+        {
           "id": "313",
           "mutatorName": "StringLiteral",
           "replacement": "``",
@@ -12099,6 +12269,62 @@
             "start": {
               "column": 56,
               "line": 139
+            }
+          }
+        },
+        {
+          "id": "314",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "default:",
+          "statusReason": "Cannot read properties of undefined (reading 'error')",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "8"
+          ],
+          "coveredBy": [
+            "8",
+            "11",
+            "33",
+            "34"
+          ],
+          "location": {
+            "end": {
+              "column": 14,
+              "line": 151
+            },
+            "start": {
+              "column": 9,
+              "line": 140
+            }
+          }
+        },
+        {
+          "id": "315",
+          "mutatorName": "ObjectLiteral",
+          "replacement": "{}",
+          "statusReason": "expected 'Request cannot be processed. No query…' to be 'POST body contains invalid content ty…' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "8"
+          ],
+          "coveredBy": [
+            "8",
+            "11",
+            "33",
+            "34"
+          ],
+          "location": {
+            "end": {
+              "column": 14,
+              "line": 151
+            },
+            "start": {
+              "column": 20,
+              "line": 141
             }
           }
         },
@@ -12215,255 +12441,6 @@
           }
         },
         {
-          "id": "246",
-          "mutatorName": "BlockStatement",
-          "replacement": "{}",
-          "statusReason": "Cannot read properties of undefined (reading 'error')",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "0"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "61",
-            "62",
-            "63",
-            "64",
-            "65",
-            "66",
-            "67",
-            "87",
-            "88",
-            "99",
-            "125"
-          ],
-          "location": {
-            "end": {
-              "column": 2,
-              "line": 153
-            },
-            "start": {
-              "column": 23,
-              "line": 50
-            }
-          }
-        },
-        {
-          "id": "294",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "case ContentType.json:",
-          "statusReason": "Cannot read properties of undefined (reading 'users')",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "0"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "9",
-            "10",
-            "12",
-            "13",
-            "14",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "63",
-            "66",
-            "67",
-            "87",
-            "88",
-            "99",
-            "125"
-          ],
-          "location": {
-            "end": {
-              "column": 14,
-              "line": 137
-            },
-            "start": {
-              "column": 9,
-              "line": 104
-            }
-          }
-        },
-        {
-          "id": "292",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "case ContentType.graphql:",
-          "statusReason": "Cannot read properties of undefined (reading 'users')",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "21"
-          ],
-          "coveredBy": [
-            "21",
-            "64",
-            "65"
-          ],
-          "location": {
-            "end": {
-              "column": 73,
-              "line": 103
-            },
-            "start": {
-              "column": 9,
-              "line": 102
-            }
-          }
-        },
-        {
-          "id": "314",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "default:",
-          "statusReason": "Cannot read properties of undefined (reading 'error')",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "8"
-          ],
-          "coveredBy": [
-            "8",
-            "11",
-            "33",
-            "34"
-          ],
-          "location": {
-            "end": {
-              "column": 14,
-              "line": 151
-            },
-            "start": {
-              "column": 9,
-              "line": 140
-            }
-          }
-        },
-        {
-          "id": "315",
-          "mutatorName": "ObjectLiteral",
-          "replacement": "{}",
-          "statusReason": "expected 'Request cannot be processed. No query…' to be 'POST body contains invalid content ty…' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "8"
-          ],
-          "coveredBy": [
-            "8",
-            "11",
-            "33",
-            "34"
-          ],
-          "location": {
-            "end": {
-              "column": 14,
-              "line": 151
-            },
-            "start": {
-              "column": 20,
-              "line": 141
-            }
-          }
-        },
-        {
-          "id": "312",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "case ContentType.urlencoded:",
-          "statusReason": "Cannot read properties of undefined (reading 'users')",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "19"
-          ],
-          "coveredBy": [
-            "19",
-            "20"
-          ],
-          "location": {
-            "end": {
-              "column": 72,
-              "line": 139
-            },
-            "start": {
-              "column": 9,
-              "line": 138
-            }
-          }
-        },
-        {
-          "id": "308",
-          "mutatorName": "ObjectLiteral",
-          "replacement": "{}",
-          "status": "Survived",
-          "static": false,
-          "testsCompleted": 1,
-          "coveredBy": [
-            "63",
-            "66",
-            "67"
-          ],
-          "location": {
-            "end": {
-              "column": 18,
-              "line": 136
-            },
-            "start": {
-              "column": 24,
-              "line": 129
-            }
-          }
-        },
-        {
           "id": "307",
           "mutatorName": "BlockStatement",
           "replacement": "{}",
@@ -12483,29 +12460,6 @@
             "start": {
               "column": 20,
               "line": 127
-            }
-          }
-        },
-        {
-          "id": "309",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "true",
-          "status": "Survived",
-          "static": false,
-          "testsCompleted": 1,
-          "coveredBy": [
-            "63",
-            "66",
-            "67"
-          ],
-          "location": {
-            "end": {
-              "column": 47,
-              "line": 135
-            },
-            "start": {
-              "column": 25,
-              "line": 133
             }
           }
         },
@@ -12533,6 +12487,29 @@
           }
         },
         {
+          "id": "308",
+          "mutatorName": "ObjectLiteral",
+          "replacement": "{}",
+          "status": "Survived",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": [
+            "63",
+            "66",
+            "67"
+          ],
+          "location": {
+            "end": {
+              "column": 18,
+              "line": 136
+            },
+            "start": {
+              "column": 24,
+              "line": 129
+            }
+          }
+        },
+        {
           "id": "310",
           "mutatorName": "ConditionalExpression",
           "replacement": "false",
@@ -12552,6 +12529,76 @@
             "start": {
               "column": 25,
               "line": 133
+            }
+          }
+        },
+        {
+          "id": "309",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "status": "Survived",
+          "static": false,
+          "testsCompleted": 1,
+          "coveredBy": [
+            "63",
+            "66",
+            "67"
+          ],
+          "location": {
+            "end": {
+              "column": 47,
+              "line": 135
+            },
+            "start": {
+              "column": 25,
+              "line": 133
+            }
+          }
+        },
+        {
+          "id": "295",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "status": "Survived",
+          "static": false,
+          "testsCompleted": 29,
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "9",
+            "10",
+            "12",
+            "13",
+            "14",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "63",
+            "66",
+            "67",
+            "87",
+            "88",
+            "99",
+            "125"
+          ],
+          "location": {
+            "end": {
+              "column": 29,
+              "line": 105
+            },
+            "start": {
+              "column": 17,
+              "line": 105
             }
           }
         },
@@ -12606,53 +12653,6 @@
             "start": {
               "column": 24,
               "line": 15
-            }
-          }
-        },
-        {
-          "id": "295",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "true",
-          "status": "Survived",
-          "static": false,
-          "testsCompleted": 29,
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "9",
-            "10",
-            "12",
-            "13",
-            "14",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "63",
-            "66",
-            "67",
-            "87",
-            "88",
-            "99",
-            "125"
-          ],
-          "location": {
-            "end": {
-              "column": 29,
-              "line": 105
-            },
-            "start": {
-              "column": 17,
-              "line": 105
             }
           }
         },
@@ -14793,63 +14793,6 @@
           }
         },
         {
-          "id": "354",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "true",
-          "status": "Survived",
-          "static": false,
-          "testsCompleted": 37,
-          "coveredBy": [
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-            "19",
-            "20",
-            "21",
-            "22",
-            "23",
-            "24",
-            "25",
-            "26",
-            "27",
-            "28",
-            "29",
-            "30",
-            "31",
-            "32",
-            "88",
-            "89",
-            "90",
-            "99"
-          ],
-          "location": {
-            "end": {
-              "column": 19,
-              "line": 27
-            },
-            "start": {
-              "column": 9,
-              "line": 27
-            }
-          }
-        },
-        {
           "id": "365",
           "mutatorName": "ConditionalExpression",
           "replacement": "false",
@@ -14905,9 +14848,66 @@
               "line": 38
             }
           }
+        },
+        {
+          "id": "354",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "status": "Survived",
+          "static": false,
+          "testsCompleted": 37,
+          "coveredBy": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "23",
+            "24",
+            "25",
+            "26",
+            "27",
+            "28",
+            "29",
+            "30",
+            "31",
+            "32",
+            "88",
+            "89",
+            "90",
+            "99"
+          ],
+          "location": {
+            "end": {
+              "column": 19,
+              "line": 27
+            },
+            "start": {
+              "column": 9,
+              "line": 27
+            }
+          }
         }
       ],
-      "source": "import { ResponseParameters } from '@dreamit/graphql-server-base'\nimport { Buffer } from 'node:buffer'\n\n/**\n * Default implementation of sendResponse function\n */\nexport function sendResponse(responseParameters: ResponseParameters): void {\n    const {\n        customHeaders,\n        context,\n        executionResult,\n        logger,\n        response,\n        statusCode,\n        formatErrorFunction,\n        responseEndChunkFunction,\n    } = responseParameters\n    logger.debug(\n        `Preparing response with executionResult ${JSON.stringify(executionResult)}` +\n            `, status code ${statusCode} and custom headers ${JSON.stringify(customHeaders)}` +\n            `, and context ${context}`,\n        context,\n    )\n    if (executionResult && executionResult.errors && formatErrorFunction) {\n        executionResult.errors.map((element) => formatErrorFunction(element))\n    }\n    if (statusCode) {\n        response.statusCode = statusCode\n    }\n    response.setHeader('Content-Type', 'application/json; charset=utf-8')\n    if (customHeaders) {\n        for (const [key, value] of Object.entries(customHeaders)) {\n            logger.debug(`Set custom header ${key} to ${value}`, context)\n            response.setHeader(key, String(value))\n        }\n    }\n\n    if (responseEndChunkFunction) {\n        response.end(responseEndChunkFunction(executionResult))\n    } else {\n        response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))\n    }\n}\n"
+      "source": "import { ResponseParameters } from '@dreamit/graphql-server-base'\r\nimport { Buffer } from 'node:buffer'\r\n\r\n/**\r\n * Default implementation of sendResponse function\r\n */\r\nexport function sendResponse(responseParameters: ResponseParameters): void {\r\n    const {\r\n        customHeaders,\r\n        context,\r\n        executionResult,\r\n        logger,\r\n        response,\r\n        statusCode,\r\n        formatErrorFunction,\r\n        responseEndChunkFunction,\r\n    } = responseParameters\r\n    logger.debug(\r\n        `Preparing response with executionResult ${JSON.stringify(executionResult)}` +\r\n            `, status code ${statusCode} and custom headers ${JSON.stringify(customHeaders)}` +\r\n            `, and context ${context}`,\r\n        context,\r\n    )\r\n    if (executionResult && executionResult.errors && formatErrorFunction) {\r\n        executionResult.errors.map((element) => formatErrorFunction(element))\r\n    }\r\n    if (statusCode) {\r\n        response.statusCode = statusCode\r\n    }\r\n    response.setHeader('Content-Type', 'application/json; charset=utf-8')\r\n    if (customHeaders) {\r\n        for (const [key, value] of Object.entries(customHeaders)) {\r\n            logger.debug(`Set custom header ${key} to ${value}`, context)\r\n            response.setHeader(key, String(value))\r\n        }\r\n    }\r\n\r\n    if (responseEndChunkFunction) {\r\n        response.end(responseEndChunkFunction(executionResult))\r\n    } else {\r\n        response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))\r\n    }\r\n}\r\n"
     },
     "src/server/DefaultGraphQLServerOptions.ts": {
       "language": "typescript",
@@ -24941,15 +24941,15 @@
         },
         {
           "id": "66",
-          "name": "should extract any given query from request (with seed=313906512)"
+          "name": "should extract any given query from request (with seed=-1994268906)"
         },
         {
           "id": "67",
-          "name": "should not throw an error if body json is invalid (with seed=-1592235052)"
+          "name": "should not throw an error if body json is invalid (with seed=571749579)"
         },
         {
           "id": "127",
-          "name": "should extract any given query from request (with seed=-1884014971)",
+          "name": "should extract any given query from request (with seed=313906512)",
           "location": {
             "start": {
               "column": 1,
@@ -24959,7 +24959,7 @@
         },
         {
           "id": "128",
-          "name": "should not throw an error if body json is invalid (with seed=1101471074)",
+          "name": "should not throw an error if body json is invalid (with seed=-1592235052)",
           "location": {
             "start": {
               "column": 1,
@@ -24969,7 +24969,7 @@
         },
         {
           "id": "129",
-          "name": "should extract any given query from request (with seed=-166752838)",
+          "name": "should extract any given query from request (with seed=-1884014971)",
           "location": {
             "start": {
               "column": 1,
@@ -24979,7 +24979,7 @@
         },
         {
           "id": "130",
-          "name": "should not throw an error if body json is invalid (with seed=-2087354892)",
+          "name": "should not throw an error if body json is invalid (with seed=1101471074)",
           "location": {
             "start": {
               "column": 1,
@@ -24989,7 +24989,7 @@
         },
         {
           "id": "131",
-          "name": "should extract any given query from request (with seed=708155623)",
+          "name": "should extract any given query from request (with seed=-166752838)",
           "location": {
             "start": {
               "column": 1,
@@ -24999,6 +24999,26 @@
         },
         {
           "id": "132",
+          "name": "should not throw an error if body json is invalid (with seed=-2087354892)",
+          "location": {
+            "start": {
+              "column": 1,
+              "line": 1
+            }
+          }
+        },
+        {
+          "id": "133",
+          "name": "should extract any given query from request (with seed=708155623)",
+          "location": {
+            "start": {
+              "column": 1,
+              "line": 1
+            }
+          }
+        },
+        {
+          "id": "134",
           "name": "should not throw an error if body json is invalid (with seed=-1507445455)",
           "location": {
             "start": {
@@ -25122,10 +25142,20 @@
         },
         {
           "id": "90",
-          "name": "Should use default response.end behavior if no responseEndChunkFunction if defined and return expected message (with seed=-1185232325)"
+          "name": "Should use default response.end behavior if no responseEndChunkFunction if defined and return expected message (with seed=-201193751)"
         },
         {
-          "id": "133",
+          "id": "135",
+          "name": "Should use default response.end behavior if no responseEndChunkFunction if defined and return expected message (with seed=-1185232325)",
+          "location": {
+            "start": {
+              "column": 1,
+              "line": 1
+            }
+          }
+        },
+        {
+          "id": "136",
           "name": "Should use default response.end behavior if no responseEndChunkFunction if defined and return expected message (with seed=988063085)",
           "location": {
             "start": {
@@ -25135,7 +25165,7 @@
           }
         },
         {
-          "id": "134",
+          "id": "137",
           "name": "Should use default response.end behavior if no responseEndChunkFunction if defined and return expected message (with seed=-573250293)",
           "location": {
             "start": {
@@ -25145,7 +25175,7 @@
           }
         },
         {
-          "id": "135",
+          "id": "138",
           "name": "Should use default response.end behavior if no responseEndChunkFunction if defined and return expected message (with seed=-1130912420)",
           "location": {
             "start": {
