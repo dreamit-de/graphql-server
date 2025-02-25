@@ -34,7 +34,7 @@ export interface StandardSchemaV1<Input = unknown, Output = Input> {
     /** The result interface if validation fails. */
     export interface FailureResult {
        /** The issues of failed validation. */
-       // eslint-disable-next-line @typescript-eslint/array-lint
+       // eslint-disable-next-line @typescript-eslint/array-type
        readonly issues: ReadonlyArray<Issue>
     }
  
