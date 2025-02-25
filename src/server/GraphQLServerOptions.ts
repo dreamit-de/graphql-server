@@ -22,6 +22,7 @@ import {
     ValidationRule,
 } from 'graphql'
 import { StandaloneResponseParameters } from '../response/StandaloneResponseParameters'
+import { StandardSchemaV1 } from '../validation/StandardSchemaV1'
 
 /**
  * Interface for creating new GraphQLServer instances.
@@ -109,4 +110,5 @@ export interface GraphQLServerOptions {
     readonly adjustGraphQLExecutionResult?: (
         parameters: StandaloneResponseParameters,
     ) => GraphQLExecutionResult
+    readonly responseStandardSchema?:StandardSchemaV1
 }

@@ -29,6 +29,7 @@ import { extractInformationFromRequest } from '../request/ExtractInformationFrom
 import { sendResponse } from '../response/SendResponse'
 import { StandaloneResponseParameters } from '../response/StandaloneResponseParameters'
 import { GraphQLServerOptions } from './GraphQLServerOptions'
+import { StandardSchemaV1 } from '../validation/StandardSchemaV1'
 
 export const defaultGraphqlExecutionErrorMessage =
     'While processing the request a GraphQL execution error occurred: '
@@ -51,6 +52,14 @@ export const invalidSchemaResponse: GraphQLExecutionResult = {
         ],
     },
     statusCode: 500,
+}
+
+export const noOpStandardSchema: StandardSchemaV1 = {
+    '~standard': {
+        validate: (value: unknown) => ({ value }),
+        vendor: 'no-op',
+        version: 1,
+    },
 }
 
 export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
@@ -92,6 +101,7 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     adjustGraphQLExecutionResult?: (
         parameters: StandaloneResponseParameters,
     ) => GraphQLExecutionResult
+    responseStandardSchema: StandardSchemaV1 = noOpStandardSchema
 }
 
 /**

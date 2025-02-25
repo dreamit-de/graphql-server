@@ -140,6 +140,7 @@ export class GraphQLServer {
             metricsClient,
             sendResponse,
             responseEndChunkFunction,
+            responseStandardSchema,
         } = this.options
 
         const context = contextFunction({
@@ -185,6 +186,7 @@ export class GraphQLServer {
                     request,
                     response,
                     responseEndChunkFunction,
+                    responseStandardSchema,
                     statusCode: result.statusCode,
                 })
             }
@@ -217,6 +219,7 @@ export class GraphQLServer {
                 request: isGraphQLServerRequest(request) ? request : undefined,
                 response,
                 responseEndChunkFunction,
+                responseStandardSchema,
                 statusCode: result.statusCode,
             })
         }
