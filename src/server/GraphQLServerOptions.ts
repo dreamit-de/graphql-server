@@ -110,5 +110,5 @@ export interface GraphQLServerOptions {
     readonly adjustGraphQLExecutionResult?: (
         parameters: StandaloneResponseParameters,
     ) => GraphQLExecutionResult
-    readonly responseStandardSchema?:StandardSchemaV1
+    readonly responseStandardSchema?: StandardSchemaV1
 }

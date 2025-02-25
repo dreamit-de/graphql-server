@@ -28,8 +28,8 @@ import { SimpleMetricsClient } from '../metrics/SimpleMetricsClient'
 import { extractInformationFromRequest } from '../request/ExtractInformationFromRequest'
 import { sendResponse } from '../response/SendResponse'
 import { StandaloneResponseParameters } from '../response/StandaloneResponseParameters'
-import { GraphQLServerOptions } from './GraphQLServerOptions'
 import { StandardSchemaV1 } from '../validation/StandardSchemaV1'
+import { GraphQLServerOptions } from './GraphQLServerOptions'
 
 export const defaultGraphqlExecutionErrorMessage =
     'While processing the request a GraphQL execution error occurred: '
