@@ -42,6 +42,7 @@
     },
     "homepage": "https://github.com/dreamit-de/graphql-server#readme",
     "devDependencies": {
+        "@dreamit/graphql-std-schema": "0.1.0",
         "@dreamit/graphql-testing": "0.1.1",
         "@fast-check/vitest": "0.1.5",
         "@sgohlke/stryker-log-ignorer": "2.0.2",

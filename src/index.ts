@@ -62,3 +62,5 @@ export {
 export { getRequestInformation } from './server/GetRequestInformation'
 export { GraphQLServer } from './server/GraphQLServer'
 export { GraphQLServerOptions } from './server/GraphQLServerOptions'
+export { getResponseSchemaValidationErrors } from './validation/GetResponseSchemaValidationErrors'
+export { StandardSchemaV1 } from './validation/StandardSchemaV1'
