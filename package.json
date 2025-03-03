@@ -54,7 +54,7 @@
         "oxlint": "0.15.12",
         "prettier": "3.5.3",
         "prettier-plugin-organize-imports": "4.1.0",
-        "tsup": "8.3.6",
+        "tsup": "8.4.0",
         "typescript": "5.8.2",
         "vite-tsconfig-paths": "5.1.4",
         "vitest": "2.1.9"
