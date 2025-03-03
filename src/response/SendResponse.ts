@@ -1,5 +1,7 @@
 import { ResponseParameters } from '@dreamit/graphql-server-base'
+import { GraphQLError } from 'graphql'
 import { Buffer } from 'node:buffer'
+import { getResponseSchemaValidationErrors } from 'src/validation/GetResponseSchemaValidationErrors'
 
 /**
  * Default implementation of sendResponse function
@@ -8,19 +10,44 @@ export function sendResponse(responseParameters: ResponseParameters): void {
     const {
         customHeaders,
         context,
-        executionResult,
         logger,
         response,
         statusCode,
         formatErrorFunction,
         responseEndChunkFunction,
+        responseStandardSchema,
     } = responseParameters
+    let executionResult = responseParameters.executionResult
     logger.debug(
         `Preparing response with executionResult ${JSON.stringify(executionResult)}` +
             `, status code ${statusCode} and custom headers ${JSON.stringify(customHeaders)}` +
             `, and context ${context}`,
         context,
     )
+
+    if (responseStandardSchema) {
+        try {
+            const validationErrors = getResponseSchemaValidationErrors(
+                responseStandardSchema,
+                executionResult,
+            )
+            if (validationErrors) {
+                executionResult = {
+                    errors: validationErrors.map(
+                        (error) => new GraphQLError(error.message, {}),
+                    ),
+                }
+            }
+        } catch (error: unknown) {
+            logger.error(
+                `An error occurred while validating the response: ${error}`,
+                error as TypeError,
+                'ResponseValidationError',
+                context,
+            )
+        }
+    }
+
     if (executionResult && executionResult.errors && formatErrorFunction) {
         executionResult.errors.map((element) => formatErrorFunction(element))
     }

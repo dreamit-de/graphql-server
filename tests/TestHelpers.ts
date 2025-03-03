@@ -10,9 +10,11 @@ import {
     GraphQLServerOptions,
     JsonLogger,
     NoStacktraceJsonLogger,
+    StandardSchemaV1,
 } from 'src'
 
 import { testDateString } from '@dreamit/funpara'
+import { graphQLResponseSchema } from '@dreamit/graphql-std-schema'
 import {
     JsonContentTypeHeader,
     NoConsole,
@@ -53,8 +55,29 @@ export const LOGGER = new NoStacktraceJsonLogger(
 
 export const INITIAL_GRAPHQL_SERVER_OPTIONS: GraphQLServerOptions = {
     logger: NoOpTestLogger,
+    responseStandardSchema: graphQLResponseSchema(),
     rootValue: userSchemaResolvers,
     schema: userSchema,
+}
+
+export const PromiseReturningStandardSchema: StandardSchemaV1 = {
+    '~standard': {
+        validate: async () => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        issues: [
+                            {
+                                message: 'Did not work!',
+                            },
+                        ],
+                    })
+                }, 100)
+            })
+        },
+        vendor: 'test',
+        version: 1,
+    },
 }
 
 export function sendRequest(

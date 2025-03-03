@@ -23,7 +23,7 @@ on them.
 | ~~^15.2.0~~        |        ~~1.x~~         |          ~~n.a.~~           |    ~~n.a.~~     | [~~legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15) | end of life        |
 | ~~^16.0.0~~        |        ~~2.x~~         |          ~~n.a.~~           |    ~~n.a.~~     | [~~legacy-server-v2~~](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2) | end of life        |
 | ^16.0.0            |          3.x           |           ^1.0.1            |      n.a.       |   [legacy-server-v3](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v3)   | maintenance        |
-| ^16.0.0            |          4.x           |            ^2.6             |      ^1.0       |                    [main](https://github.com/dreamit-de/graphql-server)                    | active             |
+| ^16.0.0            |          4.x           |            ^2.7             |      ^1.0       |                    [main](https://github.com/dreamit-de/graphql-server)                    | active             |
 
 ## Features
 
@@ -32,6 +32,7 @@ on them.
 - Uses out-of-the-box default options to ease use and keep code short
 - Provides hot reloading for schema and options
 - Provides out-of-the-box metrics for GraphQLServer
+- Provides option to validate response against [StandardSchemaV1][18] compliant schema.
 - Uses only 3 peerDependencies: [graphql-js][1] version 16, [graphql-server-base][12] version 2 and [funpara][17] version 1 (no other production
   dependencies)
 
@@ -155,6 +156,27 @@ const graphQLServerExpress = express()
 const customGraphQLServer = new GraphQLServer({
     schema: someExampleSchema,
     customValidationRules: [NoSchemaIntrospectionCustomRule],
+})
+graphQLServerExpress.use(bodyParser.text({ type: '*/*' }))
+graphQLServerExpress.all('/graphql', (req, res) => {
+    return customGraphQLServer.handleRequest(req, res)
+})
+graphQLServerExpress.listen({ port: graphQLServerPort })
+console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
+```
+
+## Response validation
+
+The GraphQL response can be validated using the `responseStandardSchema` option. It accepts a [StandardSchemaV1][18] and will, when using `sendResponse`, put found issues into the response as `GraphQLError`s. By default `noOpStandardSchema` is used and returns the value and no issues. To validate the response a [StandardSchemaV1][18] compliant schema like [@dreamit/graphql-std-schema][19] can be used.
+
+```typescript
+import { graphQLResponseSchema } from '@dreamit/graphql-std-schema'
+
+const graphQLServerPort = 3592
+const graphQLServerExpress = express()
+const customGraphQLServer = new GraphQLServer({
+    responseStandardSchema: graphQLResponseSchema(),
+    schema: someExampleSchema,
 })
 graphQLServerExpress.use(bodyParser.text({ type: '*/*' }))
 graphQLServerExpress.all('/graphql', (req, res) => {
@@ -288,25 +310,6 @@ The `GraphQLServerRequest` and `GraphQLServerResponse` are available in the [@dr
 This allows extensions such as custom `Logger` or `MetricsClient` implementations to implement these interfaces without
 defining `@dreamit/graphql-server` as dependency.
 
-```typescript
-export interface GraphQLServerRequest {
-    headers: IncomingHttpHeaders
-    url?: string
-    body?: unknown
-    method?: string
-}
-
-export interface GraphQLServerResponse {
-    statusCode: number
-    setHeader(
-        name: string,
-        value: number | string | ReadonlyArray<string>,
-    ): this
-    end(chunk: unknown, callback?: () => void): this
-    removeHeader(name: string): void
-}
-```
-
 ## Working with context function
 
 `GraphQLServer`, like many GraphQL libraries, uses a context function to create a context object that is available
@@ -407,6 +410,10 @@ the `setOptions` function of the `GraphQLServer` instance.
   can be used to trigger collecting error metrics. Default implementation is `defaultCollectErrorMetrics` that increase
   the error counter for the given errorName or Error by 1.
 
+### Response Validation options
+
+- **`responseStandardSchema:`**: `StandardSchemaV1` to validate response against. By default `noOpStandardSchema` is used and returns the value and no issues.
+
 ### Technical components
 
 - **`logger`**: Logger to be used in the GraphQL server. `TextLogger` and `JsonLogger` as well as `NoStacktraceTextLogger` and `NoStacktraceJsonLogger` (useful for tests without the need for a stacktrace) and `NoLogger` (useful if no logging should be done but logger is required) are available in the module. Own
@@ -461,3 +468,5 @@ graphql-server is under [MIT-License](./LICENSE).
 [15]: https://deno.land/
 [16]: https://bun.sh/
 [17]: https://github.com/dreamit-de/funpara
+[18]: https://standardschema.dev/
+[19]: https://github.com/dreamit-de/graphql-std-schema
