@@ -65,7 +65,8 @@
         "graphql": "^16.0.0"
     },
     "optionalDependencies": {
-        "@oxlint/linux-x64-gnu": "0.15.12"
+        "@oxlint/linux-x64-gnu": "0.15.12",
+        "@rollup/rollup-linux-x64-gnu": "4.34.9"
     },
     "engines": {
         "node": ">=v6.13.0"
