@@ -64,6 +64,11 @@
         "@dreamit/graphql-server-base": "^2.7.0",
         "graphql": "^16.0.0"
     },
+    "optionalDependencies": {
+        "@esbuild/linux-x64": "0.25.0",
+        "@oxlint/linux-x64-gnu": "0.15.12",
+        "@rollup/rollup-linux-x64-gnu": "4.34.9"
+    },
     "engines": {
         "node": ">=v6.13.0"
     },
