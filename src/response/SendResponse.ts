@@ -1,7 +1,7 @@
 import { ResponseParameters } from '@dreamit/graphql-server-base'
 import { GraphQLError } from 'graphql'
 import { Buffer } from 'node:buffer'
-import { getResponseSchemaValidationErrors } from 'src/validation/GetResponseSchemaValidationErrors'
+import { getResponseSchemaValidationErrors } from '../validation/GetResponseSchemaValidationErrors'
 
 /**
  * Default implementation of sendResponse function
