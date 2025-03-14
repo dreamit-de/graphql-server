@@ -6,7 +6,7 @@ import { JsonLogger, NoStacktraceJsonLogger } from 'src'
 import { expect, test } from 'vitest'
 import { JsonTestLogger } from '../TestHelpers'
 
-export class NoStacktraceJsonTestLogger extends NoStacktraceJsonLogger {
+class NoStacktraceJsonTestLogger extends NoStacktraceJsonLogger {
     logEntries: LogEntry[] = new Array<LogEntry>()
 
     constructor(debugEnabled = false) {
