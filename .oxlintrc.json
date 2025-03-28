@@ -30,6 +30,7 @@
         "eslint/no-empty-function": "error",
         "eslint/no-eq-null": "error",
         "eslint/no-eval": "error",
+        "eslint/no-redeclare": "off",
         "eslint/no-regex-spaces": "error",
         "eslint/no-restricted-globals": "error",
         "eslint/no-var": "error",
