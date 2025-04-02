@@ -152,7 +152,7 @@ export class GraphQLServer {
         const requestInformation = isGraphQLServerRequest(request)
             ? this.getRequestInformation(request, context)
             : request
-        if ('query' in requestInformation && context) {
+        if ('query' in requestInformation && context && context !== request) {
             const contextAsRecord = context as Record<string, unknown>
             contextAsRecord.query = requestInformation.query
         }

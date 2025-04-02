@@ -218,6 +218,7 @@ test('Should set only default options if no options are provided', async () => {
 })
 
 test('Should adjust execution result with data from mutation context info', async () => {
+    const logger = new JsonTestLogger(true)
     const graphqlServer = new GraphQLServer({
         adjustGraphQLExecutionResult: (
             parameters: StandaloneResponseParameters,
@@ -239,7 +240,7 @@ test('Should adjust execution result with data from mutation context info', asyn
         collectErrorMetricsFunction: defaultCollectErrorMetrics,
         contextFunction: (): unknown => ({ authHeader: '123456789' }),
         extractInformationFromRequest: extractInformationFromRequest,
-        logger: NoOpTestLogger,
+        logger: logger,
         metricsClient: new SimpleMetricsClient(),
         parseFunction: parse,
         rootValue: userSchemaResolvers,
@@ -253,6 +254,7 @@ test('Should adjust execution result with data from mutation context info', asyn
     expect(result.customHeaders).toEqual({ 'x-jwt': 'jwt-123456789' })
     expect(result.statusCode).toBe(200)
     expect(result.requestInformation?.query).toBe(loginMutation)
+    expect(logger.logEntries.at(-1)?.query).toBe(loginMutation)
 })
 
 function expectRootQueryNotDefined(graphqlServer: GraphQLServer): void {
