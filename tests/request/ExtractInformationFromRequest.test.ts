@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import {
     generateGetParametersFromGraphQLRequestInfo,
+    JsonContentTypeHeader,
     usersRequest,
     usersRequestWithoutOperationName,
     usersRequestWithoutVariables,
@@ -64,9 +65,7 @@ test('Get fitting error if body contains a Buffer', () => {
 test('Should properly extract variables from url', () => {
     const request = {
         body: { query: 'doesnotmatter' },
-        headers: {
-            'content-type': 'application/json',
-        },
+        headers: JsonContentTypeHeader,
         url: '/graphql?query=mutation&variables=findme',
     }
     const response = extractInformationFromRequest(request)
@@ -96,14 +95,21 @@ test('Should read body even if url is not set', () => {
     expect(response.query).toBe('{"query":"findTheQuery"}')
 })
 
+test('Should not throw an error if body is undefined', () => {
+    const request = {
+        body: undefined,
+        headers: JsonContentTypeHeader,
+    }
+    const response = extractInformationFromRequest(request)
+    expect(response.query).toBeUndefined()
+})
+
 propertyTest.prop([fc.string()])(
     'should extract any given query from request',
     (queryToTest) => {
         const request = {
             body: { query: queryToTest },
-            headers: {
-                'content-type': 'application/json',
-            },
+            headers: JsonContentTypeHeader,
         }
         const response = extractInformationFromRequest(request)
         return response.query === queryToTest
@@ -115,9 +121,7 @@ propertyTest.prop([fc.jsonValue()])(
     (bodyToTest) => {
         const request = {
             body: bodyToTest,
-            headers: {
-                'content-type': 'application/json',
-            },
+            headers: JsonContentTypeHeader,
         }
         extractInformationFromRequest(request)
         // If an error is thrown the test will fail
