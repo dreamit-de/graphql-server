@@ -10,6 +10,7 @@ test.each`
     errorMessage                  | expectedErrorName
     ${'ECONNREFUSED'}             | ${FETCH_ERROR}
     ${'ECONNRESET'}               | ${FETCH_ERROR}
+    ${'EPERM'}                    | ${FETCH_ERROR}
     ${'ETIMEDOUT'}                | ${FETCH_ERROR}
     ${'network timeout'}          | ${FETCH_ERROR}
     ${'invalid redirect URL'}     | ${FETCH_ERROR}

@@ -13,6 +13,7 @@ export function determineGraphQLOrFetchError(error: unknown): string {
             error.message.includes('fetch failed') ||
             error.message.includes('ECONNREFUSED') ||
             error.message.includes('ECONNRESET') ||
+            error.message.includes('EPERM') ||
             error.message.includes('ETIMEDOUT') ||
             error.message.includes('network timeout') ||
             error.message.includes('invalid redirect URL') ||
