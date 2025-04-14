@@ -44,11 +44,11 @@
     "devDependencies": {
         "@dreamit/graphql-std-schema": "0.1.0",
         "@dreamit/graphql-testing": "0.1.2",
-        "@fast-check/vitest": "0.2.0",
+        "@fast-check/vitest": "0.2.1",
         "@sgohlke/stryker-log-ignorer": "2.0.2",
         "@stryker-mutator/vitest-runner": "8.7.1",
         "@types/content-type": "1.1.8",
-        "@types/node": "22.14.0",
+        "@types/node": "22.14.1",
         "@vitest/coverage-v8": "2.1.9",
         "fast-check": "4.1.1",
         "oxlint": "0.16.5",
@@ -67,7 +67,7 @@
     "optionalDependencies": {
         "@esbuild/linux-x64": "0.25.2",
         "@oxlint/linux-x64-gnu": "0.16.5",
-        "@rollup/rollup-linux-x64-gnu": "4.39.0"
+        "@rollup/rollup-linux-x64-gnu": "4.40.0"
     },
     "engines": {
         "node": ">=v6.13.0"
