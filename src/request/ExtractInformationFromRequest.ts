@@ -8,7 +8,7 @@ import { Buffer } from 'node:buffer'
 import { URLSearchParams } from 'node:url'
 import { getContentType } from './GetContentType'
 
-export function extractInformationFromRequest(
+function extractInformationFromRequest(
     request: GraphQLServerRequest,
 ): GraphQLRequestInfo {
     const extractedURLParameters = extractInformationFromUrlParameters(
@@ -24,9 +24,7 @@ export function extractInformationFromRequest(
     }
 }
 
-export function extractInformationFromUrlParameters(
-    url: string,
-): GraphQLRequestInfo {
+function extractInformationFromUrlParameters(url: string): GraphQLRequestInfo {
     const urlParameters = new URLSearchParams(
         url.slice(Math.max(0, url.indexOf('?'))),
     )
@@ -45,7 +43,7 @@ export function extractInformationFromUrlParameters(
 }
 
 /** Extracts information from request body. Based on implementation from express-graphql */
-export function extractInformationFromBody(
+function extractInformationFromBody(
     request: GraphQLServerRequest,
 ): GraphQLRequestInfo {
     // Do not try to read body for GET requests
@@ -150,4 +148,10 @@ export function extractInformationFromBody(
                 },
             }
     }
+}
+
+export {
+    extractInformationFromBody,
+    extractInformationFromRequest,
+    extractInformationFromUrlParameters,
 }

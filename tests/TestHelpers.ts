@@ -24,7 +24,7 @@ import {
 } from '@dreamit/graphql-testing'
 import { IncomingHttpHeaders } from 'node:http'
 
-export class JsonTestLogger extends JsonLogger {
+class JsonTestLogger extends JsonLogger {
     logEntries: LogEntry[] = new Array<LogEntry>()
 
     constructor(debugEnabled = false) {
@@ -47,20 +47,20 @@ export class JsonTestLogger extends JsonLogger {
     }
 }
 
-export const LOGGER = new NoStacktraceJsonLogger(
+const LOGGER = new NoStacktraceJsonLogger(
     'nostack-logger',
     'myTestService',
     false,
 )
 
-export const INITIAL_GRAPHQL_SERVER_OPTIONS: GraphQLServerOptions = {
+const INITIAL_GRAPHQL_SERVER_OPTIONS: GraphQLServerOptions = {
     logger: NoOpTestLogger,
     responseStandardSchema: graphQLResponseSchema(),
     rootValue: userSchemaResolvers,
     schema: userSchema,
 }
 
-export const PromiseReturningStandardSchema: StandardSchemaV1 = {
+const PromiseReturningStandardSchema: StandardSchemaV1 = {
     '~standard': {
         validate: async () => {
             return new Promise((resolve) => {
@@ -80,7 +80,7 @@ export const PromiseReturningStandardSchema: StandardSchemaV1 = {
     },
 }
 
-export function sendRequest(
+function sendRequest(
     graphqlServer: GraphQLServer,
     response: GraphQLServerResponse,
     body: BodyInit,
@@ -98,7 +98,7 @@ export function sendRequest(
     )
 }
 
-export function sendRequestWithURL(
+function sendRequestWithURL(
     graphqlServer: GraphQLServer,
     response: GraphQLServerResponse,
     url: string,
@@ -113,4 +113,13 @@ export function sendRequestWithURL(
         },
         response,
     )
+}
+
+export {
+    INITIAL_GRAPHQL_SERVER_OPTIONS,
+    JsonTestLogger,
+    LOGGER,
+    PromiseReturningStandardSchema,
+    sendRequest,
+    sendRequestWithURL,
 }

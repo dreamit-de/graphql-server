@@ -2159,11 +2159,11 @@
           "coveredBy": [],
           "location": {
             "end": {
-              "column": 49,
+              "column": 42,
               "line": 4
             },
             "start": {
-              "column": 35,
+              "column": 28,
               "line": 4
             }
           }
@@ -2360,7 +2360,7 @@
           }
         }
       ],
-      "source": "// Removes validation recommendations matching the defined recommendation text\nimport { GraphQLError } from 'graphql'\n\nexport const recommendationText = 'Did you mean'\n\nexport function removeValidationRecommendationsFromErrors(\n    validationErrors: readonly GraphQLError[],\n): readonly GraphQLError[] {\n    for (const validationError of validationErrors) {\n        if (validationError.message.includes(recommendationText)) {\n            validationError.message = validationError.message.slice(\n                0,\n                Math.max(\n                    0,\n                    validationError.message.indexOf(recommendationText),\n                ),\n            )\n        }\n    }\n    return validationErrors\n}\n"
+      "source": "// Removes validation recommendations matching the defined recommendation text\nimport { GraphQLError } from 'graphql'\n\nconst recommendationText = 'Did you mean'\n\nfunction removeValidationRecommendationsFromErrors(\n    validationErrors: readonly GraphQLError[],\n): readonly GraphQLError[] {\n    for (const validationError of validationErrors) {\n        if (validationError.message.includes(recommendationText)) {\n            validationError.message = validationError.message.slice(\n                0,\n                Math.max(\n                    0,\n                    validationError.message.indexOf(recommendationText),\n                ),\n            )\n        }\n    }\n    return validationErrors\n}\n\nexport { recommendationText, removeValidationRecommendationsFromErrors }\n"
     },
     "src/logger/CreateLogEntry.ts": {
       "language": "typescript",
@@ -4341,31 +4341,6 @@
       "language": "typescript",
       "mutants": [
         {
-          "id": "112",
-          "mutatorName": "BlockStatement",
-          "replacement": "{}",
-          "statusReason": "expected undefined to be truthy",
-          "status": "Killed",
-          "testsCompleted": 1,
-          "static": false,
-          "killedBy": [
-            "123"
-          ],
-          "coveredBy": [
-            "123"
-          ],
-          "location": {
-            "end": {
-              "column": 2,
-              "line": 8
-            },
-            "start": {
-              "column": 66,
-              "line": 6
-            }
-          }
-        },
-        {
           "id": "113",
           "mutatorName": "BlockStatement",
           "replacement": "{}",
@@ -4421,9 +4396,34 @@
               "line": 12
             }
           }
+        },
+        {
+          "id": "112",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "expected undefined to be truthy",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "killedBy": [
+            "123"
+          ],
+          "coveredBy": [
+            "123"
+          ],
+          "location": {
+            "end": {
+              "column": 2,
+              "line": 8
+            },
+            "start": {
+              "column": 59,
+              "line": 6
+            }
+          }
         }
       ],
-      "source": "import { DateFunction, nowDateFunction } from '@dreamit/funpara'\n\n/**\n * @deprecated Use createISOTimestamp instead\n */\nexport function createTimestamp(date: Date = new Date()): string {\n    return date.toISOString()\n}\n\nexport function createISOTimestamp(\n    dateFunction: DateFunction = nowDateFunction(),\n): string {\n    return dateFunction().toISOString()\n}\n"
+      "source": "import { DateFunction, nowDateFunction } from '@dreamit/funpara'\n\n/**\n * @deprecated Use createISOTimestamp instead\n */\nfunction createTimestamp(date: Date = new Date()): string {\n    return date.toISOString()\n}\n\nfunction createISOTimestamp(\n    dateFunction: DateFunction = nowDateFunction(),\n): string {\n    return dateFunction().toISOString()\n}\n\nexport { createISOTimestamp, createTimestamp }\n"
     },
     "src/logger/JsonLogger.ts": {
       "language": "typescript",
@@ -5100,68 +5100,12 @@
           "coveredBy": [],
           "location": {
             "end": {
-              "column": 76,
+              "column": 69,
               "line": 4
             },
             "start": {
-              "column": 43,
+              "column": 36,
               "line": 4
-            }
-          }
-        },
-        {
-          "id": "136",
-          "mutatorName": "BlockStatement",
-          "replacement": "{}",
-          "statusReason": "expected undefined to be 'A info message' // Object.is equality",
-          "status": "Killed",
-          "testsCompleted": 1,
-          "static": false,
-          "killedBy": [
-            "35"
-          ],
-          "coveredBy": [
-            "12",
-            "35",
-            "36",
-            "37",
-            "38",
-            "39",
-            "40",
-            "41",
-            "42",
-            "43",
-            "44",
-            "45",
-            "46",
-            "47",
-            "50",
-            "53",
-            "54",
-            "57",
-            "58",
-            "71",
-            "72",
-            "74",
-            "75",
-            "76",
-            "78",
-            "80",
-            "81",
-            "82",
-            "85",
-            "86",
-            "87",
-            "122"
-          ],
-          "location": {
-            "end": {
-              "column": 2,
-              "line": 25
-            },
-            "start": {
-              "column": 61,
-              "line": 13
             }
           }
         },
@@ -5603,9 +5547,65 @@
               "line": 21
             }
           }
+        },
+        {
+          "id": "136",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "expected undefined to be 'A info message' // Object.is equality",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 2,
+          "killedBy": [
+            "35"
+          ],
+          "coveredBy": [
+            "12",
+            "35",
+            "36",
+            "37",
+            "38",
+            "39",
+            "40",
+            "41",
+            "42",
+            "43",
+            "44",
+            "45",
+            "46",
+            "47",
+            "50",
+            "53",
+            "54",
+            "57",
+            "58",
+            "71",
+            "72",
+            "74",
+            "75",
+            "76",
+            "78",
+            "80",
+            "81",
+            "82",
+            "85",
+            "86",
+            "87",
+            "122"
+          ],
+          "location": {
+            "end": {
+              "column": 2,
+              "line": 25
+            },
+            "start": {
+              "column": 54,
+              "line": 13
+            }
+          }
         }
       ],
-      "source": "/**\n * @deprecated Do not use this, Polynomial regular expression\n */\nexport const VARIABLES_IN_MESSAGE_REGEX = /got invalid value (.*); Field/gm\n\n/**\n * Removes sensible information that might occur when\n * variables are used in log messages from the message.\n * @param {string} logMessage - The original log message\n * @returns {string} The sanitized message. Sensible parts will\n * be overwritten with the text REMOVED BY SANITIZER\n */\nexport function sanitizeMessage(logMessage: string): string {\n    if (\n        logMessage.includes('got invalid value') &&\n        logMessage.includes('; Field')\n    ) {\n        return (\n            logMessage.slice(0, logMessage.indexOf('got invalid value') + 18) +\n            'REMOVED BY SANITIZER' +\n            logMessage.slice(logMessage.indexOf('; Field'))\n        )\n    }\n    return logMessage\n}\n"
+      "source": "/**\n * @deprecated Do not use this, Polynomial regular expression\n */\nconst VARIABLES_IN_MESSAGE_REGEX = /got invalid value (.*); Field/gm\n\n/**\n * Removes sensible information that might occur when\n * variables are used in log messages from the message.\n * @param {string} logMessage - The original log message\n * @returns {string} The sanitized message. Sensible parts will\n * be overwritten with the text REMOVED BY SANITIZER\n */\nfunction sanitizeMessage(logMessage: string): string {\n    if (\n        logMessage.includes('got invalid value') &&\n        logMessage.includes('; Field')\n    ) {\n        return (\n            logMessage.slice(0, logMessage.indexOf('got invalid value') + 18) +\n            'REMOVED BY SANITIZER' +\n            logMessage.slice(logMessage.indexOf('; Field'))\n        )\n    }\n    return logMessage\n}\n\nexport { VARIABLES_IN_MESSAGE_REGEX, sanitizeMessage }\n"
     },
     "src/logger/TextLogger.ts": {
       "language": "typescript",
@@ -8631,6 +8631,60 @@
           }
         },
         {
+          "id": "232",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"Stryker was here!\"",
+          "status": "Survived",
+          "testsCompleted": 35,
+          "static": false,
+          "killedBy": [],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "68",
+            "69",
+            "89",
+            "90",
+            "99"
+          ],
+          "location": {
+            "end": {
+              "column": 26,
+              "line": 15
+            },
+            "start": {
+              "column": 24,
+              "line": 15
+            }
+          }
+        },
+        {
           "id": "233",
           "mutatorName": "ObjectLiteral",
           "replacement": "{}",
@@ -8690,6 +8744,66 @@
             "start": {
               "column": 12,
               "line": 18
+            }
+          }
+        },
+        {
+          "id": "234",
+          "mutatorName": "LogicalOperator",
+          "replacement": "extractedURLParameters.operationName && extractedBody.operationName",
+          "status": "Survived",
+          "testsCompleted": 40,
+          "static": false,
+          "killedBy": [],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "66",
+            "67",
+            "68",
+            "69",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 80,
+              "line": 21
+            },
+            "start": {
+              "column": 13,
+              "line": 21
             }
           }
         },
@@ -8820,71 +8934,6 @@
           }
         },
         {
-          "id": "237",
-          "mutatorName": "BlockStatement",
-          "replacement": "{}",
-          "statusReason": "Cannot read properties of undefined (reading 'operationName')",
-          "status": "Killed",
-          "testsCompleted": 1,
-          "static": false,
-          "killedBy": [
-            "33"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "62",
-            "63",
-            "66",
-            "67",
-            "68",
-            "69",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 2,
-              "line": 45
-            },
-            "start": {
-              "column": 23,
-              "line": 29
-            }
-          }
-        },
-        {
           "id": "238",
           "mutatorName": "MethodExpression",
           "replacement": "url",
@@ -8941,11 +8990,76 @@
           "location": {
             "end": {
               "column": 49,
-              "line": 31
+              "line": 29
             },
             "start": {
               "column": 9,
-              "line": 31
+              "line": 29
+            }
+          }
+        },
+        {
+          "id": "239",
+          "mutatorName": "MethodExpression",
+          "replacement": "Math.min(0, url.indexOf('?'))",
+          "statusReason": "Cannot read properties of undefined (reading 'users')",
+          "status": "Killed",
+          "testsCompleted": 15,
+          "static": false,
+          "killedBy": [
+            "15"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "62",
+            "63",
+            "66",
+            "67",
+            "68",
+            "69",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 48,
+              "line": 29
+            },
+            "start": {
+              "column": 19,
+              "line": 29
             }
           }
         },
@@ -9006,11 +9120,11 @@
           "location": {
             "end": {
               "column": 46,
-              "line": 31
+              "line": 29
             },
             "start": {
               "column": 43,
-              "line": 31
+              "line": 29
             }
           }
         },
@@ -9071,11 +9185,11 @@
           "location": {
             "end": {
               "column": 67,
-              "line": 33
+              "line": 31
             },
             "start": {
               "column": 28,
-              "line": 33
+              "line": 31
             }
           }
         },
@@ -9136,11 +9250,11 @@
           "location": {
             "end": {
               "column": 53,
-              "line": 33
+              "line": 31
             },
             "start": {
               "column": 46,
-              "line": 33
+              "line": 31
             }
           }
         },
@@ -9201,11 +9315,11 @@
           "location": {
             "end": {
               "column": 31,
-              "line": 37
+              "line": 35
             },
             "start": {
               "column": 9,
-              "line": 35
+              "line": 33
             }
           }
         },
@@ -9266,11 +9380,206 @@
           "location": {
             "end": {
               "column": 31,
+              "line": 35
+            },
+            "start": {
+              "column": 9,
+              "line": 33
+            }
+          }
+        },
+        {
+          "id": "245",
+          "mutatorName": "LogicalOperator",
+          "replacement": "urlParameters.get('variables') as Readonly<Record<string, unknown>> | null && undefined",
+          "statusReason": "expected null to be undefined // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 33,
+          "static": false,
+          "killedBy": [
+            "62"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "62",
+            "63",
+            "66",
+            "67",
+            "68",
+            "69",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 31,
+              "line": 35
+            },
+            "start": {
+              "column": 9,
+              "line": 33
+            }
+          }
+        },
+        {
+          "id": "246",
+          "mutatorName": "LogicalOperator",
+          "replacement": "urlParameters.get('operationName') && undefined",
+          "statusReason": "expected undefined to be 'users' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 33,
+          "static": false,
+          "killedBy": [
+            "62"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "62",
+            "63",
+            "66",
+            "67",
+            "68",
+            "69",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 56,
               "line": 37
             },
             "start": {
               "column": 9,
-              "line": 35
+              "line": 37
+            }
+          }
+        },
+        {
+          "id": "247",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "statusReason": "expected undefined to be 'users' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 33,
+          "static": false,
+          "killedBy": [
+            "62"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "62",
+            "63",
+            "66",
+            "67",
+            "68",
+            "69",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 42,
+              "line": 37
+            },
+            "start": {
+              "column": 27,
+              "line": 37
             }
           }
         },
@@ -9331,11 +9640,11 @@
           "location": {
             "end": {
               "column": 6,
-              "line": 44
+              "line": 42
             },
             "start": {
               "column": 12,
-              "line": 40
+              "line": 38
             }
           }
         },
@@ -9396,11 +9705,11 @@
           "location": {
             "end": {
               "column": 2,
-              "line": 153
+              "line": 151
             },
             "start": {
               "column": 23,
-              "line": 50
+              "line": 48
             }
           }
         },
@@ -9461,11 +9770,11 @@
           "location": {
             "end": {
               "column": 51,
-              "line": 52
+              "line": 50
             },
             "start": {
               "column": 9,
-              "line": 52
+              "line": 50
             }
           }
         },
@@ -9526,11 +9835,11 @@
           "location": {
             "end": {
               "column": 51,
-              "line": 52
+              "line": 50
             },
             "start": {
               "column": 9,
-              "line": 52
+              "line": 50
             }
           }
         },
@@ -9591,11 +9900,11 @@
           "location": {
             "end": {
               "column": 51,
-              "line": 52
+              "line": 50
             },
             "start": {
               "column": 9,
-              "line": 52
+              "line": 50
             }
           }
         },
@@ -9651,11 +9960,11 @@
           "location": {
             "end": {
               "column": 51,
-              "line": 52
+              "line": 50
             },
             "start": {
               "column": 27,
-              "line": 52
+              "line": 50
             }
           }
         },
@@ -9711,11 +10020,11 @@
           "location": {
             "end": {
               "column": 51,
-              "line": 52
+              "line": 50
             },
             "start": {
               "column": 27,
-              "line": 52
+              "line": 50
             }
           }
         },
@@ -9771,11 +10080,11 @@
           "location": {
             "end": {
               "column": 51,
-              "line": 52
+              "line": 50
             },
             "start": {
               "column": 46,
-              "line": 52
+              "line": 50
             }
           }
         },
@@ -9798,11 +10107,73 @@
           "location": {
             "end": {
               "column": 6,
-              "line": 54
+              "line": 52
             },
             "start": {
               "column": 53,
-              "line": 52
+              "line": 50
+            }
+          }
+        },
+        {
+          "id": "257",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "statusReason": "expected 'Invalid request. Request header conte…' to be 'POST body contains invalid type boole…' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 31,
+          "static": false,
+          "killedBy": [
+            "64"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "64",
+            "65",
+            "66",
+            "67",
+            "68",
+            "69",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 50,
+              "line": 55
+            },
+            "start": {
+              "column": 26,
+              "line": 55
             }
           }
         },
@@ -9860,11 +10231,11 @@
           "location": {
             "end": {
               "column": 50,
-              "line": 57
+              "line": 55
             },
             "start": {
               "column": 26,
-              "line": 57
+              "line": 55
             }
           }
         },
@@ -9922,11 +10293,11 @@
           "location": {
             "end": {
               "column": 50,
-              "line": 57
+              "line": 55
             },
             "start": {
               "column": 26,
-              "line": 57
+              "line": 55
             }
           }
         },
@@ -9984,11 +10355,259 @@
           "location": {
             "end": {
               "column": 50,
-              "line": 57
+              "line": 55
             },
             "start": {
               "column": 42,
-              "line": 57
+              "line": 55
+            }
+          }
+        },
+        {
+          "id": "261",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "statusReason": "expected 'Invalid request. Request header conte…' to be 'POST body contains invalid type boole…' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 31,
+          "static": false,
+          "killedBy": [
+            "64"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "64",
+            "65",
+            "66",
+            "67",
+            "68",
+            "69",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 50,
+              "line": 56
+            },
+            "start": {
+              "column": 26,
+              "line": 56
+            }
+          }
+        },
+        {
+          "id": "262",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "false",
+          "statusReason": "expected 'POST body contains invalid type objec…' to be 'Cannot extract information from body …' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 32,
+          "static": false,
+          "killedBy": [
+            "65"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "64",
+            "65",
+            "66",
+            "67",
+            "68",
+            "69",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 50,
+              "line": 56
+            },
+            "start": {
+              "column": 26,
+              "line": 56
+            }
+          }
+        },
+        {
+          "id": "263",
+          "mutatorName": "EqualityOperator",
+          "replacement": "typeof body !== 'object'",
+          "statusReason": "expected 'Invalid request. Request header conte…' to be 'POST body contains invalid type boole…' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 31,
+          "static": false,
+          "killedBy": [
+            "64"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "64",
+            "65",
+            "66",
+            "67",
+            "68",
+            "69",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 50,
+              "line": 56
+            },
+            "start": {
+              "column": 26,
+              "line": 56
+            }
+          }
+        },
+        {
+          "id": "264",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "statusReason": "expected 'POST body contains invalid type objec…' to be 'Cannot extract information from body …' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 32,
+          "static": false,
+          "killedBy": [
+            "65"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "64",
+            "65",
+            "66",
+            "67",
+            "68",
+            "69",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 50,
+              "line": 56
+            },
+            "start": {
+              "column": 42,
+              "line": 56
             }
           }
         },
@@ -10046,11 +10665,135 @@
           "location": {
             "end": {
               "column": 50,
-              "line": 60
+              "line": 58
             },
             "start": {
               "column": 9,
-              "line": 60
+              "line": 58
+            }
+          }
+        },
+        {
+          "id": "266",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "false",
+          "statusReason": "expected 'Invalid request. Request header conte…' to be 'POST body contains invalid type boole…' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 31,
+          "static": false,
+          "killedBy": [
+            "64"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "64",
+            "65",
+            "66",
+            "67",
+            "68",
+            "69",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 50,
+              "line": 58
+            },
+            "start": {
+              "column": 9,
+              "line": 58
+            }
+          }
+        },
+        {
+          "id": "267",
+          "mutatorName": "LogicalOperator",
+          "replacement": "!body && !bodyIsString && !bodyIsObject",
+          "statusReason": "expected 'Invalid request. Request header conte…' to be 'POST body contains invalid type boole…' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 31,
+          "static": false,
+          "killedBy": [
+            "64"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "64",
+            "65",
+            "66",
+            "67",
+            "68",
+            "69",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 50,
+              "line": 58
+            },
+            "start": {
+              "column": 9,
+              "line": 58
             }
           }
         },
@@ -10108,11 +10851,72 @@
           "location": {
             "end": {
               "column": 14,
-              "line": 60
+              "line": 58
             },
             "start": {
               "column": 9,
-              "line": 60
+              "line": 58
+            }
+          }
+        },
+        {
+          "id": "269",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "false",
+          "statusReason": "expected 'Invalid request. Request header conte…' to be 'POST body contains invalid type boole…' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 31,
+          "static": false,
+          "killedBy": [
+            "64"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "64",
+            "65",
+            "66",
+            "67",
+            "68",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 49,
+              "line": 58
+            },
+            "start": {
+              "column": 19,
+              "line": 58
             }
           }
         },
@@ -10169,11 +10973,654 @@
           "location": {
             "end": {
               "column": 49,
-              "line": 60
+              "line": 58
             },
             "start": {
               "column": 19,
+              "line": 58
+            }
+          }
+        },
+        {
+          "id": "271",
+          "mutatorName": "BooleanLiteral",
+          "replacement": "bodyIsString",
+          "statusReason": "Cannot read properties of undefined (reading 'users')",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "0"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "64",
+            "65",
+            "66",
+            "67",
+            "68",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 32,
+              "line": 58
+            },
+            "start": {
+              "column": 19,
+              "line": 58
+            }
+          }
+        },
+        {
+          "id": "272",
+          "mutatorName": "BooleanLiteral",
+          "replacement": "bodyIsObject",
+          "statusReason": "expected 'Invalid request. Request header conte…' to be 'POST body contains invalid type boole…' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "64"
+          ],
+          "coveredBy": [
+            "64",
+            "65",
+            "66",
+            "67",
+            "68"
+          ],
+          "location": {
+            "end": {
+              "column": 49,
+              "line": 58
+            },
+            "start": {
+              "column": 36,
+              "line": 58
+            }
+          }
+        },
+        {
+          "id": "273",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "expected 'Invalid request. Request header conte…' to be 'POST body contains invalid type boole…' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "64"
+          ],
+          "coveredBy": [
+            "64",
+            "69"
+          ],
+          "location": {
+            "end": {
+              "column": 6,
+              "line": 69
+            },
+            "start": {
+              "column": 52,
+              "line": 58
+            }
+          }
+        },
+        {
+          "id": "274",
+          "mutatorName": "ObjectLiteral",
+          "replacement": "{}",
+          "statusReason": "expected undefined to be 'POST body contains invalid type boole…' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "64"
+          ],
+          "coveredBy": [
+            "64",
+            "69"
+          ],
+          "location": {
+            "end": {
+              "column": 10,
+              "line": 68
+            },
+            "start": {
+              "column": 16,
+              "line": 59
+            }
+          }
+        },
+        {
+          "id": "275",
+          "mutatorName": "ObjectLiteral",
+          "replacement": "{}",
+          "statusReason": "Cannot read properties of undefined (reading 'message')",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "64"
+          ],
+          "coveredBy": [
+            "64",
+            "69"
+          ],
+          "location": {
+            "end": {
+              "column": 14,
+              "line": 67
+            },
+            "start": {
+              "column": 20,
               "line": 60
+            }
+          }
+        },
+        {
+          "id": "276",
+          "mutatorName": "StringLiteral",
+          "replacement": "``",
+          "statusReason": "expected 'Only \"object\" and \"string\" are suppor…' to be 'POST body contains invalid type boole…' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "64"
+          ],
+          "coveredBy": [
+            "64",
+            "69"
+          ],
+          "location": {
+            "end": {
+              "column": 71,
+              "line": 62
+            },
+            "start": {
+              "column": 21,
+              "line": 62
+            }
+          }
+        },
+        {
+          "id": "277",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "statusReason": "expected 'POST body contains invalid type boole…' to be 'POST body contains invalid type boole…' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "64"
+          ],
+          "coveredBy": [
+            "64",
+            "69"
+          ],
+          "location": {
+            "end": {
+              "column": 68,
+              "line": 63
+            },
+            "start": {
+              "column": 25,
+              "line": 63
+            }
+          }
+        },
+        {
+          "id": "278",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "statusReason": "expected undefined to be '{\"query\":\"findTheQuery\"}' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 3,
+          "static": false,
+          "killedBy": [
+            "67"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "65",
+            "66",
+            "67",
+            "68",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 54,
+              "line": 69
+            },
+            "start": {
+              "column": 16,
+              "line": 69
+            }
+          }
+        },
+        {
+          "id": "279",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "false",
+          "statusReason": "expected 'Invalid request. Request header conte…' to be 'Cannot extract information from body …' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "65"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "65",
+            "66",
+            "67",
+            "68",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 54,
+              "line": 69
+            },
+            "start": {
+              "column": 16,
+              "line": 69
+            }
+          }
+        },
+        {
+          "id": "280",
+          "mutatorName": "LogicalOperator",
+          "replacement": "bodyIsObject || body instanceof Buffer",
+          "statusReason": "expected undefined to be '{\"query\":\"findTheQuery\"}' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 3,
+          "static": false,
+          "killedBy": [
+            "67"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "65",
+            "66",
+            "67",
+            "68",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 54,
+              "line": 69
+            },
+            "start": {
+              "column": 16,
+              "line": 69
+            }
+          }
+        },
+        {
+          "id": "281",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "expected 'Invalid request. Request header conte…' to be 'Cannot extract information from body …' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "65"
+          ],
+          "coveredBy": [
+            "65"
+          ],
+          "location": {
+            "end": {
+              "column": 6,
+              "line": 80
+            },
+            "start": {
+              "column": 56,
+              "line": 69
+            }
+          }
+        },
+        {
+          "id": "282",
+          "mutatorName": "ObjectLiteral",
+          "replacement": "{}",
+          "statusReason": "expected undefined to be 'Cannot extract information from body …' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "65"
+          ],
+          "coveredBy": [
+            "65"
+          ],
+          "location": {
+            "end": {
+              "column": 10,
+              "line": 79
+            },
+            "start": {
+              "column": 16,
+              "line": 70
+            }
+          }
+        },
+        {
+          "id": "283",
+          "mutatorName": "ObjectLiteral",
+          "replacement": "{}",
+          "statusReason": "Cannot read properties of undefined (reading 'message')",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "65"
+          ],
+          "coveredBy": [
+            "65"
+          ],
+          "location": {
+            "end": {
+              "column": 14,
+              "line": 78
+            },
+            "start": {
+              "column": 20,
+              "line": 71
+            }
+          }
+        },
+        {
+          "id": "284",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "statusReason": "expected 'body because it contains an object bu…' to be 'Cannot extract information from body …' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "65"
+          ],
+          "coveredBy": [
+            "65"
+          ],
+          "location": {
+            "end": {
+              "column": 55,
+              "line": 73
+            },
+            "start": {
+              "column": 21,
+              "line": 73
+            }
+          }
+        },
+        {
+          "id": "285",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "statusReason": "expected 'Cannot extract information from ' to be 'Cannot extract information from body …' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "65"
+          ],
+          "coveredBy": [
+            "65"
+          ],
+          "location": {
+            "end": {
+              "column": 69,
+              "line": 74
+            },
+            "start": {
+              "column": 25,
+              "line": 74
+            }
+          }
+        },
+        {
+          "id": "286",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "statusReason": "expected undefined to be '{\"query\":\"findTheQuery\"}' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 2,
+          "static": false,
+          "killedBy": [
+            "67"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "66",
+            "67",
+            "68",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 65,
+              "line": 83
+            },
+            "start": {
+              "column": 51,
+              "line": 83
+            }
+          }
+        },
+        {
+          "id": "287",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "statusReason": "expected undefined to be '{\"query\":\"findTheQuery\"}' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 2,
+          "static": false,
+          "killedBy": [
+            "67"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "66",
+            "67",
+            "68",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 44,
+              "line": 85
+            },
+            "start": {
+              "column": 9,
+              "line": 85
             }
           }
         },
@@ -10228,11 +11675,70 @@
           "location": {
             "end": {
               "column": 44,
-              "line": 87
+              "line": 85
             },
             "start": {
               "column": 9,
-              "line": 87
+              "line": 85
+            }
+          }
+        },
+        {
+          "id": "289",
+          "mutatorName": "EqualityOperator",
+          "replacement": "contentTypeFromHeader !== undefined",
+          "statusReason": "Cannot read properties of undefined (reading 'users')",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [
+            "0"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "66",
+            "67",
+            "68",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 44,
+              "line": 85
+            },
+            "start": {
+              "column": 9,
+              "line": 85
             }
           }
         },
@@ -10253,11 +11759,11 @@
           "location": {
             "end": {
               "column": 6,
-              "line": 98
+              "line": 96
             },
             "start": {
               "column": 46,
-              "line": 87
+              "line": 85
             }
           }
         },
@@ -10278,11 +11784,11 @@
           "location": {
             "end": {
               "column": 10,
-              "line": 97
+              "line": 95
             },
             "start": {
               "column": 16,
-              "line": 88
+              "line": 86
             }
           }
         },
@@ -10303,11 +11809,11 @@
           "location": {
             "end": {
               "column": 14,
-              "line": 96
+              "line": 94
             },
             "start": {
               "column": 20,
-              "line": 89
+              "line": 87
             }
           }
         },
@@ -10328,11 +11834,11 @@
           "location": {
             "end": {
               "column": 40,
-              "line": 91
+              "line": 89
             },
             "start": {
               "column": 21,
-              "line": 91
+              "line": 89
             }
           }
         },
@@ -10353,11 +11859,11 @@
           "location": {
             "end": {
               "column": 68,
-              "line": 92
+              "line": 90
             },
             "start": {
               "column": 25,
-              "line": 92
+              "line": 90
             }
           }
         },
@@ -10380,11 +11886,11 @@
           "location": {
             "end": {
               "column": 73,
-              "line": 103
+              "line": 101
             },
             "start": {
               "column": 9,
-              "line": 102
+              "line": 100
             }
           }
         },
@@ -10407,11 +11913,11 @@
           "location": {
             "end": {
               "column": 73,
-              "line": 103
+              "line": 101
             },
             "start": {
               "column": 20,
-              "line": 103
+              "line": 101
             }
           }
         },
@@ -10456,11 +11962,57 @@
           "location": {
             "end": {
               "column": 14,
-              "line": 137
+              "line": 135
             },
             "start": {
               "column": 9,
-              "line": 104
+              "line": 102
+            }
+          }
+        },
+        {
+          "id": "298",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "status": "Survived",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "9",
+            "10",
+            "12",
+            "13",
+            "14",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "66",
+            "89",
+            "90",
+            "99",
+            "126"
+          ],
+          "location": {
+            "end": {
+              "column": 29,
+              "line": 103
+            },
+            "start": {
+              "column": 17,
+              "line": 103
             }
           }
         },
@@ -10505,11 +12057,11 @@
           "location": {
             "end": {
               "column": 29,
-              "line": 105
+              "line": 103
             },
             "start": {
               "column": 17,
-              "line": 105
+              "line": 103
             }
           }
         },
@@ -10553,11 +12105,11 @@
           "location": {
             "end": {
               "column": 14,
-              "line": 127
+              "line": 125
             },
             "start": {
               "column": 31,
-              "line": 105
+              "line": 103
             }
           }
         },
@@ -10601,11 +12153,11 @@
           "location": {
             "end": {
               "column": 18,
-              "line": 116
+              "line": 114
             },
             "start": {
               "column": 21,
-              "line": 106
+              "line": 104
             }
           }
         },
@@ -10647,11 +12199,11 @@
           "location": {
             "end": {
               "column": 22,
-              "line": 115
+              "line": 113
             },
             "start": {
               "column": 28,
-              "line": 108
+              "line": 106
             }
           }
         },
@@ -10693,11 +12245,11 @@
           "location": {
             "end": {
               "column": 51,
-              "line": 114
+              "line": 112
             },
             "start": {
               "column": 29,
-              "line": 112
+              "line": 110
             }
           }
         },
@@ -10739,11 +12291,11 @@
           "location": {
             "end": {
               "column": 51,
-              "line": 114
+              "line": 112
             },
             "start": {
               "column": 29,
-              "line": 112
+              "line": 110
             }
           }
         },
@@ -10785,11 +12337,11 @@
           "location": {
             "end": {
               "column": 51,
-              "line": 114
+              "line": 112
             },
             "start": {
               "column": 29,
-              "line": 112
+              "line": 110
             }
           }
         },
@@ -10811,11 +12363,11 @@
           "location": {
             "end": {
               "column": 18,
-              "line": 126
+              "line": 124
             },
             "start": {
               "column": 25,
-              "line": 116
+              "line": 114
             }
           }
         },
@@ -10837,11 +12389,11 @@
           "location": {
             "end": {
               "column": 22,
-              "line": 125
+              "line": 123
             },
             "start": {
               "column": 28,
-              "line": 117
+              "line": 115
             }
           }
         },
@@ -10863,11 +12415,11 @@
           "location": {
             "end": {
               "column": 26,
-              "line": 124
+              "line": 122
             },
             "start": {
               "column": 32,
-              "line": 118
+              "line": 116
             }
           }
         },
@@ -10889,11 +12441,121 @@
           "location": {
             "end": {
               "column": 67,
-              "line": 120
+              "line": 118
             },
             "start": {
               "column": 33,
-              "line": 120
+              "line": 118
+            }
+          }
+        },
+        {
+          "id": "310",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "status": "Survived",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [],
+          "coveredBy": [
+            "66"
+          ],
+          "location": {
+            "end": {
+              "column": 14,
+              "line": 135
+            },
+            "start": {
+              "column": 20,
+              "line": 125
+            }
+          }
+        },
+        {
+          "id": "311",
+          "mutatorName": "ObjectLiteral",
+          "replacement": "{}",
+          "status": "Survived",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [],
+          "coveredBy": [
+            "66"
+          ],
+          "location": {
+            "end": {
+              "column": 18,
+              "line": 134
+            },
+            "start": {
+              "column": 24,
+              "line": 127
+            }
+          }
+        },
+        {
+          "id": "312",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "status": "Survived",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [],
+          "coveredBy": [
+            "66"
+          ],
+          "location": {
+            "end": {
+              "column": 47,
+              "line": 133
+            },
+            "start": {
+              "column": 25,
+              "line": 131
+            }
+          }
+        },
+        {
+          "id": "313",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "false",
+          "status": "Survived",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [],
+          "coveredBy": [
+            "66"
+          ],
+          "location": {
+            "end": {
+              "column": 47,
+              "line": 133
+            },
+            "start": {
+              "column": 25,
+              "line": 131
+            }
+          }
+        },
+        {
+          "id": "314",
+          "mutatorName": "LogicalOperator",
+          "replacement": "bodyAsMap.variables as Readonly<Record<string, unknown>> | null && undefined",
+          "status": "Survived",
+          "testsCompleted": 1,
+          "static": false,
+          "killedBy": [],
+          "coveredBy": [
+            "66"
+          ],
+          "location": {
+            "end": {
+              "column": 47,
+              "line": 133
+            },
+            "start": {
+              "column": 25,
+              "line": 131
             }
           }
         },
@@ -10915,11 +12577,11 @@
           "location": {
             "end": {
               "column": 72,
-              "line": 139
+              "line": 137
             },
             "start": {
               "column": 9,
-              "line": 138
+              "line": 136
             }
           }
         },
@@ -10941,11 +12603,11 @@
           "location": {
             "end": {
               "column": 71,
-              "line": 139
+              "line": 137
             },
             "start": {
               "column": 56,
-              "line": 139
+              "line": 137
             }
           }
         },
@@ -10969,11 +12631,11 @@
           "location": {
             "end": {
               "column": 14,
-              "line": 151
+              "line": 149
             },
             "start": {
               "column": 9,
-              "line": 140
+              "line": 138
             }
           }
         },
@@ -10997,11 +12659,11 @@
           "location": {
             "end": {
               "column": 14,
-              "line": 151
+              "line": 149
             },
             "start": {
               "column": 20,
-              "line": 141
+              "line": 139
             }
           }
         },
@@ -11025,11 +12687,11 @@
           "location": {
             "end": {
               "column": 18,
-              "line": 150
+              "line": 148
             },
             "start": {
               "column": 24,
-              "line": 142
+              "line": 140
             }
           }
         },
@@ -11053,11 +12715,11 @@
           "location": {
             "end": {
               "column": 68,
-              "line": 144
+              "line": 142
             },
             "start": {
               "column": 25,
-              "line": 144
+              "line": 142
             }
           }
         },
@@ -11081,11 +12743,11 @@
           "location": {
             "end": {
               "column": 66,
-              "line": 146
+              "line": 144
             },
             "start": {
               "column": 29,
-              "line": 146
+              "line": 144
             }
           }
         },
@@ -11109,19 +12771,19 @@
           "location": {
             "end": {
               "column": 62,
-              "line": 146
+              "line": 144
             },
             "start": {
               "column": 48,
-              "line": 146
+              "line": 144
             }
           }
         },
         {
-          "id": "271",
-          "mutatorName": "BooleanLiteral",
-          "replacement": "bodyIsString",
-          "statusReason": "Cannot read properties of undefined (reading 'users')",
+          "id": "237",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "Cannot read properties of undefined (reading 'operationName')",
           "status": "Killed",
           "static": false,
           "testsCompleted": 1,
@@ -11142,67 +12804,6 @@
             "12",
             "13",
             "14",
-            "17",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "64",
-            "65",
-            "66",
-            "67",
-            "68",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 32,
-              "line": 60
-            },
-            "start": {
-              "column": 19,
-              "line": 60
-            }
-          }
-        },
-        {
-          "id": "239",
-          "mutatorName": "MethodExpression",
-          "replacement": "Math.min(0, url.indexOf('?'))",
-          "statusReason": "Cannot read properties of undefined (reading 'users')",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 15,
-          "killedBy": [
-            "15"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
             "15",
             "16",
             "17",
@@ -11234,1610 +12835,17 @@
           ],
           "location": {
             "end": {
-              "column": 48,
-              "line": 31
+              "column": 2,
+              "line": 43
             },
             "start": {
-              "column": 19,
-              "line": 31
-            }
-          }
-        },
-        {
-          "id": "272",
-          "mutatorName": "BooleanLiteral",
-          "replacement": "bodyIsObject",
-          "statusReason": "expected 'Invalid request. Request header conte…' to be 'POST body contains invalid type boole…' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "64"
-          ],
-          "coveredBy": [
-            "64",
-            "65",
-            "66",
-            "67",
-            "68"
-          ],
-          "location": {
-            "end": {
-              "column": 49,
-              "line": 60
-            },
-            "start": {
-              "column": 36,
-              "line": 60
-            }
-          }
-        },
-        {
-          "id": "273",
-          "mutatorName": "BlockStatement",
-          "replacement": "{}",
-          "statusReason": "expected 'Invalid request. Request header conte…' to be 'POST body contains invalid type boole…' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "64"
-          ],
-          "coveredBy": [
-            "64",
-            "69"
-          ],
-          "location": {
-            "end": {
-              "column": 6,
-              "line": 71
-            },
-            "start": {
-              "column": 52,
-              "line": 60
-            }
-          }
-        },
-        {
-          "id": "257",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "true",
-          "statusReason": "expected 'Invalid request. Request header conte…' to be 'POST body contains invalid type boole…' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 31,
-          "killedBy": [
-            "64"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "17",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "64",
-            "65",
-            "66",
-            "67",
-            "68",
-            "69",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 50,
-              "line": 57
-            },
-            "start": {
-              "column": 26,
-              "line": 57
-            }
-          }
-        },
-        {
-          "id": "274",
-          "mutatorName": "ObjectLiteral",
-          "replacement": "{}",
-          "statusReason": "expected undefined to be 'POST body contains invalid type boole…' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "64"
-          ],
-          "coveredBy": [
-            "64",
-            "69"
-          ],
-          "location": {
-            "end": {
-              "column": 10,
-              "line": 70
-            },
-            "start": {
-              "column": 16,
-              "line": 61
-            }
-          }
-        },
-        {
-          "id": "269",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "false",
-          "statusReason": "expected 'Invalid request. Request header conte…' to be 'POST body contains invalid type boole…' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 31,
-          "killedBy": [
-            "64"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "17",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "64",
-            "65",
-            "66",
-            "67",
-            "68",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 49,
-              "line": 60
-            },
-            "start": {
-              "column": 19,
-              "line": 60
-            }
-          }
-        },
-        {
-          "id": "266",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "false",
-          "statusReason": "expected 'Invalid request. Request header conte…' to be 'POST body contains invalid type boole…' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 31,
-          "killedBy": [
-            "64"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "17",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "64",
-            "65",
-            "66",
-            "67",
-            "68",
-            "69",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 50,
-              "line": 60
-            },
-            "start": {
-              "column": 9,
-              "line": 60
-            }
-          }
-        },
-        {
-          "id": "264",
-          "mutatorName": "StringLiteral",
-          "replacement": "\"\"",
-          "statusReason": "expected 'POST body contains invalid type objec…' to be 'Cannot extract information from body …' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 32,
-          "killedBy": [
-            "65"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "17",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "64",
-            "65",
-            "66",
-            "67",
-            "68",
-            "69",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 50,
-              "line": 58
-            },
-            "start": {
-              "column": 42,
-              "line": 58
-            }
-          }
-        },
-        {
-          "id": "261",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "true",
-          "statusReason": "expected 'Invalid request. Request header conte…' to be 'POST body contains invalid type boole…' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 31,
-          "killedBy": [
-            "64"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "17",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "64",
-            "65",
-            "66",
-            "67",
-            "68",
-            "69",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 50,
-              "line": 58
-            },
-            "start": {
-              "column": 26,
-              "line": 58
-            }
-          }
-        },
-        {
-          "id": "263",
-          "mutatorName": "EqualityOperator",
-          "replacement": "typeof body !== 'object'",
-          "statusReason": "expected 'Invalid request. Request header conte…' to be 'POST body contains invalid type boole…' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 31,
-          "killedBy": [
-            "64"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "17",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "64",
-            "65",
-            "66",
-            "67",
-            "68",
-            "69",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 50,
-              "line": 58
-            },
-            "start": {
-              "column": 26,
-              "line": 58
-            }
-          }
-        },
-        {
-          "id": "262",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "false",
-          "statusReason": "expected 'POST body contains invalid type objec…' to be 'Cannot extract information from body …' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 32,
-          "killedBy": [
-            "65"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "17",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "64",
-            "65",
-            "66",
-            "67",
-            "68",
-            "69",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 50,
-              "line": 58
-            },
-            "start": {
-              "column": 26,
-              "line": 58
-            }
-          }
-        },
-        {
-          "id": "267",
-          "mutatorName": "LogicalOperator",
-          "replacement": "!body && !bodyIsString && !bodyIsObject",
-          "statusReason": "expected 'Invalid request. Request header conte…' to be 'POST body contains invalid type boole…' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 31,
-          "killedBy": [
-            "64"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "17",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "64",
-            "65",
-            "66",
-            "67",
-            "68",
-            "69",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 50,
-              "line": 60
-            },
-            "start": {
-              "column": 9,
-              "line": 60
-            }
-          }
-        },
-        {
-          "id": "246",
-          "mutatorName": "LogicalOperator",
-          "replacement": "urlParameters.get('operationName') && undefined",
-          "statusReason": "expected undefined to be 'users' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 33,
-          "killedBy": [
-            "62"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "62",
-            "63",
-            "66",
-            "67",
-            "68",
-            "69",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 56,
-              "line": 39
-            },
-            "start": {
-              "column": 9,
-              "line": 39
-            }
-          }
-        },
-        {
-          "id": "245",
-          "mutatorName": "LogicalOperator",
-          "replacement": "urlParameters.get('variables') as Readonly<Record<string, unknown>> | null && undefined",
-          "statusReason": "expected null to be undefined // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 33,
-          "killedBy": [
-            "62"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "62",
-            "63",
-            "66",
-            "67",
-            "68",
-            "69",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 31,
-              "line": 37
-            },
-            "start": {
-              "column": 9,
-              "line": 35
-            }
-          }
-        },
-        {
-          "id": "247",
-          "mutatorName": "StringLiteral",
-          "replacement": "\"\"",
-          "statusReason": "expected undefined to be 'users' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 33,
-          "killedBy": [
-            "62"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "62",
-            "63",
-            "66",
-            "67",
-            "68",
-            "69",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 42,
-              "line": 39
-            },
-            "start": {
-              "column": 27,
-              "line": 39
-            }
-          }
-        },
-        {
-          "id": "275",
-          "mutatorName": "ObjectLiteral",
-          "replacement": "{}",
-          "statusReason": "Cannot read properties of undefined (reading 'message')",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "64"
-          ],
-          "coveredBy": [
-            "64",
-            "69"
-          ],
-          "location": {
-            "end": {
-              "column": 14,
-              "line": 69
-            },
-            "start": {
-              "column": 20,
-              "line": 62
-            }
-          }
-        },
-        {
-          "id": "277",
-          "mutatorName": "StringLiteral",
-          "replacement": "\"\"",
-          "statusReason": "expected 'POST body contains invalid type boole…' to be 'POST body contains invalid type boole…' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "64"
-          ],
-          "coveredBy": [
-            "64",
-            "69"
-          ],
-          "location": {
-            "end": {
-              "column": 68,
-              "line": 65
-            },
-            "start": {
-              "column": 25,
-              "line": 65
-            }
-          }
-        },
-        {
-          "id": "278",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "true",
-          "statusReason": "expected undefined to be '{\"query\":\"findTheQuery\"}' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 3,
-          "killedBy": [
-            "67"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "17",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "65",
-            "66",
-            "67",
-            "68",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 54,
-              "line": 71
-            },
-            "start": {
-              "column": 16,
-              "line": 71
-            }
-          }
-        },
-        {
-          "id": "276",
-          "mutatorName": "StringLiteral",
-          "replacement": "``",
-          "statusReason": "expected 'Only \"object\" and \"string\" are suppor…' to be 'POST body contains invalid type boole…' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "64"
-          ],
-          "coveredBy": [
-            "64",
-            "69"
-          ],
-          "location": {
-            "end": {
-              "column": 71,
-              "line": 64
-            },
-            "start": {
-              "column": 21,
-              "line": 64
-            }
-          }
-        },
-        {
-          "id": "281",
-          "mutatorName": "BlockStatement",
-          "replacement": "{}",
-          "statusReason": "expected 'Invalid request. Request header conte…' to be 'Cannot extract information from body …' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "65"
-          ],
-          "coveredBy": [
-            "65"
-          ],
-          "location": {
-            "end": {
-              "column": 6,
-              "line": 82
-            },
-            "start": {
-              "column": 56,
-              "line": 71
-            }
-          }
-        },
-        {
-          "id": "283",
-          "mutatorName": "ObjectLiteral",
-          "replacement": "{}",
-          "statusReason": "Cannot read properties of undefined (reading 'message')",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "65"
-          ],
-          "coveredBy": [
-            "65"
-          ],
-          "location": {
-            "end": {
-              "column": 14,
-              "line": 80
-            },
-            "start": {
-              "column": 20,
-              "line": 73
-            }
-          }
-        },
-        {
-          "id": "280",
-          "mutatorName": "LogicalOperator",
-          "replacement": "bodyIsObject || body instanceof Buffer",
-          "statusReason": "expected undefined to be '{\"query\":\"findTheQuery\"}' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 3,
-          "killedBy": [
-            "67"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "17",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "65",
-            "66",
-            "67",
-            "68",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 54,
-              "line": 71
-            },
-            "start": {
-              "column": 16,
-              "line": 71
-            }
-          }
-        },
-        {
-          "id": "279",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "false",
-          "statusReason": "expected 'Invalid request. Request header conte…' to be 'Cannot extract information from body …' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "65"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "17",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "65",
-            "66",
-            "67",
-            "68",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 54,
-              "line": 71
-            },
-            "start": {
-              "column": 16,
-              "line": 71
-            }
-          }
-        },
-        {
-          "id": "282",
-          "mutatorName": "ObjectLiteral",
-          "replacement": "{}",
-          "statusReason": "expected undefined to be 'Cannot extract information from body …' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "65"
-          ],
-          "coveredBy": [
-            "65"
-          ],
-          "location": {
-            "end": {
-              "column": 10,
-              "line": 81
-            },
-            "start": {
-              "column": 16,
-              "line": 72
-            }
-          }
-        },
-        {
-          "id": "284",
-          "mutatorName": "StringLiteral",
-          "replacement": "\"\"",
-          "statusReason": "expected 'body because it contains an object bu…' to be 'Cannot extract information from body …' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "65"
-          ],
-          "coveredBy": [
-            "65"
-          ],
-          "location": {
-            "end": {
-              "column": 55,
-              "line": 75
-            },
-            "start": {
-              "column": 21,
-              "line": 75
-            }
-          }
-        },
-        {
-          "id": "285",
-          "mutatorName": "StringLiteral",
-          "replacement": "\"\"",
-          "statusReason": "expected 'Cannot extract information from ' to be 'Cannot extract information from body …' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "65"
-          ],
-          "coveredBy": [
-            "65"
-          ],
-          "location": {
-            "end": {
-              "column": 69,
-              "line": 76
-            },
-            "start": {
-              "column": 25,
-              "line": 76
-            }
-          }
-        },
-        {
-          "id": "289",
-          "mutatorName": "EqualityOperator",
-          "replacement": "contentTypeFromHeader !== undefined",
-          "statusReason": "Cannot read properties of undefined (reading 'users')",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 1,
-          "killedBy": [
-            "0"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "17",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "66",
-            "67",
-            "68",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 44,
-              "line": 87
-            },
-            "start": {
-              "column": 9,
-              "line": 87
-            }
-          }
-        },
-        {
-          "id": "232",
-          "mutatorName": "StringLiteral",
-          "replacement": "\"Stryker was here!\"",
-          "status": "Survived",
-          "static": false,
-          "testsCompleted": 35,
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "17",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "68",
-            "69",
-            "89",
-            "90",
-            "99"
-          ],
-          "location": {
-            "end": {
-              "column": 26,
-              "line": 15
-            },
-            "start": {
-              "column": 24,
-              "line": 15
-            }
-          }
-        },
-        {
-          "id": "286",
-          "mutatorName": "StringLiteral",
-          "replacement": "\"\"",
-          "statusReason": "expected undefined to be '{\"query\":\"findTheQuery\"}' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 2,
-          "killedBy": [
-            "67"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "17",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "66",
-            "67",
-            "68",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 65,
-              "line": 85
-            },
-            "start": {
-              "column": 51,
-              "line": 85
-            }
-          }
-        },
-        {
-          "id": "287",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "true",
-          "statusReason": "expected undefined to be '{\"query\":\"findTheQuery\"}' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 2,
-          "killedBy": [
-            "67"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "17",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "66",
-            "67",
-            "68",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 44,
-              "line": 87
-            },
-            "start": {
-              "column": 9,
-              "line": 87
-            }
-          }
-        },
-        {
-          "id": "298",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "true",
-          "status": "Survived",
-          "static": false,
-          "testsCompleted": 1,
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "9",
-            "10",
-            "12",
-            "13",
-            "14",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "66",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 29,
-              "line": 105
-            },
-            "start": {
-              "column": 17,
-              "line": 105
-            }
-          }
-        },
-        {
-          "id": "310",
-          "mutatorName": "BlockStatement",
-          "replacement": "{}",
-          "status": "Survived",
-          "static": false,
-          "testsCompleted": 1,
-          "coveredBy": [
-            "66"
-          ],
-          "location": {
-            "end": {
-              "column": 14,
-              "line": 137
-            },
-            "start": {
-              "column": 20,
-              "line": 127
-            }
-          }
-        },
-        {
-          "id": "312",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "true",
-          "status": "Survived",
-          "static": false,
-          "testsCompleted": 1,
-          "coveredBy": [
-            "66"
-          ],
-          "location": {
-            "end": {
-              "column": 47,
-              "line": 135
-            },
-            "start": {
-              "column": 25,
-              "line": 133
-            }
-          }
-        },
-        {
-          "id": "313",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "false",
-          "status": "Survived",
-          "static": false,
-          "testsCompleted": 1,
-          "coveredBy": [
-            "66"
-          ],
-          "location": {
-            "end": {
-              "column": 47,
-              "line": 135
-            },
-            "start": {
-              "column": 25,
-              "line": 133
-            }
-          }
-        },
-        {
-          "id": "311",
-          "mutatorName": "ObjectLiteral",
-          "replacement": "{}",
-          "status": "Survived",
-          "static": false,
-          "testsCompleted": 1,
-          "coveredBy": [
-            "66"
-          ],
-          "location": {
-            "end": {
-              "column": 18,
-              "line": 136
-            },
-            "start": {
-              "column": 24,
-              "line": 129
-            }
-          }
-        },
-        {
-          "id": "314",
-          "mutatorName": "LogicalOperator",
-          "replacement": "bodyAsMap.variables as Readonly<Record<string, unknown>> | null && undefined",
-          "status": "Survived",
-          "static": false,
-          "testsCompleted": 1,
-          "coveredBy": [
-            "66"
-          ],
-          "location": {
-            "end": {
-              "column": 47,
-              "line": 135
-            },
-            "start": {
-              "column": 25,
-              "line": 133
-            }
-          }
-        },
-        {
-          "id": "234",
-          "mutatorName": "LogicalOperator",
-          "replacement": "extractedURLParameters.operationName && extractedBody.operationName",
-          "status": "Survived",
-          "static": false,
-          "testsCompleted": 40,
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "66",
-            "67",
-            "68",
-            "69",
-            "89",
-            "90",
-            "99",
-            "126"
-          ],
-          "location": {
-            "end": {
-              "column": 80,
-              "line": 21
-            },
-            "start": {
-              "column": 13,
-              "line": 21
+              "column": 79,
+              "line": 27
             }
           }
         }
       ],
-      "source": "import {\n    ContentType,\n    GraphQLRequestInfo,\n    GraphQLServerRequest,\n} from '@dreamit/graphql-server-base'\nimport { GraphQLError } from 'graphql'\nimport { Buffer } from 'node:buffer'\nimport { URLSearchParams } from 'node:url'\nimport { getContentType } from './GetContentType'\n\nexport function extractInformationFromRequest(\n    request: GraphQLServerRequest,\n): GraphQLRequestInfo {\n    const extractedURLParameters = extractInformationFromUrlParameters(\n        request.url ?? '',\n    )\n    const extractedBody = extractInformationFromBody(request)\n    return {\n        error: extractedBody.error,\n        operationName:\n            extractedURLParameters.operationName ?? extractedBody.operationName,\n        query: extractedURLParameters.query ?? extractedBody.query,\n        variables: extractedURLParameters.variables ?? extractedBody.variables,\n    }\n}\n\nexport function extractInformationFromUrlParameters(\n    url: string,\n): GraphQLRequestInfo {\n    const urlParameters = new URLSearchParams(\n        url.slice(Math.max(0, url.indexOf('?'))),\n    )\n    const extractedQuery = urlParameters.get('query') ?? undefined\n    const extractedVariables =\n        (urlParameters.get('variables') as Readonly<\n            Record<string, unknown>\n        > | null) || undefined\n    const extractedOperationName =\n        urlParameters.get('operationName') ?? undefined\n    return {\n        operationName: extractedOperationName,\n        query: extractedQuery,\n        variables: extractedVariables,\n    }\n}\n\n/** Extracts information from request body. Based on implementation from express-graphql */\nexport function extractInformationFromBody(\n    request: GraphQLServerRequest,\n): GraphQLRequestInfo {\n    // Do not try to read body for GET requests\n    if (request.method && request.method === 'GET') {\n        return {}\n    }\n\n    const { body } = request\n    const bodyIsString = typeof body === 'string'\n    const bodyIsObject = typeof body === 'object'\n\n    if (!body || (!bodyIsString && !bodyIsObject)) {\n        return {\n            error: {\n                graphQLError: new GraphQLError(\n                    `POST body contains invalid type ${typeof body}. ` +\n                        'Only \"object\" and \"string\" are supported.',\n                    {},\n                ),\n                statusCode: 400,\n            },\n        }\n    } else if (bodyIsObject && body instanceof Buffer) {\n        return {\n            error: {\n                graphQLError: new GraphQLError(\n                    'Cannot extract information from ' +\n                        'body because it contains an object buffer!',\n                    {},\n                ),\n                statusCode: 400,\n            },\n        }\n    }\n\n    // eslint-disable-next-line unicorn/consistent-destructuring\n    const contentTypeFromHeader = request.headers['content-type']\n\n    if (contentTypeFromHeader === undefined) {\n        return {\n            error: {\n                graphQLError: new GraphQLError(\n                    'Invalid request. ' +\n                        'Request header content-type is undefined.',\n                    {},\n                ),\n                statusCode: 400,\n            },\n        }\n    }\n\n    const contentType = getContentType(contentTypeFromHeader)\n    switch (contentType) {\n        case ContentType.graphql:\n            return { query: bodyIsString ? body : JSON.stringify(body) }\n        case ContentType.json:\n            if (bodyIsString) {\n                try {\n                    const bodyAsJson = JSON.parse(body)\n                    return {\n                        operationName: bodyAsJson.operationName,\n                        query: bodyAsJson.query,\n                        variables:\n                            (bodyAsJson.variables as Readonly<\n                                Record<string, unknown>\n                            > | null) || undefined,\n                    }\n                } catch {\n                    return {\n                        error: {\n                            graphQLError: new GraphQLError(\n                                'POST body contains invalid JSON.',\n                                {},\n                            ),\n                            statusCode: 400,\n                        },\n                    }\n                }\n            } else {\n                const bodyAsMap = body as Record<string, unknown>\n                return {\n                    operationName: bodyAsMap.operationName as string,\n                    query: bodyAsMap.query as string,\n                    variables:\n                        (bodyAsMap.variables as Readonly<\n                            Record<string, unknown>\n                        > | null) || undefined,\n                }\n            }\n        case ContentType.urlencoded:\n            return extractInformationFromUrlParameters(`host?${body}.`)\n        default:\n            return {\n                error: {\n                    graphQLError: new GraphQLError(\n                        'POST body contains invalid content type: ' +\n                            // eslint-disable-next-line unicorn/consistent-destructuring\n                            `${request.headers['content-type']}.`,\n                        {},\n                    ),\n                    statusCode: 400,\n                },\n            }\n    }\n}\n"
+      "source": "import {\n    ContentType,\n    GraphQLRequestInfo,\n    GraphQLServerRequest,\n} from '@dreamit/graphql-server-base'\nimport { GraphQLError } from 'graphql'\nimport { Buffer } from 'node:buffer'\nimport { URLSearchParams } from 'node:url'\nimport { getContentType } from './GetContentType'\n\nfunction extractInformationFromRequest(\n    request: GraphQLServerRequest,\n): GraphQLRequestInfo {\n    const extractedURLParameters = extractInformationFromUrlParameters(\n        request.url ?? '',\n    )\n    const extractedBody = extractInformationFromBody(request)\n    return {\n        error: extractedBody.error,\n        operationName:\n            extractedURLParameters.operationName ?? extractedBody.operationName,\n        query: extractedURLParameters.query ?? extractedBody.query,\n        variables: extractedURLParameters.variables ?? extractedBody.variables,\n    }\n}\n\nfunction extractInformationFromUrlParameters(url: string): GraphQLRequestInfo {\n    const urlParameters = new URLSearchParams(\n        url.slice(Math.max(0, url.indexOf('?'))),\n    )\n    const extractedQuery = urlParameters.get('query') ?? undefined\n    const extractedVariables =\n        (urlParameters.get('variables') as Readonly<\n            Record<string, unknown>\n        > | null) || undefined\n    const extractedOperationName =\n        urlParameters.get('operationName') ?? undefined\n    return {\n        operationName: extractedOperationName,\n        query: extractedQuery,\n        variables: extractedVariables,\n    }\n}\n\n/** Extracts information from request body. Based on implementation from express-graphql */\nfunction extractInformationFromBody(\n    request: GraphQLServerRequest,\n): GraphQLRequestInfo {\n    // Do not try to read body for GET requests\n    if (request.method && request.method === 'GET') {\n        return {}\n    }\n\n    const { body } = request\n    const bodyIsString = typeof body === 'string'\n    const bodyIsObject = typeof body === 'object'\n\n    if (!body || (!bodyIsString && !bodyIsObject)) {\n        return {\n            error: {\n                graphQLError: new GraphQLError(\n                    `POST body contains invalid type ${typeof body}. ` +\n                        'Only \"object\" and \"string\" are supported.',\n                    {},\n                ),\n                statusCode: 400,\n            },\n        }\n    } else if (bodyIsObject && body instanceof Buffer) {\n        return {\n            error: {\n                graphQLError: new GraphQLError(\n                    'Cannot extract information from ' +\n                        'body because it contains an object buffer!',\n                    {},\n                ),\n                statusCode: 400,\n            },\n        }\n    }\n\n    // eslint-disable-next-line unicorn/consistent-destructuring\n    const contentTypeFromHeader = request.headers['content-type']\n\n    if (contentTypeFromHeader === undefined) {\n        return {\n            error: {\n                graphQLError: new GraphQLError(\n                    'Invalid request. ' +\n                        'Request header content-type is undefined.',\n                    {},\n                ),\n                statusCode: 400,\n            },\n        }\n    }\n\n    const contentType = getContentType(contentTypeFromHeader)\n    switch (contentType) {\n        case ContentType.graphql:\n            return { query: bodyIsString ? body : JSON.stringify(body) }\n        case ContentType.json:\n            if (bodyIsString) {\n                try {\n                    const bodyAsJson = JSON.parse(body)\n                    return {\n                        operationName: bodyAsJson.operationName,\n                        query: bodyAsJson.query,\n                        variables:\n                            (bodyAsJson.variables as Readonly<\n                                Record<string, unknown>\n                            > | null) || undefined,\n                    }\n                } catch {\n                    return {\n                        error: {\n                            graphQLError: new GraphQLError(\n                                'POST body contains invalid JSON.',\n                                {},\n                            ),\n                            statusCode: 400,\n                        },\n                    }\n                }\n            } else {\n                const bodyAsMap = body as Record<string, unknown>\n                return {\n                    operationName: bodyAsMap.operationName as string,\n                    query: bodyAsMap.query as string,\n                    variables:\n                        (bodyAsMap.variables as Readonly<\n                            Record<string, unknown>\n                        > | null) || undefined,\n                }\n            }\n        case ContentType.urlencoded:\n            return extractInformationFromUrlParameters(`host?${body}.`)\n        default:\n            return {\n                error: {\n                    graphQLError: new GraphQLError(\n                        'POST body contains invalid content type: ' +\n                            // eslint-disable-next-line unicorn/consistent-destructuring\n                            `${request.headers['content-type']}.`,\n                        {},\n                    ),\n                    statusCode: 400,\n                },\n            }\n    }\n}\n\nexport {\n    extractInformationFromBody,\n    extractInformationFromRequest,\n    extractInformationFromUrlParameters,\n}\n"
     },
     "src/request/GetContentType.ts": {
       "language": "typescript",
@@ -15638,7 +15646,7 @@
               "line": 55
             },
             "start": {
-              "column": 62,
+              "column": 55,
               "line": 45
             }
           }
@@ -15714,7 +15722,7 @@
               "line": 63
             },
             "start": {
-              "column": 53,
+              "column": 46,
               "line": 57
             }
           }
@@ -16916,57 +16924,6 @@
           }
         },
         {
-          "id": "422",
-          "mutatorName": "BlockStatement",
-          "replacement": "{}",
-          "statusReason": "expected 'POST body contains invalid JSON.' to be 'Request cannot be processed. Schema i…' // Object.is equality",
-          "status": "Killed",
-          "testsCompleted": 4,
-          "static": true,
-          "killedBy": [
-            "22"
-          ],
-          "coveredBy": [
-            "10",
-            "12",
-            "14",
-            "22",
-            "24",
-            "26",
-            "27",
-            "28",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "48",
-            "49",
-            "50",
-            "52",
-            "53",
-            "54",
-            "55",
-            "56",
-            "57",
-            "58",
-            "89",
-            "90",
-            "99"
-          ],
-          "location": {
-            "end": {
-              "column": 2,
-              "line": 198
-            },
-            "start": {
-              "column": 76,
-              "line": 196
-            }
-          }
-        },
-        {
           "id": "423",
           "mutatorName": "BooleanLiteral",
           "replacement": "!schema",
@@ -17760,9 +17717,60 @@
               "line": 277
             }
           }
+        },
+        {
+          "id": "422",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "expected 'POST body contains invalid JSON.' to be 'Request cannot be processed. Schema i…' // Object.is equality",
+          "status": "Killed",
+          "static": true,
+          "testsCompleted": 4,
+          "killedBy": [
+            "22"
+          ],
+          "coveredBy": [
+            "10",
+            "12",
+            "14",
+            "22",
+            "24",
+            "26",
+            "27",
+            "28",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "48",
+            "49",
+            "50",
+            "52",
+            "53",
+            "54",
+            "55",
+            "56",
+            "57",
+            "58",
+            "89",
+            "90",
+            "99"
+          ],
+          "location": {
+            "end": {
+              "column": 2,
+              "line": 198
+            },
+            "start": {
+              "column": 69,
+              "line": 196
+            }
+          }
         }
       ],
-      "source": "import {\n    GraphQLExecutionResult,\n    GraphQLRequestInfo,\n    GraphQLServerRequest,\n    GraphQLServerResponse,\n    Logger,\n    MetricsClient,\n    ResponseParameters,\n} from '@dreamit/graphql-server-base'\nimport {\n    ExecutionResult,\n    GraphQLError,\n    GraphQLFieldResolver,\n    GraphQLFormattedError,\n    GraphQLSchema,\n    GraphQLTypeResolver,\n    TypeInfo,\n    ValidationRule,\n    execute,\n    parse,\n    specifiedRules,\n    validate,\n    validateSchema,\n} from 'graphql'\nimport { Buffer } from 'node:buffer'\nimport { TextLogger } from '../logger/TextLogger'\nimport { SimpleMetricsClient } from '../metrics/SimpleMetricsClient'\nimport { extractInformationFromRequest } from '../request/ExtractInformationFromRequest'\nimport { sendResponse } from '../response/SendResponse'\nimport { StandaloneResponseParameters } from '../response/StandaloneResponseParameters'\nimport { StandardSchemaV1 } from '../validation/StandardSchemaV1'\nimport { GraphQLServerOptions } from './GraphQLServerOptions'\n\nexport const defaultGraphqlExecutionErrorMessage =\n    'While processing the request a GraphQL execution error occurred: '\nexport const defaultExecutionResultErrorMessage =\n    'While processing the request the following error occurred: '\nexport const defaultValidationErrorMessage =\n    'While processing the request the following validation error occurred: '\n\nexport const fallbackTextLogger: Logger = new TextLogger(\n    'fallback-logger',\n    'fallback-service',\n)\nexport const invalidSchemaResponse: GraphQLExecutionResult = {\n    executionResult: {\n        errors: [\n            new GraphQLError(\n                'Request cannot be processed. Schema in GraphQL server is invalid.',\n                {},\n            ),\n        ],\n    },\n    statusCode: 500,\n}\n\nexport const noOpStandardSchema: StandardSchemaV1 = {\n    '~standard': {\n        validate: (value: unknown) => ({ value }),\n        vendor: 'no-op',\n        version: 1,\n    },\n}\n\nexport class DefaultGraphQLServerOptions implements GraphQLServerOptions {\n    logger: Logger = fallbackTextLogger\n    extractInformationFromRequest: (\n        request: GraphQLServerRequest,\n    ) => GraphQLRequestInfo = extractInformationFromRequest\n    sendResponse: (responseParameters: ResponseParameters) => void =\n        sendResponse\n    metricsClient: MetricsClient = new SimpleMetricsClient()\n    formatErrorFunction = defaultFormatErrorFunction\n    collectErrorMetricsFunction = defaultCollectErrorMetrics\n    schemaValidationFunction = validateSchema\n    parseFunction = parse\n    defaultValidationRules = specifiedRules\n    customValidationRules: readonly ValidationRule[] = []\n    removeValidationRecommendations = true\n    reassignAggregateError = false\n    validateFunction = validate\n    contextFunction = defaultContextFunction\n    executeFunction = execute\n    extensionFunction = defaultExtensions\n    shouldUpdateSchemaFunction = defaultShouldUpdateSchema\n    validationTypeInfo?: TypeInfo\n    validationOptions?: { maxErrors?: number }\n    rootValue?: unknown\n    fieldResolver?: null | undefined | GraphQLFieldResolver<unknown, unknown>\n    typeResolver?: null | undefined | GraphQLTypeResolver<unknown, unknown>\n    schema?: GraphQLSchema\n    invalidSchemaResponse = invalidSchemaResponse\n    missingQueryParameterResponse = defaultMissingQueryParameterResponse\n    methodNotAllowedResponse = defaultMethodNotAllowedResponse\n    onlyQueryInGetRequestsResponse = defaultOnlyQueryInGetRequestsResponse\n    validationErrorMessage = defaultValidationErrorMessage\n    executionResultErrorMessage = defaultExecutionResultErrorMessage\n    graphqlExecutionErrorMessage = defaultGraphqlExecutionErrorMessage\n    responseEndChunkFunction = defaultResponseEndChunkFunction\n    fetchErrorMessage?: string\n    adjustGraphQLExecutionResult?: (\n        parameters: StandaloneResponseParameters,\n    ) => GraphQLExecutionResult\n    responseStandardSchema: StandardSchemaV1 = noOpStandardSchema\n}\n\n/**\n * Default format error function to format error if necessary.\n * Default behaviour: Calls toJSON function of error. Can be set in options.\n * @param {GraphQLError} error - The error to be formatted\n */\nexport function defaultFormatErrorFunction(\n    error: GraphQLError,\n): GraphQLFormattedError {\n    return error.toJSON()\n}\n\n/**\n * Default context function to store information in context for further use.\n * Default behaviour: return request object. Can be set in options.\n * @param contextParameters - The context parameters\n */\nexport function defaultContextFunction(contextParameters: {\n    serverOptions: GraphQLServerOptions\n    request?: GraphQLServerRequest\n    response?: GraphQLServerResponse\n}): unknown {\n    const { serverOptions, request, response } = contextParameters\n    const logger = serverOptions.logger\n    if (logger) {\n        logger.debug(\n            'Calling defaultRequestResponseContextFunction with ' +\n                `request ${request} and response ${response}`,\n            request,\n        )\n    }\n    return request\n}\n\n/**\n * Default extension function that can be used\n * to fill extensions field of GraphQL response. Can be set in options.\n * @param extensionParameters - The extensions parameters\n * @returns {Record<string, unknown>}\n * A key-value map to be added as extensions in response\n */\nexport function defaultExtensions(extensionParameters: {\n    requestInformation: GraphQLRequestInfo\n    executionResult: ExecutionResult\n    serverOptions: GraphQLServerOptions\n    context?: unknown\n}): Record<string, unknown> | undefined {\n    const { requestInformation, executionResult, serverOptions, context } =\n        extensionParameters\n    const logger = serverOptions.logger\n    if (logger) {\n        logger.debug(\n            `Calling defaultExtensions for requestInfo ${JSON.stringify(requestInformation)}` +\n                ` and executionResult ${JSON.stringify(executionResult)}`,\n            context,\n        )\n    }\n\n    return undefined\n}\n\n/**\n * Default collect error metrics function. Can be set in options.\n * @param errorParameters - The error parameters\n */\nexport function defaultCollectErrorMetrics(errorParameters: {\n    errorName: string\n    error: unknown\n    serverOptions: GraphQLServerOptions\n    context?: unknown\n}): void {\n    const { errorName, error, serverOptions, context } = errorParameters\n    const { logger, metricsClient } = serverOptions\n    if (logger) {\n        logger.debug(\n            `Calling defaultCollectErrorMetrics with error ${error} and errorName ${errorName}`,\n            context,\n        )\n    }\n    if (metricsClient) {\n        metricsClient.increaseErrors(errorName, context)\n    }\n}\n\n/**\n * Determines whether a schema update should be executed.\n * Default behaviour: If schema is undefined return false.\n * @param {GraphQLSchema} schema - The new schema to use as updated schema.\n * @returns {boolean} True if schema should be updated, false if not\n */\nexport function defaultShouldUpdateSchema(schema?: GraphQLSchema): boolean {\n    return !!schema\n}\n\n/**\n * Return a default error message if used method is not allowed by GraphQLServer\n * @param {string} method - The actual used method\n * @returns {GraphQLExecutionResult} A MethodNotAllowed response\n */\nexport function defaultMethodNotAllowedResponse(\n    method?: string,\n): GraphQLExecutionResult {\n    return {\n        customHeaders: { allow: 'GET, POST' },\n        executionResult: {\n            errors: [\n                new GraphQLError(\n                    'GraphQL server only supports GET and POST requests.' +\n                        ` Got ${method}`,\n                    {},\n                ),\n            ],\n        },\n        statusCode: 405,\n    }\n}\n\n/**\n * Return a default error message if no query information is found in body or URL parameter\n * @param {string} method - The actual used method\n * @returns {GraphQLExecutionResult} A MissingQueryParameter response\n */\nexport function defaultMissingQueryParameterResponse(\n    method?: string,\n): GraphQLExecutionResult {\n    return {\n        executionResult: {\n            errors: [\n                new GraphQLError(\n                    'Request cannot be processed. No query was found ' +\n                        `in parameters or body. Used method is ${method}`,\n                    {},\n                ),\n            ],\n        },\n        statusCode: 400,\n    }\n}\n\n/**\n * Return a default error message if an unsupported operation is used in GET requests.\n * Default: Only supported operation is \"query\"\n * @param {string} operation - The actual used operation\n * @returns {GraphQLExecutionResult} A OnlyQueryInGetRequestsResponse response\n */\nexport function defaultOnlyQueryInGetRequestsResponse(\n    operation?: string,\n): GraphQLExecutionResult {\n    return {\n        customHeaders: { allow: 'POST' },\n        executionResult: {\n            errors: [\n                new GraphQLError(\n                    'Only \"query\" operation is allowed in \"GET\" requests.' +\n                        ` Got: \"${operation}\"`,\n                    {},\n                ),\n            ],\n        },\n        statusCode: 405,\n    }\n}\n\n/**\n * Default response.end chunk function to adjust chunk/Body if necessary.\n * Default behavior: Create Buffer from stringified executionResult\n * @param {GraphQLError} error - The error to be formatted\n */\nexport function defaultResponseEndChunkFunction(\n    executionResult: ExecutionResult | undefined,\n): unknown {\n    return Buffer.from(JSON.stringify(executionResult), 'utf8')\n}\n"
+      "source": "import {\n    GraphQLExecutionResult,\n    GraphQLRequestInfo,\n    GraphQLServerRequest,\n    GraphQLServerResponse,\n    Logger,\n    MetricsClient,\n    ResponseParameters,\n} from '@dreamit/graphql-server-base'\nimport {\n    ExecutionResult,\n    GraphQLError,\n    GraphQLFieldResolver,\n    GraphQLFormattedError,\n    GraphQLSchema,\n    GraphQLTypeResolver,\n    TypeInfo,\n    ValidationRule,\n    execute,\n    parse,\n    specifiedRules,\n    validate,\n    validateSchema,\n} from 'graphql'\nimport { Buffer } from 'node:buffer'\nimport { TextLogger } from '../logger/TextLogger'\nimport { SimpleMetricsClient } from '../metrics/SimpleMetricsClient'\nimport { extractInformationFromRequest } from '../request/ExtractInformationFromRequest'\nimport { sendResponse } from '../response/SendResponse'\nimport { StandaloneResponseParameters } from '../response/StandaloneResponseParameters'\nimport { StandardSchemaV1 } from '../validation/StandardSchemaV1'\nimport { GraphQLServerOptions } from './GraphQLServerOptions'\n\nconst defaultGraphqlExecutionErrorMessage =\n    'While processing the request a GraphQL execution error occurred: '\nconst defaultExecutionResultErrorMessage =\n    'While processing the request the following error occurred: '\nconst defaultValidationErrorMessage =\n    'While processing the request the following validation error occurred: '\n\nconst fallbackTextLogger: Logger = new TextLogger(\n    'fallback-logger',\n    'fallback-service',\n)\nconst invalidSchemaResponse: GraphQLExecutionResult = {\n    executionResult: {\n        errors: [\n            new GraphQLError(\n                'Request cannot be processed. Schema in GraphQL server is invalid.',\n                {},\n            ),\n        ],\n    },\n    statusCode: 500,\n}\n\nconst noOpStandardSchema: StandardSchemaV1 = {\n    '~standard': {\n        validate: (value: unknown) => ({ value }),\n        vendor: 'no-op',\n        version: 1,\n    },\n}\n\nclass DefaultGraphQLServerOptions implements GraphQLServerOptions {\n    logger: Logger = fallbackTextLogger\n    extractInformationFromRequest: (\n        request: GraphQLServerRequest,\n    ) => GraphQLRequestInfo = extractInformationFromRequest\n    sendResponse: (responseParameters: ResponseParameters) => void =\n        sendResponse\n    metricsClient: MetricsClient = new SimpleMetricsClient()\n    formatErrorFunction = defaultFormatErrorFunction\n    collectErrorMetricsFunction = defaultCollectErrorMetrics\n    schemaValidationFunction = validateSchema\n    parseFunction = parse\n    defaultValidationRules = specifiedRules\n    customValidationRules: readonly ValidationRule[] = []\n    removeValidationRecommendations = true\n    reassignAggregateError = false\n    validateFunction = validate\n    contextFunction = defaultContextFunction\n    executeFunction = execute\n    extensionFunction = defaultExtensions\n    shouldUpdateSchemaFunction = defaultShouldUpdateSchema\n    validationTypeInfo?: TypeInfo\n    validationOptions?: { maxErrors?: number }\n    rootValue?: unknown\n    fieldResolver?: null | undefined | GraphQLFieldResolver<unknown, unknown>\n    typeResolver?: null | undefined | GraphQLTypeResolver<unknown, unknown>\n    schema?: GraphQLSchema\n    invalidSchemaResponse = invalidSchemaResponse\n    missingQueryParameterResponse = defaultMissingQueryParameterResponse\n    methodNotAllowedResponse = defaultMethodNotAllowedResponse\n    onlyQueryInGetRequestsResponse = defaultOnlyQueryInGetRequestsResponse\n    validationErrorMessage = defaultValidationErrorMessage\n    executionResultErrorMessage = defaultExecutionResultErrorMessage\n    graphqlExecutionErrorMessage = defaultGraphqlExecutionErrorMessage\n    responseEndChunkFunction = defaultResponseEndChunkFunction\n    fetchErrorMessage?: string\n    adjustGraphQLExecutionResult?: (\n        parameters: StandaloneResponseParameters,\n    ) => GraphQLExecutionResult\n    responseStandardSchema: StandardSchemaV1 = noOpStandardSchema\n}\n\n/**\n * Default format error function to format error if necessary.\n * Default behaviour: Calls toJSON function of error. Can be set in options.\n * @param {GraphQLError} error - The error to be formatted\n */\nfunction defaultFormatErrorFunction(\n    error: GraphQLError,\n): GraphQLFormattedError {\n    return error.toJSON()\n}\n\n/**\n * Default context function to store information in context for further use.\n * Default behaviour: return request object. Can be set in options.\n * @param contextParameters - The context parameters\n */\nfunction defaultContextFunction(contextParameters: {\n    serverOptions: GraphQLServerOptions\n    request?: GraphQLServerRequest\n    response?: GraphQLServerResponse\n}): unknown {\n    const { serverOptions, request, response } = contextParameters\n    const logger = serverOptions.logger\n    if (logger) {\n        logger.debug(\n            'Calling defaultRequestResponseContextFunction with ' +\n                `request ${request} and response ${response}`,\n            request,\n        )\n    }\n    return request\n}\n\n/**\n * Default extension function that can be used\n * to fill extensions field of GraphQL response. Can be set in options.\n * @param extensionParameters - The extensions parameters\n * @returns {Record<string, unknown>}\n * A key-value map to be added as extensions in response\n */\nfunction defaultExtensions(extensionParameters: {\n    requestInformation: GraphQLRequestInfo\n    executionResult: ExecutionResult\n    serverOptions: GraphQLServerOptions\n    context?: unknown\n}): Record<string, unknown> | undefined {\n    const { requestInformation, executionResult, serverOptions, context } =\n        extensionParameters\n    const logger = serverOptions.logger\n    if (logger) {\n        logger.debug(\n            `Calling defaultExtensions for requestInfo ${JSON.stringify(requestInformation)}` +\n                ` and executionResult ${JSON.stringify(executionResult)}`,\n            context,\n        )\n    }\n\n    return undefined\n}\n\n/**\n * Default collect error metrics function. Can be set in options.\n * @param errorParameters - The error parameters\n */\nfunction defaultCollectErrorMetrics(errorParameters: {\n    errorName: string\n    error: unknown\n    serverOptions: GraphQLServerOptions\n    context?: unknown\n}): void {\n    const { errorName, error, serverOptions, context } = errorParameters\n    const { logger, metricsClient } = serverOptions\n    if (logger) {\n        logger.debug(\n            `Calling defaultCollectErrorMetrics with error ${error} and errorName ${errorName}`,\n            context,\n        )\n    }\n    if (metricsClient) {\n        metricsClient.increaseErrors(errorName, context)\n    }\n}\n\n/**\n * Determines whether a schema update should be executed.\n * Default behaviour: If schema is undefined return false.\n * @param {GraphQLSchema} schema - The new schema to use as updated schema.\n * @returns {boolean} True if schema should be updated, false if not\n */\nfunction defaultShouldUpdateSchema(schema?: GraphQLSchema): boolean {\n    return !!schema\n}\n\n/**\n * Return a default error message if used method is not allowed by GraphQLServer\n * @param {string} method - The actual used method\n * @returns {GraphQLExecutionResult} A MethodNotAllowed response\n */\nfunction defaultMethodNotAllowedResponse(\n    method?: string,\n): GraphQLExecutionResult {\n    return {\n        customHeaders: { allow: 'GET, POST' },\n        executionResult: {\n            errors: [\n                new GraphQLError(\n                    'GraphQL server only supports GET and POST requests.' +\n                        ` Got ${method}`,\n                    {},\n                ),\n            ],\n        },\n        statusCode: 405,\n    }\n}\n\n/**\n * Return a default error message if no query information is found in body or URL parameter\n * @param {string} method - The actual used method\n * @returns {GraphQLExecutionResult} A MissingQueryParameter response\n */\nfunction defaultMissingQueryParameterResponse(\n    method?: string,\n): GraphQLExecutionResult {\n    return {\n        executionResult: {\n            errors: [\n                new GraphQLError(\n                    'Request cannot be processed. No query was found ' +\n                        `in parameters or body. Used method is ${method}`,\n                    {},\n                ),\n            ],\n        },\n        statusCode: 400,\n    }\n}\n\n/**\n * Return a default error message if an unsupported operation is used in GET requests.\n * Default: Only supported operation is \"query\"\n * @param {string} operation - The actual used operation\n * @returns {GraphQLExecutionResult} A OnlyQueryInGetRequestsResponse response\n */\nfunction defaultOnlyQueryInGetRequestsResponse(\n    operation?: string,\n): GraphQLExecutionResult {\n    return {\n        customHeaders: { allow: 'POST' },\n        executionResult: {\n            errors: [\n                new GraphQLError(\n                    'Only \"query\" operation is allowed in \"GET\" requests.' +\n                        ` Got: \"${operation}\"`,\n                    {},\n                ),\n            ],\n        },\n        statusCode: 405,\n    }\n}\n\n/**\n * Default response.end chunk function to adjust chunk/Body if necessary.\n * Default behavior: Create Buffer from stringified executionResult\n * @param {GraphQLError} error - The error to be formatted\n */\nfunction defaultResponseEndChunkFunction(\n    executionResult: ExecutionResult | undefined,\n): unknown {\n    return Buffer.from(JSON.stringify(executionResult), 'utf8')\n}\n\nexport {\n    DefaultGraphQLServerOptions,\n    defaultCollectErrorMetrics,\n    defaultContextFunction,\n    defaultExecutionResultErrorMessage,\n    defaultExtensions,\n    defaultFormatErrorFunction,\n    defaultGraphqlExecutionErrorMessage,\n    defaultMethodNotAllowedResponse,\n    defaultMissingQueryParameterResponse,\n    defaultOnlyQueryInGetRequestsResponse,\n    defaultResponseEndChunkFunction,\n    defaultShouldUpdateSchema,\n    defaultValidationErrorMessage,\n    fallbackTextLogger,\n    invalidSchemaResponse,\n}\n"
     },
     "src/server/GetRequestInformation.ts": {
       "language": "typescript",
@@ -26741,7 +26749,7 @@
       "imageUrl": "data:image/svg+xml;utf8,%3Csvg viewBox='0 0 1458 1458' xmlns='http://www.w3.org/2000/svg' fill-rule='evenodd' clip-rule='evenodd' stroke-linejoin='round' stroke-miterlimit='2'%3E%3Cpath fill='none' d='M0 0h1458v1458H0z'/%3E%3CclipPath id='a'%3E%3Cpath d='M0 0h1458v1458H0z'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23a)'%3E%3Cpath d='M1458 729c0 402.655-326.345 729-729 729S0 1131.655 0 729C0 326.445 326.345 0 729 0s729 326.345 729 729' fill='%23e74c3c' fill-rule='nonzero'/%3E%3Cpath d='M778.349 1456.15L576.6 1254.401l233-105 85-78.668v-64.332l-257-257-44-187-50-208 251.806-82.793L1076.6 389.401l380.14 379.15c-19.681 367.728-311.914 663.049-678.391 687.599z' fill-opacity='.3'/%3E%3Cpath d='M753.4 329.503c41.79 0 74.579 7.83 97.925 25.444 23.571 18.015 41.69 43.956 55.167 77.097l11.662 28.679 165.733-58.183-14.137-32.13c-26.688-60.655-64.896-108.61-114.191-144.011-49.329-35.423-117.458-54.302-204.859-54.302-50.78 0-95.646 7.376-134.767 21.542-40.093 14.671-74.09 34.79-102.239 60.259-28.84 26.207-50.646 57.06-65.496 92.701-14.718 35.052-22.101 72.538-22.101 112.401 0 72.536 20.667 133.294 61.165 182.704 38.624 47.255 98.346 88.037 179.861 121.291 42.257 17.475 78.715 33.125 109.227 46.994 27.193 12.361 49.294 26.124 66.157 41.751 15.309 14.186 26.497 30.584 33.63 49.258 7.721 20.214 11.16 45.69 11.16 76.402 0 28.021-4.251 51.787-13.591 71.219-8.832 18.374-20.171 33.178-34.523 44.219-14.787 11.374-31.193 19.591-49.393 24.466-19.68 5.359-39.14 7.993-58.69 7.993-29.359 0-54.387-3.407-75.182-10.747-20.112-7.013-37.144-16.144-51.259-27.486-13.618-11.009-24.971-23.766-33.744-38.279-9.64-15.8-17.272-31.924-23.032-48.408l-10.965-31.376-161.669 60.585 10.734 30.124c10.191 28.601 24.197 56.228 42.059 82.748 18.208 27.144 41.322 51.369 69.525 72.745 27.695 21.075 60.904 38.218 99.481 51.041 37.777 12.664 82.004 19.159 132.552 19.159 49.998 0 95.818-8.321 137.611-24.622 42.228-16.471 78.436-38.992 108.835-67.291 30.719-28.597 54.631-62.103 71.834-100.642 17.263-38.56 25.923-79.392 25.923-122.248 0-54.339-8.368-100.37-24.208-138.32-16.29-38.759-38.252-71.661-65.948-98.797-26.965-26.418-58.269-48.835-93.858-67.175-33.655-17.241-69.196-33.11-106.593-47.533-35.934-13.429-65.822-26.601-89.948-39.525-22.153-11.868-40.009-24.21-53.547-37.309-11.429-11.13-19.83-23.678-24.718-37.664-5.413-15.49-7.98-33.423-7.98-53.577 0-40.883 11.293-71.522 37.086-90.539 28.443-20.825 64.985-30.658 109.311-30.658z' fill='%23f1c40f' fill-rule='nonzero'/%3E%3Cpath d='M720 0h18v113h-18zM1458 738v-18h-113v18h113zM720 1345h18v113h-18zM113 738v-18H0v18h113z'/%3E%3C/g%3E%3C/svg%3E"
     },
     "dependencies": {
-      "typescript": "5.8.2"
+      "typescript": "5.8.3"
     }
   }
 }

@@ -1,9 +1,9 @@
 // Removes validation recommendations matching the defined recommendation text
 import { GraphQLError } from 'graphql'
 
-export const recommendationText = 'Did you mean'
+const recommendationText = 'Did you mean'
 
-export function removeValidationRecommendationsFromErrors(
+function removeValidationRecommendationsFromErrors(
     validationErrors: readonly GraphQLError[],
 ): readonly GraphQLError[] {
     for (const validationError of validationErrors) {
@@ -19,3 +19,5 @@ export function removeValidationRecommendationsFromErrors(
     }
     return validationErrors
 }
+
+export { recommendationText, removeValidationRecommendationsFromErrors }

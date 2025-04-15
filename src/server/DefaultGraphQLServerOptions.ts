@@ -31,18 +31,18 @@ import { StandaloneResponseParameters } from '../response/StandaloneResponsePara
 import { StandardSchemaV1 } from '../validation/StandardSchemaV1'
 import { GraphQLServerOptions } from './GraphQLServerOptions'
 
-export const defaultGraphqlExecutionErrorMessage =
+const defaultGraphqlExecutionErrorMessage =
     'While processing the request a GraphQL execution error occurred: '
-export const defaultExecutionResultErrorMessage =
+const defaultExecutionResultErrorMessage =
     'While processing the request the following error occurred: '
-export const defaultValidationErrorMessage =
+const defaultValidationErrorMessage =
     'While processing the request the following validation error occurred: '
 
-export const fallbackTextLogger: Logger = new TextLogger(
+const fallbackTextLogger: Logger = new TextLogger(
     'fallback-logger',
     'fallback-service',
 )
-export const invalidSchemaResponse: GraphQLExecutionResult = {
+const invalidSchemaResponse: GraphQLExecutionResult = {
     executionResult: {
         errors: [
             new GraphQLError(
@@ -54,7 +54,7 @@ export const invalidSchemaResponse: GraphQLExecutionResult = {
     statusCode: 500,
 }
 
-export const noOpStandardSchema: StandardSchemaV1 = {
+const noOpStandardSchema: StandardSchemaV1 = {
     '~standard': {
         validate: (value: unknown) => ({ value }),
         vendor: 'no-op',
@@ -62,7 +62,7 @@ export const noOpStandardSchema: StandardSchemaV1 = {
     },
 }
 
-export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
+class DefaultGraphQLServerOptions implements GraphQLServerOptions {
     logger: Logger = fallbackTextLogger
     extractInformationFromRequest: (
         request: GraphQLServerRequest,
@@ -109,7 +109,7 @@ export class DefaultGraphQLServerOptions implements GraphQLServerOptions {
  * Default behaviour: Calls toJSON function of error. Can be set in options.
  * @param {GraphQLError} error - The error to be formatted
  */
-export function defaultFormatErrorFunction(
+function defaultFormatErrorFunction(
     error: GraphQLError,
 ): GraphQLFormattedError {
     return error.toJSON()
@@ -120,7 +120,7 @@ export function defaultFormatErrorFunction(
  * Default behaviour: return request object. Can be set in options.
  * @param contextParameters - The context parameters
  */
-export function defaultContextFunction(contextParameters: {
+function defaultContextFunction(contextParameters: {
     serverOptions: GraphQLServerOptions
     request?: GraphQLServerRequest
     response?: GraphQLServerResponse
@@ -144,7 +144,7 @@ export function defaultContextFunction(contextParameters: {
  * @returns {Record<string, unknown>}
  * A key-value map to be added as extensions in response
  */
-export function defaultExtensions(extensionParameters: {
+function defaultExtensions(extensionParameters: {
     requestInformation: GraphQLRequestInfo
     executionResult: ExecutionResult
     serverOptions: GraphQLServerOptions
@@ -168,7 +168,7 @@ export function defaultExtensions(extensionParameters: {
  * Default collect error metrics function. Can be set in options.
  * @param errorParameters - The error parameters
  */
-export function defaultCollectErrorMetrics(errorParameters: {
+function defaultCollectErrorMetrics(errorParameters: {
     errorName: string
     error: unknown
     serverOptions: GraphQLServerOptions
@@ -193,7 +193,7 @@ export function defaultCollectErrorMetrics(errorParameters: {
  * @param {GraphQLSchema} schema - The new schema to use as updated schema.
  * @returns {boolean} True if schema should be updated, false if not
  */
-export function defaultShouldUpdateSchema(schema?: GraphQLSchema): boolean {
+function defaultShouldUpdateSchema(schema?: GraphQLSchema): boolean {
     return !!schema
 }
 
@@ -202,7 +202,7 @@ export function defaultShouldUpdateSchema(schema?: GraphQLSchema): boolean {
  * @param {string} method - The actual used method
  * @returns {GraphQLExecutionResult} A MethodNotAllowed response
  */
-export function defaultMethodNotAllowedResponse(
+function defaultMethodNotAllowedResponse(
     method?: string,
 ): GraphQLExecutionResult {
     return {
@@ -225,7 +225,7 @@ export function defaultMethodNotAllowedResponse(
  * @param {string} method - The actual used method
  * @returns {GraphQLExecutionResult} A MissingQueryParameter response
  */
-export function defaultMissingQueryParameterResponse(
+function defaultMissingQueryParameterResponse(
     method?: string,
 ): GraphQLExecutionResult {
     return {
@@ -248,7 +248,7 @@ export function defaultMissingQueryParameterResponse(
  * @param {string} operation - The actual used operation
  * @returns {GraphQLExecutionResult} A OnlyQueryInGetRequestsResponse response
  */
-export function defaultOnlyQueryInGetRequestsResponse(
+function defaultOnlyQueryInGetRequestsResponse(
     operation?: string,
 ): GraphQLExecutionResult {
     return {
@@ -271,8 +271,26 @@ export function defaultOnlyQueryInGetRequestsResponse(
  * Default behavior: Create Buffer from stringified executionResult
  * @param {GraphQLError} error - The error to be formatted
  */
-export function defaultResponseEndChunkFunction(
+function defaultResponseEndChunkFunction(
     executionResult: ExecutionResult | undefined,
 ): unknown {
     return Buffer.from(JSON.stringify(executionResult), 'utf8')
+}
+
+export {
+    DefaultGraphQLServerOptions,
+    defaultCollectErrorMetrics,
+    defaultContextFunction,
+    defaultExecutionResultErrorMessage,
+    defaultExtensions,
+    defaultFormatErrorFunction,
+    defaultGraphqlExecutionErrorMessage,
+    defaultMethodNotAllowedResponse,
+    defaultMissingQueryParameterResponse,
+    defaultOnlyQueryInGetRequestsResponse,
+    defaultResponseEndChunkFunction,
+    defaultShouldUpdateSchema,
+    defaultValidationErrorMessage,
+    fallbackTextLogger,
+    invalidSchemaResponse,
 }
