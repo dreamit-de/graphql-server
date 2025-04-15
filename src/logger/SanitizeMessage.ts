@@ -1,7 +1,7 @@
 /**
  * @deprecated Do not use this, Polynomial regular expression
  */
-export const VARIABLES_IN_MESSAGE_REGEX = /got invalid value (.*); Field/gm
+const VARIABLES_IN_MESSAGE_REGEX = /got invalid value (.*); Field/gm
 
 /**
  * Removes sensible information that might occur when
@@ -10,7 +10,7 @@ export const VARIABLES_IN_MESSAGE_REGEX = /got invalid value (.*); Field/gm
  * @returns {string} The sanitized message. Sensible parts will
  * be overwritten with the text REMOVED BY SANITIZER
  */
-export function sanitizeMessage(logMessage: string): string {
+function sanitizeMessage(logMessage: string): string {
     if (
         logMessage.includes('got invalid value') &&
         logMessage.includes('; Field')
@@ -23,3 +23,5 @@ export function sanitizeMessage(logMessage: string): string {
     }
     return logMessage
 }
+
+export { VARIABLES_IN_MESSAGE_REGEX, sanitizeMessage }
