@@ -1,6 +1,5 @@
 import { ResponseParameters } from '@dreamit/graphql-server-base'
 import { GraphQLError } from 'graphql'
-import { Buffer } from 'node:buffer'
 import { getResponseSchemaValidationErrors } from '../validation/GetResponseSchemaValidationErrors'
 
 /**
@@ -65,6 +64,6 @@ export function sendResponse(responseParameters: ResponseParameters): void {
     if (responseEndChunkFunction) {
         response.end(responseEndChunkFunction(executionResult))
     } else {
-        response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))
+        response.end(JSON.stringify(executionResult))
     }
 }

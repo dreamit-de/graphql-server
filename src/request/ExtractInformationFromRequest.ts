@@ -4,7 +4,6 @@ import {
     GraphQLServerRequest,
 } from '@dreamit/graphql-server-base'
 import { GraphQLError } from 'graphql'
-import { Buffer } from 'node:buffer'
 import { URLSearchParams } from 'node:url'
 import { getContentType } from './GetContentType'
 
@@ -66,7 +65,7 @@ function extractInformationFromBody(
                 statusCode: 400,
             },
         }
-    } else if (bodyIsObject && body instanceof Buffer) {
+    } else if (bodyIsObject && body instanceof Uint8Array) {
         return {
             error: {
                 graphQLError: new GraphQLError(

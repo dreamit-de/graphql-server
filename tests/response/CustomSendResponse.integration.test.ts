@@ -7,7 +7,6 @@ import {
     userSchemaResolvers,
     usersQuery,
 } from '@dreamit/graphql-testing'
-import { Buffer } from 'node:buffer'
 import { GraphQLServer } from 'src'
 import { expect, test } from 'vitest'
 import { INITIAL_GRAPHQL_SERVER_OPTIONS, sendRequest } from '../TestHelpers'
@@ -81,10 +80,8 @@ function customSendResponse(responseParameters: ResponseParameters): void {
     response.setHeader('Content-Type', 'application/json; charset=utf-8')
     const contextRecord = context as Record<string, unknown>
     if (contextRecord && contextRecord.customText) {
-        response.end(
-            Buffer.from(JSON.stringify(contextRecord.customText), 'utf8'),
-        )
+        response.end(JSON.stringify(contextRecord.customText))
     } else {
-        response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))
+        response.end(JSON.stringify(executionResult))
     }
 }

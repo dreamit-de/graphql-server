@@ -23,7 +23,6 @@ import {
     validate,
     validateSchema,
 } from 'graphql'
-import { Buffer } from 'node:buffer'
 import { TextLogger } from '../logger/TextLogger'
 import { SimpleMetricsClient } from '../metrics/SimpleMetricsClient'
 import { extractInformationFromRequest } from '../request/ExtractInformationFromRequest'
@@ -274,7 +273,7 @@ function defaultOnlyQueryInGetRequestsResponse(
 function defaultResponseEndChunkFunction(
     executionResult: ExecutionResult | undefined,
 ): unknown {
-    return Buffer.from(JSON.stringify(executionResult), 'utf8')
+    return JSON.stringify(executionResult)
 }
 
 export {
