@@ -1,9 +1,4 @@
 /**
- * @deprecated Do not use this, Polynomial regular expression
- */
-const VARIABLES_IN_MESSAGE_REGEX = /got invalid value (.*); Field/gm
-
-/**
  * Removes sensible information that might occur when
  * variables are used in log messages from the message.
  * @param {string} logMessage - The original log message
@@ -24,4 +19,4 @@ function sanitizeMessage(logMessage: string): string {
     return logMessage
 }
 
-export { VARIABLES_IN_MESSAGE_REGEX, sanitizeMessage }
+export { sanitizeMessage }

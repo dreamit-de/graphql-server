@@ -4,13 +4,13 @@ import {
     GraphQLServerResponse,
     LogEntry,
     LogEntryInput,
+    StandardSchemaV1,
 } from '@dreamit/graphql-server-base'
 import {
     GraphQLServer,
     GraphQLServerOptions,
     JsonLogger,
     NoStacktraceJsonLogger,
-    StandardSchemaV1,
 } from 'src'
 
 import { testDateString } from '@dreamit/funpara'

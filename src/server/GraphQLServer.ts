@@ -150,7 +150,7 @@ export class GraphQLServer {
         })
         metricsClient.increaseRequestThroughput(context)
         const requestInformation = isGraphQLServerRequest(request)
-            ? this.getRequestInformation(request, context)
+            ? getRequestInformationFunction(request, context, this.options)
             : request
         if ('query' in requestInformation && context && context !== request) {
             const contextAsRecord = context as Record<string, unknown>
@@ -224,21 +224,6 @@ export class GraphQLServer {
             })
         }
         return result
-    }
-
-    /**
-     * Extracts the request information from a given request
-     * @deprecated Use getRequestInformation function instead
-     * @param {GraphQLServerRequest} request - The server request
-     * @param {unknown} context - The context to be used
-     * @returns {GraphQLRequestInfo | GraphQLExecutionResult} The request information
-     * or an execution result if an error occurred
-     */
-    getRequestInformation(
-        request: GraphQLServerRequest,
-        context: unknown,
-    ): GraphQLRequestInfo | GraphQLExecutionResult {
-        return getRequestInformationFunction(request, context, this.options)
     }
 
     async executeRequestWithInfo(

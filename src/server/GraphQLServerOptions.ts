@@ -6,6 +6,7 @@ import {
     Logger,
     MetricsClient,
     ResponseParameters,
+    StandardSchemaV1,
 } from '@dreamit/graphql-server-base'
 import {
     DocumentNode,
@@ -22,7 +23,6 @@ import {
     ValidationRule,
 } from 'graphql'
 import { StandaloneResponseParameters } from '../response/StandaloneResponseParameters'
-import { StandardSchemaV1 } from '../validation/StandardSchemaV1'
 
 /**
  * Interface for creating new GraphQLServer instances.

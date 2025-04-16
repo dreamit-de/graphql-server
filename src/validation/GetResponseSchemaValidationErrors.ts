@@ -1,4 +1,4 @@
-import { StandardSchemaV1 } from './StandardSchemaV1'
+import { StandardSchemaV1 } from '@dreamit/graphql-server-base'
 
 /**
  * Gets the schema validation errors by validating input against given schema. (adapted from http://standardschema.dev)
