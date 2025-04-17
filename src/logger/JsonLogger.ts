@@ -1,10 +1,5 @@
 import { DateFunction } from '@dreamit/funpara'
-import {
-    LogEntry,
-    LogEntryInput,
-    Logger,
-    LogLevel,
-} from '@dreamit/graphql-server-base'
+import { LogEntry, LogEntryInput, Logger } from '@dreamit/graphql-server-base'
 import { Console } from 'node:console'
 import { createLogEntry } from './CreateLogEntry'
 import { truncateLogMessage } from './TruncateLogMessage'
@@ -61,7 +56,7 @@ export class JsonLogger implements Logger {
                 context,
                 dateFunction,
                 logMessage,
-                loglevel: LogLevel.debug,
+                loglevel: 'DEBUG',
             })
         }
     }
@@ -79,7 +74,7 @@ export class JsonLogger implements Logger {
             dateFunction,
             error,
             logMessage,
-            loglevel: LogLevel.error,
+            loglevel: 'ERROR',
         })
     }
 
@@ -92,7 +87,7 @@ export class JsonLogger implements Logger {
             context,
             dateFunction,
             logMessage,
-            loglevel: LogLevel.info,
+            loglevel: 'INFO',
         })
     }
 
@@ -105,7 +100,7 @@ export class JsonLogger implements Logger {
             context,
             dateFunction,
             logMessage,
-            loglevel: LogLevel.warn,
+            loglevel: 'WARN',
         })
     }
 

@@ -1,5 +1,4 @@
 import {
-    ContentType,
     GraphQLRequestInfo,
     GraphQLServerRequest,
 } from '@dreamit/graphql-server-base'
@@ -96,9 +95,9 @@ function extractInformationFromBody(
 
     const contentType = getContentType(contentTypeFromHeader)
     switch (contentType) {
-        case ContentType.graphql:
+        case 'application/graphql':
             return { query: bodyIsString ? body : JSON.stringify(body) }
-        case ContentType.json:
+        case 'application/json':
             if (bodyIsString) {
                 try {
                     const bodyAsJson = JSON.parse(body)
@@ -132,7 +131,7 @@ function extractInformationFromBody(
                         > | null) || undefined,
                 }
             }
-        case ContentType.urlencoded:
+        case 'application/x-www-form-urlencoded':
             return extractInformationFromUrlParameters(`host?${body}.`)
         default:
             return {

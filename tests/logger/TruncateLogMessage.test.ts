@@ -1,5 +1,4 @@
 /* eslint-disable max-len */
-import { LogLevel } from '@dreamit/graphql-server-base'
 import { truncateLogMessage } from 'src'
 import { expect, test } from 'vitest'
 
@@ -21,7 +20,7 @@ test.each`
     ({ message, truncatedText, truncateLimit, expectedLogMessage }) => {
         const logEntry = truncateLogMessage(
             {
-                level: LogLevel.info,
+                level: 'INFO',
                 logger: 'test-logger',
                 message,
                 serviceName: 'test-service',

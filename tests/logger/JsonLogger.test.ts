@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { testDateFunction, testDateString } from '@dreamit/funpara'
-import { LogEntry, LogEntryInput, LogLevel } from '@dreamit/graphql-server-base'
+import { LogEntry, LogEntryInput } from '@dreamit/graphql-server-base'
 import { NoConsole } from '@dreamit/graphql-testing'
 import { JsonLogger, NoStacktraceJsonLogger } from 'src'
 import { expect, test } from 'vitest'
@@ -45,7 +45,7 @@ test.each([new JsonTestLogger(true), new NoStacktraceJsonTestLogger(true)])(
         debugLogger.debug('test', undefined, testDateFunction)
         const logEntry = debugLogger.logEntries.at(0)
         expect(logEntry?.message).toBe('test')
-        expect(logEntry?.level).toBe(LogLevel.debug)
+        expect(logEntry?.level).toBe('DEBUG')
     },
 )
 
@@ -70,7 +70,7 @@ test.each([new JsonTestLogger(), new NoStacktraceJsonTestLogger()])(
             testDateFunction,
         )
         const createdLogEntry = defaultLogger.logEntries.at(0)
-        expect(createdLogEntry?.level).toBe(LogLevel.error)
+        expect(createdLogEntry?.level).toBe('ERROR')
         expect(createdLogEntry?.message).toBe('error error')
         expect(createdLogEntry?.errorName).toBe('custom')
         expect(createdLogEntry?.stacktrace).toBe(
@@ -86,7 +86,7 @@ test.each([new JsonTestLogger(), new NoStacktraceJsonTestLogger()])(
     (defaultLogger: JsonTestLogger | NoStacktraceJsonTestLogger) => {
         defaultLogger.info('info', undefined, testDateFunction)
         const createdLogEntry = defaultLogger.logEntries.at(0)
-        expect(createdLogEntry?.level).toBe(LogLevel.info)
+        expect(createdLogEntry?.level).toBe('INFO')
         expect(createdLogEntry?.message).toBe('info')
     },
 )
@@ -96,7 +96,7 @@ test.each([new JsonTestLogger(), new NoStacktraceJsonTestLogger()])(
     (defaultLogger: JsonTestLogger | NoStacktraceJsonTestLogger) => {
         defaultLogger.warn('warn', undefined, testDateFunction)
         const createdLogEntry = defaultLogger.logEntries.at(0)
-        expect(createdLogEntry?.level).toBe(LogLevel.warn)
+        expect(createdLogEntry?.level).toBe('WARN')
         expect(createdLogEntry?.message).toBe('warn')
     },
 )

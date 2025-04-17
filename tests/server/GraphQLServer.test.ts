@@ -1,4 +1,4 @@
-import { GraphQLExecutionResult, LogLevel } from '@dreamit/graphql-server-base'
+import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
 import {
     initialSchemaWithOnlyDescription,
     loginMutation,
@@ -74,7 +74,7 @@ test('Should not update schema when given schema is undefined', () => {
     expect(warnLogEntry?.message).toBe(
         'Schema update was rejected because condition set in "shouldUpdateSchema" check was not fulfilled.',
     )
-    expect(warnLogEntry?.level).toBe(LogLevel.warn)
+    expect(warnLogEntry?.level).toBe('WARN')
 })
 
 test(

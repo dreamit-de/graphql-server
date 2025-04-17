@@ -1,4 +1,4 @@
-import { LogEntry, LogEntryInput, LogLevel } from '@dreamit/graphql-server-base'
+import { LogEntry, LogEntryInput } from '@dreamit/graphql-server-base'
 import { GraphQLError } from 'graphql'
 import { createISOTimestamp } from './CreateTimestamp'
 import { sanitizeMessage } from './SanitizeMessage'
@@ -16,7 +16,7 @@ export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
     } = logEntryInput
 
     const logEntry: LogEntry = {
-        level: loglevel ?? LogLevel.info,
+        level: loglevel ?? 'INFO',
         logger: loggerName ?? 'fallback-logger',
         message: sanitizeMessage(logMessage),
         serviceName: serviceName ?? 'fallback-service',
@@ -27,11 +27,8 @@ export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
     const contextRecord = context as Record<string, unknown>
     if (contextRecord && contextRecord.serviceName) {
         logEntry.serviceName = contextRecord.serviceName as string
-        if (
-            loglevel === LogLevel.error &&
-            contextRecord.serviceName !== serviceName
-        ) {
-            logEntry.level = LogLevel.warn
+        if (loglevel === 'ERROR' && contextRecord.serviceName !== serviceName) {
+            logEntry.level = 'WARN'
         }
     }
     if (contextRecord && contextRecord.query) {
@@ -59,8 +56,8 @@ export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
                 logEntry.serviceName = error.extensions.serviceName as string
                 logEntry.level =
                     error.extensions.serviceName === serviceName
-                        ? LogLevel.error
-                        : LogLevel.warn
+                        ? 'ERROR'
+                        : 'WARN'
             }
 
             if (error.extensions.exception) {

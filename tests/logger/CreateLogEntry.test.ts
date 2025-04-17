@@ -1,5 +1,4 @@
 /* eslint-disable max-len */
-import { LogLevel } from '@dreamit/graphql-server-base'
 import { GraphQLError, Kind } from 'graphql'
 import { createLogEntry } from 'src'
 import { expect, test } from 'vitest'
@@ -109,18 +108,18 @@ const sanitizedMessage = String.raw`Variable \"$login\" got invalid value REMOVE
 const errorWithVariables = 'A GraphQLError message ' + sanitizedMessage
 
 test.each`
-    logMessage                  | loglevel          | error                                 | expectedLogMessage     | expectedLogLevel | expectedStacktrace        | expectedQuery | expectedServiceName
-    ${'A info message'}         | ${LogLevel.info}  | ${undefined}                          | ${'A info message'}    | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
-    ${messageWithVariables}     | ${LogLevel.info}  | ${undefined}                          | ${sanitizedMessage}    | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
-    ${'A debug message'}        | ${LogLevel.debug} | ${undefined}                          | ${'A debug message'}   | ${'DEBUG'}       | ${undefined}              | ${undefined}  | ${'myTestService'}
-    ${'A FetchError message'}   | ${LogLevel.error} | ${fetchError}                         | ${fetchErrorMessage}   | ${'ERROR'}       | ${'FetchError: An error'} | ${undefined}  | ${'myTestService'}
-    ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLError}                       | ${graphQLErrorMessage} | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
-    ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLErrorWithVariables}          | ${errorWithVariables}  | ${'ERROR'}       | ${'A stacktrace'}         | ${'customer'} | ${'myTestService'}
-    ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLErrorWithSourceBody}         | ${graphQLErrorMessage} | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
-    ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLErrorWithAstNode}            | ${graphQLErrorMessage} | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
-    ${'A GraphQLError message'} | ${LogLevel.error} | ${graphQLErrorWithSensibleStacktrace} | ${graphQLErrorMessage} | ${'WARN'}        | ${sanitizedMessage}       | ${'customer'} | ${'customer'}
-    ${'A GraphQLError message'} | ${LogLevel.error} | ${errorWithSensibleStackInformation}  | ${graphQLErrorMessage} | ${'ERROR'}       | ${sanitizedMessage}       | ${undefined}  | ${'myTestService'}
-    ${'A GraphQLError message'} | ${LogLevel.error} | ${errorWithoutStacktrace}             | ${errorMessage}        | ${'ERROR'}       | ${undefined}              | ${undefined}  | ${'myTestService'}
+    logMessage                  | loglevel   | error                                 | expectedLogMessage     | expectedLogLevel | expectedStacktrace        | expectedQuery | expectedServiceName
+    ${'A info message'}         | ${'INFO'}  | ${undefined}                          | ${'A info message'}    | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
+    ${messageWithVariables}     | ${'INFO'}  | ${undefined}                          | ${sanitizedMessage}    | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
+    ${'A debug message'}        | ${'DEBUG'} | ${undefined}                          | ${'A debug message'}   | ${'DEBUG'}       | ${undefined}              | ${undefined}  | ${'myTestService'}
+    ${'A FetchError message'}   | ${'ERROR'} | ${fetchError}                         | ${fetchErrorMessage}   | ${'ERROR'}       | ${'FetchError: An error'} | ${undefined}  | ${'myTestService'}
+    ${'A GraphQLError message'} | ${'ERROR'} | ${graphQLError}                       | ${graphQLErrorMessage} | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
+    ${'A GraphQLError message'} | ${'ERROR'} | ${graphQLErrorWithVariables}          | ${errorWithVariables}  | ${'ERROR'}       | ${'A stacktrace'}         | ${'customer'} | ${'myTestService'}
+    ${'A GraphQLError message'} | ${'ERROR'} | ${graphQLErrorWithSourceBody}         | ${graphQLErrorMessage} | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
+    ${'A GraphQLError message'} | ${'ERROR'} | ${graphQLErrorWithAstNode}            | ${graphQLErrorMessage} | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
+    ${'A GraphQLError message'} | ${'ERROR'} | ${graphQLErrorWithSensibleStacktrace} | ${graphQLErrorMessage} | ${'WARN'}        | ${sanitizedMessage}       | ${'customer'} | ${'customer'}
+    ${'A GraphQLError message'} | ${'ERROR'} | ${errorWithSensibleStackInformation}  | ${graphQLErrorMessage} | ${'ERROR'}       | ${sanitizedMessage}       | ${undefined}  | ${'myTestService'}
+    ${'A GraphQLError message'} | ${'ERROR'} | ${errorWithoutStacktrace}             | ${errorMessage}        | ${'ERROR'}       | ${undefined}              | ${undefined}  | ${'myTestService'}
 `(
     'expects a correct logEntry is created for given $logMessage , $loglevel and $error ',
     ({
@@ -169,7 +168,7 @@ test('Should use customErrorName instead or error.name if customErrorName is set
         error: graphQLError,
         logMessage: 'A GraphQLError message',
         loggerName: 'test-logger',
-        loglevel: LogLevel.error,
+        loglevel: 'ERROR',
         serviceName: 'myTestService',
     })
     expect(logEntry.errorName).toBe('MyCustomError')
@@ -185,7 +184,7 @@ test(
             error: errorWithSensibleStackInformation,
             logMessage: 'A GraphQLError message',
             loggerName: 'test-logger',
-            loglevel: LogLevel.error,
+            loglevel: 'ERROR',
             serviceName: 'myTestService',
         })
         expect(logEntry.serviceName).toBe('myRemoteService')
@@ -198,7 +197,7 @@ test('Should use fallback values for loggerName, serviceName and level if they a
         logMessage: 'A GraphQLError message',
     })
     expect(logEntry.message).toBe('A GraphQLError message')
-    expect(logEntry.level).toBe(LogLevel.info)
+    expect(logEntry.level).toBe('INFO')
     expect(logEntry.logger).toBe('fallback-logger')
     expect(logEntry.serviceName).toBe('fallback-service')
 })
@@ -218,37 +217,37 @@ test('Test downgrading loglevel based on service name', () => {
             context: { serviceName: 'myRemoteService' },
             error: errorWithoutStacktrace,
             logMessage: '',
-            loglevel: LogLevel.error,
+            loglevel: 'ERROR',
             serviceName: 'myTestService',
         }).level,
-    ).toBe(LogLevel.warn)
+    ).toBe('WARN')
     expect(
         createLogEntry({
             context: { serviceName: 'myTestService' },
             error: errorWithoutStacktrace,
             logMessage: '',
-            loglevel: LogLevel.error,
+            loglevel: 'ERROR',
             serviceName: 'myTestService',
         }).level,
-    ).toBe(LogLevel.error)
+    ).toBe('ERROR')
     expect(
         createLogEntry({
             context: { serviceName: 'myTestService' },
             error: errorWithoutStacktrace,
             logMessage: '',
-            loglevel: LogLevel.info,
+            loglevel: 'INFO',
             serviceName: 'myTestService',
         }).level,
-    ).toBe(LogLevel.info)
+    ).toBe('INFO')
     expect(
         createLogEntry({
             context: { serviceName: 'myRemoteService' },
             error: errorWithoutStacktrace,
             logMessage: '',
-            loglevel: LogLevel.info,
+            loglevel: 'INFO',
             serviceName: 'myTestService',
         }).level,
-    ).toBe(LogLevel.info)
+    ).toBe('INFO')
 })
 
 test(
@@ -259,9 +258,9 @@ test(
             context: undefined,
             error: graphQLError,
             logMessage: '',
-            loglevel: LogLevel.error,
+            loglevel: 'ERROR',
             serviceName: 'customer',
         })
-        expect(logEntry.level).toBe(LogLevel.error)
+        expect(logEntry.level).toBe('ERROR')
     },
 )
