@@ -3,7 +3,7 @@
 /test-report/
 /coverage/
 /build/
-*.tgz
+dreamit-graphql-server-5*.tgz
 # stryker temp files
 .stryker-tmp
 /reports/
