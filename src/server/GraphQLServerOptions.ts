@@ -26,89 +26,76 @@ import { StandaloneResponseParameters } from '../response/StandaloneResponsePara
 
 /**
  * Interface for creating new GraphQLServer instances.
- * Fields are all optional, but it is recommended to set the fields necessary to execute the
- * expected functionality, e.g. schema and rootValue for basic GraphQL request execution.
  */
 export interface GraphQLServerOptions {
-    readonly logger?: Logger
-    readonly extractInformationFromRequest?: (
+    // required fields
+    logger: Logger
+    extractInformationFromRequest: (
         request: GraphQLServerRequest,
     ) => GraphQLRequestInfo
-    readonly sendResponse?: (responseParameters: ResponseParameters) => void
-    readonly metricsClient?: MetricsClient
-    readonly schema?: GraphQLSchema
-    readonly shouldUpdateSchemaFunction?: (schema?: GraphQLSchema) => boolean
-    readonly formatErrorFunction?: (
-        error: GraphQLError,
-    ) => GraphQLFormattedError
-    readonly collectErrorMetricsFunction?: (errorParameters: {
+    sendResponse: (responseParameters: ResponseParameters) => void
+    metricsClient: MetricsClient
+    shouldUpdateSchemaFunction: (schema?: GraphQLSchema) => boolean
+    formatErrorFunction: (error: GraphQLError) => GraphQLFormattedError
+    collectErrorMetricsFunction: (errorParameters: {
         errorName: string
         error: unknown
         serverOptions: GraphQLServerOptions
         context?: unknown
     }) => void
-    readonly schemaValidationFunction?: (
-        schema: GraphQLSchema,
-    ) => readonly GraphQLError[]
-    readonly parseFunction?: (
+    schemaValidationFunction: (schema: GraphQLSchema) => readonly GraphQLError[]
+    parseFunction: (
         source: string | Source,
         options?: ParseOptions,
     ) => DocumentNode
-    readonly defaultValidationRules?: readonly ValidationRule[]
-    readonly customValidationRules?: readonly ValidationRule[]
-    readonly validationTypeInfo?: TypeInfo
-    readonly validationOptions?: { maxErrors?: number }
-    readonly removeValidationRecommendations?: boolean
-    readonly reassignAggregateError?: boolean
-    readonly validateFunction?: (
+    defaultValidationRules: readonly ValidationRule[]
+    customValidationRules: readonly ValidationRule[]
+    removeValidationRecommendations: boolean
+    reassignAggregateError: boolean
+    validateFunction: (
         schema: GraphQLSchema,
         documentAST: DocumentNode,
         rules?: readonly ValidationRule[],
         options?: { maxErrors?: number },
         typeInfo?: TypeInfo,
     ) => readonly GraphQLError[]
-    readonly rootValue?: unknown
-    readonly contextFunction?: (contextParameters: {
+    contextFunction: (contextParameters: {
         serverOptions: GraphQLServerOptions
         request?: GraphQLServerRequest
         response?: GraphQLServerResponse
     }) => unknown
-    readonly fieldResolver?:
-        | null
-        | undefined
-        | GraphQLFieldResolver<unknown, unknown>
-    readonly typeResolver?:
-        | null
-        | undefined
-        | GraphQLTypeResolver<unknown, unknown>
-    readonly executeFunction?: (
+    executeFunction: (
         arguments_: ExecutionArgs,
     ) => Promise<ExecutionResult> | ExecutionResult
-    readonly extensionFunction?: (extensionParameters: {
+    extensionFunction: (extensionParameters: {
         requestInformation: GraphQLRequestInfo
         executionResult: ExecutionResult
         serverOptions: GraphQLServerOptions
         context?: unknown
     }) => Record<string, unknown> | undefined
-    readonly methodNotAllowedResponse?: (
-        method?: string,
-    ) => GraphQLExecutionResult
-    readonly invalidSchemaResponse?: GraphQLExecutionResult
-    readonly missingQueryParameterResponse?: (
-        method?: string,
-    ) => GraphQLExecutionResult
-    readonly onlyQueryInGetRequestsResponse?: (
+    methodNotAllowedResponse: (method?: string) => GraphQLExecutionResult
+    invalidSchemaResponse: GraphQLExecutionResult
+    missingQueryParameterResponse: (method?: string) => GraphQLExecutionResult
+    onlyQueryInGetRequestsResponse: (
         operation?: string,
     ) => GraphQLExecutionResult
-    readonly validationErrorMessage?: string
-    readonly executionResultErrorMessage?: string
-    readonly graphqlExecutionErrorMessage?: string
-    readonly responseEndChunkFunction?: (
+    validationErrorMessage: string
+    executionResultErrorMessage: string
+    graphqlExecutionErrorMessage: string
+    responseEndChunkFunction: (
         executionResult: ExecutionResult | undefined,
     ) => unknown
-    readonly fetchErrorMessage?: string
-    readonly adjustGraphQLExecutionResult?: (
+    responseStandardSchema: StandardSchemaV1
+    adjustGraphQLExecutionResult?: (
         parameters: StandaloneResponseParameters,
     ) => GraphQLExecutionResult
-    readonly responseStandardSchema?: StandardSchemaV1
+
+    // optional fields
+    fieldResolver?: null | undefined | GraphQLFieldResolver<unknown, unknown>
+    fetchErrorMessage?: string
+    rootValue?: unknown
+    schema?: GraphQLSchema
+    typeResolver?: null | undefined | GraphQLTypeResolver<unknown, unknown>
+    validationOptions?: { maxErrors?: number }
+    validationTypeInfo?: TypeInfo
 }

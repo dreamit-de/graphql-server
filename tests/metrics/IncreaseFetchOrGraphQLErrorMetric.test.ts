@@ -1,6 +1,7 @@
 import {
     GraphQLServerOptions,
     defaultCollectErrorMetrics,
+    defaultGraphQLServerOptions,
     increaseFetchOrGraphQLErrorMetric,
 } from 'src'
 import { expect, test } from 'vitest'
@@ -17,9 +18,13 @@ test.each([
 ])(
     'Test that increaseFetchOrGraphQLErrorMetric does not throw an error' +
         ' logs a debug message if a logger is defined',
-    (serverOptions: GraphQLServerOptions) => {
+    (serverOptions: Partial<GraphQLServerOptions>) => {
         expect(
-            increaseFetchOrGraphQLErrorMetric(undefined, serverOptions, {}),
+            increaseFetchOrGraphQLErrorMetric(
+                undefined,
+                { ...defaultGraphQLServerOptions, ...serverOptions },
+                {},
+            ),
         ).toBe(undefined)
         const { logger } = serverOptions
 

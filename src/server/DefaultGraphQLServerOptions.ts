@@ -4,19 +4,13 @@ import {
     GraphQLServerRequest,
     GraphQLServerResponse,
     Logger,
-    MetricsClient,
-    ResponseParameters,
     StandardSchemaV1,
 } from '@dreamit/graphql-server-base'
 import {
     ExecutionResult,
     GraphQLError,
-    GraphQLFieldResolver,
     GraphQLFormattedError,
     GraphQLSchema,
-    GraphQLTypeResolver,
-    TypeInfo,
-    ValidationRule,
     execute,
     parse,
     specifiedRules,
@@ -27,7 +21,6 @@ import { TextLogger } from '../logger/TextLogger'
 import { SimpleMetricsClient } from '../metrics/SimpleMetricsClient'
 import { extractInformationFromRequest } from '../request/ExtractInformationFromRequest'
 import { sendResponse } from '../response/SendResponse'
-import { StandaloneResponseParameters } from '../response/StandaloneResponseParameters'
 import { GraphQLServerOptions } from './GraphQLServerOptions'
 
 const defaultGraphqlExecutionErrorMessage =
@@ -61,46 +54,33 @@ const noOpStandardSchema: StandardSchemaV1 = {
     },
 }
 
-class DefaultGraphQLServerOptions implements GraphQLServerOptions {
-    logger: Logger = fallbackTextLogger
-    extractInformationFromRequest: (
-        request: GraphQLServerRequest,
-    ) => GraphQLRequestInfo = extractInformationFromRequest
-    sendResponse: (responseParameters: ResponseParameters) => void =
-        sendResponse
-    metricsClient: MetricsClient = new SimpleMetricsClient()
-    formatErrorFunction = defaultFormatErrorFunction
-    collectErrorMetricsFunction = defaultCollectErrorMetrics
-    schemaValidationFunction = validateSchema
-    parseFunction = parse
-    defaultValidationRules = specifiedRules
-    customValidationRules: readonly ValidationRule[] = []
-    removeValidationRecommendations = true
-    reassignAggregateError = false
-    validateFunction = validate
-    contextFunction = defaultContextFunction
-    executeFunction = execute
-    extensionFunction = defaultExtensions
-    shouldUpdateSchemaFunction = defaultShouldUpdateSchema
-    validationTypeInfo?: TypeInfo
-    validationOptions?: { maxErrors?: number }
-    rootValue?: unknown
-    fieldResolver?: null | undefined | GraphQLFieldResolver<unknown, unknown>
-    typeResolver?: null | undefined | GraphQLTypeResolver<unknown, unknown>
-    schema?: GraphQLSchema
-    invalidSchemaResponse = invalidSchemaResponse
-    missingQueryParameterResponse = defaultMissingQueryParameterResponse
-    methodNotAllowedResponse = defaultMethodNotAllowedResponse
-    onlyQueryInGetRequestsResponse = defaultOnlyQueryInGetRequestsResponse
-    validationErrorMessage = defaultValidationErrorMessage
-    executionResultErrorMessage = defaultExecutionResultErrorMessage
-    graphqlExecutionErrorMessage = defaultGraphqlExecutionErrorMessage
-    responseEndChunkFunction = defaultResponseEndChunkFunction
-    fetchErrorMessage?: string
-    adjustGraphQLExecutionResult?: (
-        parameters: StandaloneResponseParameters,
-    ) => GraphQLExecutionResult
-    responseStandardSchema: StandardSchemaV1 = noOpStandardSchema
+const defaultGraphQLServerOptions: GraphQLServerOptions = {
+    collectErrorMetricsFunction: defaultCollectErrorMetrics,
+    contextFunction: defaultContextFunction,
+    customValidationRules: [],
+    defaultValidationRules: specifiedRules,
+    executeFunction: execute,
+    executionResultErrorMessage: defaultExecutionResultErrorMessage,
+    extensionFunction: defaultExtensions,
+    extractInformationFromRequest: extractInformationFromRequest,
+    formatErrorFunction: defaultFormatErrorFunction,
+    graphqlExecutionErrorMessage: defaultGraphqlExecutionErrorMessage,
+    invalidSchemaResponse: invalidSchemaResponse,
+    logger: fallbackTextLogger,
+    methodNotAllowedResponse: defaultMethodNotAllowedResponse,
+    metricsClient: new SimpleMetricsClient(),
+    missingQueryParameterResponse: defaultMissingQueryParameterResponse,
+    onlyQueryInGetRequestsResponse: defaultOnlyQueryInGetRequestsResponse,
+    parseFunction: parse,
+    reassignAggregateError: false,
+    removeValidationRecommendations: true,
+    responseEndChunkFunction: defaultResponseEndChunkFunction,
+    responseStandardSchema: noOpStandardSchema,
+    schemaValidationFunction: validateSchema,
+    sendResponse: sendResponse,
+    shouldUpdateSchemaFunction: defaultShouldUpdateSchema,
+    validateFunction: validate,
+    validationErrorMessage: defaultValidationErrorMessage,
 }
 
 /**
@@ -126,13 +106,11 @@ function defaultContextFunction(contextParameters: {
 }): unknown {
     const { serverOptions, request, response } = contextParameters
     const logger = serverOptions.logger
-    if (logger) {
-        logger.debug(
-            'Calling defaultRequestResponseContextFunction with ' +
-                `request ${request} and response ${response}`,
-            request,
-        )
-    }
+    logger.debug(
+        'Calling defaultRequestResponseContextFunction with ' +
+            `request ${request} and response ${response}`,
+        request,
+    )
     return request
 }
 
@@ -152,14 +130,11 @@ function defaultExtensions(extensionParameters: {
     const { requestInformation, executionResult, serverOptions, context } =
         extensionParameters
     const logger = serverOptions.logger
-    if (logger) {
-        logger.debug(
-            `Calling defaultExtensions for requestInfo ${JSON.stringify(requestInformation)}` +
-                ` and executionResult ${JSON.stringify(executionResult)}`,
-            context,
-        )
-    }
-
+    logger.debug(
+        `Calling defaultExtensions for requestInfo ${JSON.stringify(requestInformation)}` +
+            ` and executionResult ${JSON.stringify(executionResult)}`,
+        context,
+    )
     return undefined
 }
 
@@ -175,15 +150,11 @@ function defaultCollectErrorMetrics(errorParameters: {
 }): void {
     const { errorName, error, serverOptions, context } = errorParameters
     const { logger, metricsClient } = serverOptions
-    if (logger) {
-        logger.debug(
-            `Calling defaultCollectErrorMetrics with error ${error} and errorName ${errorName}`,
-            context,
-        )
-    }
-    if (metricsClient) {
-        metricsClient.increaseErrors(errorName, context)
-    }
+    logger.debug(
+        `Calling defaultCollectErrorMetrics with error ${error} and errorName ${errorName}`,
+        context,
+    )
+    metricsClient.increaseErrors(errorName, context)
 }
 
 /**
@@ -277,12 +248,12 @@ function defaultResponseEndChunkFunction(
 }
 
 export {
-    DefaultGraphQLServerOptions,
     defaultCollectErrorMetrics,
     defaultContextFunction,
     defaultExecutionResultErrorMessage,
     defaultExtensions,
     defaultFormatErrorFunction,
+    defaultGraphQLServerOptions,
     defaultGraphqlExecutionErrorMessage,
     defaultMethodNotAllowedResponse,
     defaultMissingQueryParameterResponse,

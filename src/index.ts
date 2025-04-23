@@ -38,12 +38,12 @@ export { sendResponse } from './response/SendResponse'
 export { StandaloneResponseParameters } from './response/StandaloneResponseParameters'
 
 export {
-    DefaultGraphQLServerOptions,
     defaultCollectErrorMetrics,
     defaultContextFunction,
     defaultExecutionResultErrorMessage,
     defaultExtensions,
     defaultFormatErrorFunction,
+    defaultGraphQLServerOptions,
     defaultGraphqlExecutionErrorMessage,
     defaultMethodNotAllowedResponse,
     defaultMissingQueryParameterResponse,

@@ -28,22 +28,20 @@ import { increaseFetchOrGraphQLErrorMetric } from '../metrics/IncreaseFetchOrGra
 import { SimpleMetricsClient } from '../metrics/SimpleMetricsClient'
 import { requestCouldNotBeProcessed } from '../request/RequestConstants'
 import { getFirstErrorFromExecutionResult } from '../response/GraphQLExecutionResult'
-import { getRequestInformation as getRequestInformationFunction } from '../server/GetRequestInformation'
-import { DefaultGraphQLServerOptions } from './DefaultGraphQLServerOptions'
+import { getRequestInformation } from '../server/GetRequestInformation'
+import { defaultGraphQLServerOptions } from './DefaultGraphQLServerOptions'
 import { GraphQLServerOptions } from './GraphQLServerOptions'
 
-const defaultOptions = new DefaultGraphQLServerOptions()
-
 export class GraphQLServer {
-    options: DefaultGraphQLServerOptions = new DefaultGraphQLServerOptions()
+    options: GraphQLServerOptions = defaultGraphQLServerOptions
     schemaValidationErrors: readonly GraphQLError[] = []
 
-    constructor(optionsParameter?: GraphQLServerOptions) {
+    constructor(optionsParameter?: Partial<GraphQLServerOptions>) {
         this.setOptions(optionsParameter)
     }
 
-    setOptions(newOptions?: GraphQLServerOptions): void {
-        this.options = { ...defaultOptions, ...newOptions }
+    setOptions(newOptions?: Partial<GraphQLServerOptions>): void {
+        this.options = { ...defaultGraphQLServerOptions, ...newOptions }
         this.setMetricsClient(
             newOptions?.metricsClient ?? new SimpleMetricsClient(),
         )
@@ -150,7 +148,7 @@ export class GraphQLServer {
         })
         metricsClient.increaseRequestThroughput(context)
         const requestInformation = isGraphQLServerRequest(request)
-            ? getRequestInformationFunction(request, context, this.options)
+            ? getRequestInformation(request, context, this.options)
             : request
         if ('query' in requestInformation && context && context !== request) {
             const contextAsRecord = context as Record<string, unknown>

@@ -20,6 +20,7 @@ import {
 } from '@dreamit/graphql-testing'
 import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql'
 import {
+    defaultGraphQLServerOptions,
     GraphQLServer,
     GraphQLServerOptions,
     NoMetricsClient,
@@ -360,6 +361,7 @@ function getInitialGraphQLServerOptions(
     metricsClient: MetricsClient,
 ): GraphQLServerOptions {
     return {
+        ...defaultGraphQLServerOptions,
         customValidationRules: [NoSchemaIntrospectionCustomRule],
         logger: NoOpTestLogger,
         metricsClient: metricsClient,

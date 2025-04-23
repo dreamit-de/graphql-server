@@ -53,7 +53,7 @@ const LOGGER = new NoStacktraceJsonLogger(
     false,
 )
 
-const INITIAL_GRAPHQL_SERVER_OPTIONS: GraphQLServerOptions = {
+const INITIAL_GRAPHQL_SERVER_OPTIONS: Partial<GraphQLServerOptions> = {
     logger: NoOpTestLogger,
     responseStandardSchema: graphQLResponseSchema(),
     rootValue: userSchemaResolvers,

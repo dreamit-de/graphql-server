@@ -13,19 +13,15 @@ export function increaseFetchOrGraphQLErrorMetric(
     context: unknown,
 ): void {
     const { collectErrorMetricsFunction, logger } = serverOptions
-    if (logger) {
-        logger.debug(
-            'Calling increaseFetchOrGraphQLErrorMetric' +
-                ` with error ${error} and errorIsFetch ${error instanceof Error}`,
-            context,
-        )
-    }
-    if (collectErrorMetricsFunction) {
-        collectErrorMetricsFunction({
-            context,
-            error,
-            errorName: determineGraphQLOrFetchError(error),
-            serverOptions,
-        })
-    }
+    logger.debug(
+        'Calling increaseFetchOrGraphQLErrorMetric' +
+            ` with error ${error} and errorIsFetch ${error instanceof Error}`,
+        context,
+    )
+    collectErrorMetricsFunction({
+        context,
+        error,
+        errorName: determineGraphQLOrFetchError(error),
+        serverOptions,
+    })
 }
