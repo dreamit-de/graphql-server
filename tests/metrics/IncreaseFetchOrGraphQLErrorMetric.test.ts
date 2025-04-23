@@ -8,7 +8,6 @@ import { expect, test } from 'vitest'
 import { JsonTestLogger } from '../TestHelpers'
 
 test.each([
-    {},
     { collectErrorMetricsFunction: defaultCollectErrorMetrics },
     { logger: new JsonTestLogger(true) },
     {

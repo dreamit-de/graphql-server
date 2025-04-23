@@ -39,6 +39,14 @@ test('Should get correct metrics for SimpleMetricsClient', async () => {
     await runMetricsTest(metricsClient, false)
 })
 
+test('SimpleMetricsClient does not increase errors for unknown label', () => {
+    const metricsClient = new SimpleMetricsClient()
+    metricsClient.increaseErrors('unknownLabel')
+    expect(metricsClient.getErrorCount('unknownLabel')).toBe(
+        'graphql_server_errors{errorClass="unknownLabel"} undefined',
+    )
+})
+
 test('Should get no metrics for NoMetricsClient', async () => {
     const metricsClient = new NoMetricsClient()
     customGraphQLServer.setMetricsClient(metricsClient)

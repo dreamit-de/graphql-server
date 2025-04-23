@@ -20,6 +20,16 @@ const messageWithVariables =
     String.raw` { email: \"max@mustermann.de\", password: \"12345678\", abc: \"def\" }` +
     String.raw`; Field \"abc\" is not defined by type LoginInput.`
 
+const messageInvalidValue =
+    String.raw`Variable \"$login\" got invalid value` +
+    String.raw` { email: \"max@mustermann.de\", password: \"12345678\", abc: \"def\" }` +
+    String.raw`; doesnotmatter.`
+
+const messageField =
+    String.raw`Variable \"$login\"` +
+    String.raw` { email: \"max@mustermann.de\", password: \"12345678\", abc: \"def\" }` +
+    String.raw`; Field \"abc\" is not defined by type LoginInput.`
+
 const graphQLError: GraphQLError = new GraphQLError(customerMessage, {
     extensions: {
         exception: 'A stacktrace',
@@ -111,6 +121,8 @@ test.each`
     logMessage                  | loglevel   | error                                 | expectedLogMessage     | expectedLogLevel | expectedStacktrace        | expectedQuery | expectedServiceName
     ${'A info message'}         | ${'INFO'}  | ${undefined}                          | ${'A info message'}    | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
     ${messageWithVariables}     | ${'INFO'}  | ${undefined}                          | ${sanitizedMessage}    | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
+    ${messageInvalidValue}      | ${'INFO'}  | ${undefined}                          | ${messageInvalidValue} | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
+    ${messageField}             | ${'INFO'}  | ${undefined}                          | ${messageField}        | ${'INFO'}        | ${undefined}              | ${undefined}  | ${'myTestService'}
     ${'A debug message'}        | ${'DEBUG'} | ${undefined}                          | ${'A debug message'}   | ${'DEBUG'}       | ${undefined}              | ${undefined}  | ${'myTestService'}
     ${'A FetchError message'}   | ${'ERROR'} | ${fetchError}                         | ${fetchErrorMessage}   | ${'ERROR'}       | ${'FetchError: An error'} | ${undefined}  | ${'myTestService'}
     ${'A GraphQLError message'} | ${'ERROR'} | ${graphQLError}                       | ${graphQLErrorMessage} | ${'WARN'}        | ${'A stacktrace'}         | ${'customer'} | ${'customer'}
