@@ -53,6 +53,7 @@ export {
     defaultValidationErrorMessage,
     fallbackTextLogger,
     invalidSchemaResponse,
+    noOpStandardSchema,
 } from './server/DefaultGraphQLServerOptions'
 export { getRequestInformation } from './server/GetRequestInformation'
 export { GraphQLServer } from './server/GraphQLServer'

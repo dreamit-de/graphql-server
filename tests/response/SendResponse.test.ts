@@ -4,7 +4,11 @@ import {
 } from '@dreamit/graphql-testing'
 import { fc, test as propertyTest } from '@fast-check/vitest'
 import { GraphQLError, GraphQLFormattedError } from 'graphql'
-import { sendResponse } from 'src'
+import {
+    defaultResponseEndChunkFunction,
+    noOpStandardSchema,
+    sendResponse,
+} from 'src'
 import { PromiseReturningStandardSchema } from 'tests/TestHelpers'
 import { expect, test } from 'vitest'
 
@@ -23,6 +27,8 @@ test('Should use default response.end behavior if no responseEndChunkFunction if
         },
         logger: NoOpTestLogger,
         response: standaloneGraphQLServerResponse,
+        responseEndChunkFunction: defaultResponseEndChunkFunction,
+        responseStandardSchema: noOpStandardSchema,
         statusCode: 401,
     })
 
@@ -50,6 +56,7 @@ test('Should send original response if responseStandardSchema returns a Promise'
         },
         logger: NoOpTestLogger,
         response: standaloneGraphQLServerResponse,
+        responseEndChunkFunction: defaultResponseEndChunkFunction,
         responseStandardSchema: PromiseReturningStandardSchema,
         statusCode: 401,
     })
@@ -78,6 +85,7 @@ test('Should send response validation error if any exist', () => {
         },
         logger: NoOpTestLogger,
         response: standaloneGraphQLServerResponse,
+        responseEndChunkFunction: defaultResponseEndChunkFunction,
         responseStandardSchema: {
             '~standard': {
                 validate: () => {
@@ -123,6 +131,8 @@ propertyTest.prop([fc.string()])(
             },
             logger: NoOpTestLogger,
             response: standaloneGraphQLServerResponse,
+            responseEndChunkFunction: defaultResponseEndChunkFunction,
+            responseStandardSchema: noOpStandardSchema,
             statusCode: 200,
         })
 

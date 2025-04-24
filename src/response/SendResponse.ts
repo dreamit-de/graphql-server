@@ -24,30 +24,28 @@ export function sendResponse(responseParameters: ResponseParameters): void {
         context,
     )
 
-    if (responseStandardSchema) {
-        try {
-            const validationErrors = getResponseSchemaValidationErrors(
-                responseStandardSchema,
-                executionResult,
-            )
-            if (validationErrors) {
-                executionResult = {
-                    errors: validationErrors.map(
-                        (error) => new GraphQLError(error.message, {}),
-                    ),
-                }
+    try {
+        const validationErrors = getResponseSchemaValidationErrors(
+            responseStandardSchema,
+            executionResult,
+        )
+        if (validationErrors) {
+            executionResult = {
+                errors: validationErrors.map(
+                    (error) => new GraphQLError(error.message, {}),
+                ),
             }
-        } catch (error: unknown) {
-            logger.error(
-                `An error occurred while validating the response: ${error}`,
-                error as TypeError,
-                'ResponseValidationError',
-                context,
-            )
         }
+    } catch (error: unknown) {
+        logger.error(
+            `An error occurred while validating the response: ${error}`,
+            error as TypeError,
+            'ResponseValidationError',
+            context,
+        )
     }
 
-    if (executionResult && executionResult.errors && formatErrorFunction) {
+    if (executionResult.errors) {
         executionResult.errors.map((element) => formatErrorFunction(element))
     }
     if (statusCode) {
@@ -60,10 +58,5 @@ export function sendResponse(responseParameters: ResponseParameters): void {
             response.setHeader(key, String(value))
         }
     }
-
-    if (responseEndChunkFunction) {
-        response.end(responseEndChunkFunction(executionResult))
-    } else {
-        response.end(JSON.stringify(executionResult))
-    }
+    response.end(responseEndChunkFunction(executionResult))
 }

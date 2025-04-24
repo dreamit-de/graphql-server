@@ -86,11 +86,10 @@ export interface GraphQLServerOptions {
         executionResult: ExecutionResult | undefined,
     ) => unknown
     responseStandardSchema: StandardSchemaV1
+    // optional fields
     adjustGraphQLExecutionResult?: (
         parameters: StandaloneResponseParameters,
     ) => GraphQLExecutionResult
-
-    // optional fields
     fieldResolver?: null | undefined | GraphQLFieldResolver<unknown, unknown>
     fetchErrorMessage?: string
     rootValue?: unknown
