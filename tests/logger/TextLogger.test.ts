@@ -19,7 +19,10 @@ class TextTestLogger extends TextLogger {
         )
     }
 
-    prepareLogOutput(logEntry: LogEntry, context?: unknown): string {
+    prepareLogOutput(
+        logEntry: LogEntry,
+        context: Record<string, unknown>,
+    ): string {
         logEntry.stacktrace = logEntry.stacktrace ? 'stacktrace' : undefined
         logEntry.timestamp = testDateString
         const logOutput = super.prepareLogOutput(logEntry, context)
@@ -42,7 +45,10 @@ class NoStacktraceTextTestLogger extends NoStacktraceTextLogger {
         )
     }
 
-    prepareLogOutput(logEntry: LogEntry, context: unknown): string {
+    prepareLogOutput(
+        logEntry: LogEntry,
+        context: Record<string, unknown>,
+    ): string {
         logEntry.timestamp = testDateString
         const logOutput = super.prepareLogOutput(logEntry, context)
         this.logEntries.push(logOutput)
@@ -65,7 +71,7 @@ test.each([new TextTestLogger(), new NoStacktraceTextTestLogger()])(
     'logMessage should work even if no loglevel is provided',
     (logger: TextTestLogger | NoStacktraceTextTestLogger) => {
         logger.logMessage({
-            context: undefined,
+            context: {},
             logMessage: 'test',
         })
         // Then
@@ -78,7 +84,7 @@ test.each([new TextTestLogger(), new NoStacktraceTextTestLogger()])(
 test.each([new TextTestLogger(true), new NoStacktraceTextTestLogger(true)])(
     'Debug entry should be written if debug is enabled',
     (debugLogger: TextTestLogger | NoStacktraceTextTestLogger) => {
-        debugLogger.debug('test', undefined, testDateFunction)
+        debugLogger.debug('test', {}, testDateFunction)
         expect(debugLogger.logEntries.at(0)).toBe(
             `${testDateString} [DEBUG]test-logger-test-service :test`,
         )
@@ -88,7 +94,7 @@ test.each([new TextTestLogger(true), new NoStacktraceTextTestLogger(true)])(
 test.each([new TextTestLogger(), new NoStacktraceTextTestLogger()])(
     'Debug entry should not be written if debug is disabled',
     (defaultLogger: TextTestLogger | NoStacktraceTextTestLogger) => {
-        defaultLogger.debug('test')
+        defaultLogger.debug('test', {})
         expect(defaultLogger.logEntries.length).toBe(0)
     },
 )
@@ -98,13 +104,7 @@ test.each([new TextTestLogger(), new NoStacktraceTextTestLogger()])(
     (defaultLogger: TextTestLogger | NoStacktraceTextTestLogger) => {
         const testError = new Error('error')
         testError.stack = 'stacktrace'
-        defaultLogger.error(
-            'error',
-            testError,
-            'custom',
-            undefined,
-            testDateFunction,
-        )
+        defaultLogger.error('error', {}, testError, 'custom', testDateFunction)
         expect(defaultLogger.logEntries.at(0)).toBe(
             '1001-01-01T00:00:00.000Z [ERROR]test-logger-test-service :error error' +
                 (defaultLogger instanceof NoStacktraceTextTestLogger
@@ -117,7 +117,7 @@ test.each([new TextTestLogger(), new NoStacktraceTextTestLogger()])(
 test.each([new TextTestLogger(), new NoStacktraceTextTestLogger()])(
     'Info entry should be written',
     (defaultLogger: TextTestLogger | NoStacktraceTextTestLogger) => {
-        defaultLogger.info('info', undefined, testDateFunction)
+        defaultLogger.info('info', {}, testDateFunction)
         expect(defaultLogger.logEntries.at(0)).toBe(
             '1001-01-01T00:00:00.000Z [INFO]test-logger-test-service :info',
         )
@@ -127,7 +127,7 @@ test.each([new TextTestLogger(), new NoStacktraceTextTestLogger()])(
 test.each([new TextTestLogger(), new NoStacktraceTextTestLogger()])(
     'Warn entry should be written',
     (defaultLogger: TextTestLogger | NoStacktraceTextTestLogger) => {
-        defaultLogger.warn('warn', undefined, testDateFunction)
+        defaultLogger.warn('warn', {}, testDateFunction)
         expect(defaultLogger.logEntries.at(0)).toBe(
             '1001-01-01T00:00:00.000Z [WARN]test-logger-test-service :warn',
         )

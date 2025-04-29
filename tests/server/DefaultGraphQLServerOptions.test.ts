@@ -40,7 +40,7 @@ test('defaultContextFunction should return the expected formatted error', () => 
                 ...{ logger },
             },
         }),
-    ).toStrictEqual({ headers: JsonContentTypeHeader })
+    ).toStrictEqual({})
     if (logger) {
         expect(logger.logEntries.at(0)?.message).toBe(
             'Calling defaultRequestResponseContextFunction with request [object Object] and response undefined',
@@ -52,6 +52,7 @@ test('defaultExtensions should return undefined', () => {
     const logger = new JsonTestLogger(true)
     expect(
         defaultExtensions({
+            context: {},
             executionResult: {},
             requestInformation: {},
             serverOptions: {
@@ -69,6 +70,7 @@ test('defaultCollectErrorMetrics should log a debug message if logger is availab
     const logger = new JsonTestLogger(true)
     expect(
         defaultCollectErrorMetrics({
+            context: {},
             error: undefined,
             errorName: 'test',
             serverOptions: {

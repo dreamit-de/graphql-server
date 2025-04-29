@@ -41,7 +41,7 @@ export interface GraphQLServerOptions {
         errorName: string
         error: unknown
         serverOptions: GraphQLServerOptions
-        context?: unknown
+        context: Record<string, unknown>
     }) => void
     schemaValidationFunction: (schema: GraphQLSchema) => readonly GraphQLError[]
     parseFunction: (
@@ -63,7 +63,7 @@ export interface GraphQLServerOptions {
         serverOptions: GraphQLServerOptions
         request?: GraphQLServerRequest
         response?: GraphQLServerResponse
-    }) => unknown
+    }) => Record<string, unknown>
     executeFunction: (
         arguments_: ExecutionArgs,
     ) => Promise<ExecutionResult> | ExecutionResult
@@ -71,7 +71,7 @@ export interface GraphQLServerOptions {
         requestInformation: GraphQLRequestInfo
         executionResult: ExecutionResult
         serverOptions: GraphQLServerOptions
-        context?: unknown
+        context: Record<string, unknown>
     }) => Record<string, unknown> | undefined
     methodNotAllowedResponse: (method?: string) => GraphQLExecutionResult
     invalidSchemaResponse: GraphQLExecutionResult

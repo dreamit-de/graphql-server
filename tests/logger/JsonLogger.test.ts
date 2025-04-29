@@ -42,7 +42,7 @@ test('Creating a Logger should work with default options', () => {
 test.each([new JsonTestLogger(true), new NoStacktraceJsonTestLogger(true)])(
     'Debug entry should be written if debug is enabled',
     (debugLogger: JsonTestLogger | NoStacktraceJsonTestLogger) => {
-        debugLogger.debug('test', undefined, testDateFunction)
+        debugLogger.debug('test', {}, testDateFunction)
         const logEntry = debugLogger.logEntries.at(0)
         expect(logEntry?.message).toBe('test')
         expect(logEntry?.level).toBe('DEBUG')
@@ -52,7 +52,7 @@ test.each([new JsonTestLogger(true), new NoStacktraceJsonTestLogger(true)])(
 test.each([new JsonTestLogger(), new NoStacktraceJsonTestLogger()])(
     'Debug entry should not be written if debug is disabled',
     (defaultLogger: JsonTestLogger | NoStacktraceJsonTestLogger) => {
-        defaultLogger.debug('test')
+        defaultLogger.debug('test', {})
         expect(defaultLogger.logEntries.length).toBe(0)
     },
 )
@@ -62,13 +62,7 @@ test.each([new JsonTestLogger(), new NoStacktraceJsonTestLogger()])(
     (defaultLogger: JsonTestLogger | NoStacktraceJsonTestLogger) => {
         const testError = new Error('error')
         testError.stack = 'stacktrace'
-        defaultLogger.error(
-            'error',
-            testError,
-            'custom',
-            undefined,
-            testDateFunction,
-        )
+        defaultLogger.error('error', {}, testError, 'custom', testDateFunction)
         const createdLogEntry = defaultLogger.logEntries.at(0)
         expect(createdLogEntry?.level).toBe('ERROR')
         expect(createdLogEntry?.message).toBe('error error')
@@ -84,7 +78,7 @@ test.each([new JsonTestLogger(), new NoStacktraceJsonTestLogger()])(
 test.each([new JsonTestLogger(), new NoStacktraceJsonTestLogger()])(
     'Info entry should be written',
     (defaultLogger: JsonTestLogger | NoStacktraceJsonTestLogger) => {
-        defaultLogger.info('info', undefined, testDateFunction)
+        defaultLogger.info('info', {}, testDateFunction)
         const createdLogEntry = defaultLogger.logEntries.at(0)
         expect(createdLogEntry?.level).toBe('INFO')
         expect(createdLogEntry?.message).toBe('info')
@@ -94,7 +88,7 @@ test.each([new JsonTestLogger(), new NoStacktraceJsonTestLogger()])(
 test.each([new JsonTestLogger(), new NoStacktraceJsonTestLogger()])(
     'Warn entry should be written',
     (defaultLogger: JsonTestLogger | NoStacktraceJsonTestLogger) => {
-        defaultLogger.warn('warn', undefined, testDateFunction)
+        defaultLogger.warn('warn', {}, testDateFunction)
         const createdLogEntry = defaultLogger.logEntries.at(0)
         expect(createdLogEntry?.level).toBe('WARN')
         expect(createdLogEntry?.message).toBe('warn')

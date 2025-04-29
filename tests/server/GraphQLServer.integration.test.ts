@@ -247,7 +247,7 @@ test(
         expect(responseBody.errors[0].message).toBe(
             'A GraphQL context error occurred!',
         )
-        expect(testLogger.logEntries.at(1)?.query).toBeUndefined()
+        expect(testLogger.logEntries.at(1)?.query).toBe(usersQuery)
         customGraphQLServer.setOptions(INITIAL_GRAPHQL_SERVER_OPTIONS)
     },
 )

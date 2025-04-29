@@ -10,7 +10,7 @@ import { GraphQLServerOptions } from './GraphQLServerOptions'
 
 export function getRequestInformation(
     request: GraphQLServerRequest,
-    context: unknown,
+    context: Record<string, unknown>,
     options: GraphQLServerOptions,
 ): GraphQLRequestInfo | GraphQLExecutionResult {
     const {
@@ -26,9 +26,9 @@ export function getRequestInformation(
         const error = getFirstErrorFromExecutionResult(response)
         logger.error(
             requestCouldNotBeProcessed,
+            context,
             error,
             METHOD_NOT_ALLOWED_ERROR,
-            context,
         )
         collectErrorMetricsFunction({
             context,

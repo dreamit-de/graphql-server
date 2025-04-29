@@ -39,9 +39,9 @@ export function sendResponse(responseParameters: ResponseParameters): void {
     } catch (error: unknown) {
         logger.error(
             `An error occurred while validating the response: ${error}`,
+            context,
             error as TypeError,
             'ResponseValidationError',
-            context,
         )
     }
 

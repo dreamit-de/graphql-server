@@ -16,7 +16,7 @@ test('Should use default response.end behavior if no responseEndChunkFunction if
     const standaloneGraphQLServerResponse =
         new StandaloneGraphQLServerResponse()
     sendResponse({
-        context: undefined,
+        context: {},
         executionResult: {
             data: { message: 'Did work!' },
         },
@@ -45,7 +45,7 @@ test('Should send original response if responseStandardSchema returns a Promise'
     const standaloneGraphQLServerResponse =
         new StandaloneGraphQLServerResponse()
     sendResponse({
-        context: undefined,
+        context: {},
         executionResult: {
             data: { message: 'Did work!' },
         },
@@ -74,7 +74,7 @@ test('Should send response validation error if any exist', () => {
     const standaloneGraphQLServerResponse =
         new StandaloneGraphQLServerResponse()
     sendResponse({
-        context: undefined,
+        context: {},
         executionResult: {
             data: { message: 'Did work!' },
         },
@@ -120,7 +120,7 @@ propertyTest.prop([fc.string()])(
         const standaloneGraphQLServerResponse =
             new StandaloneGraphQLServerResponse()
         sendResponse({
-            context: undefined,
+            context: {},
             executionResult: {
                 data: { message: messageToTest },
             },

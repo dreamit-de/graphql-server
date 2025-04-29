@@ -96,22 +96,22 @@ function defaultFormatErrorFunction(
 
 /**
  * Default context function to store information in context for further use.
- * Default behaviour: return request object. Can be set in options.
+ * Default behaviour: return empty object. Can be set in options.
  * @param contextParameters - The context parameters
  */
 function defaultContextFunction(contextParameters: {
     serverOptions: GraphQLServerOptions
     request?: GraphQLServerRequest
     response?: GraphQLServerResponse
-}): unknown {
+}): Record<string, unknown> {
     const { serverOptions, request, response } = contextParameters
     const logger = serverOptions.logger
     logger.debug(
         'Calling defaultRequestResponseContextFunction with ' +
             `request ${request} and response ${response}`,
-        request,
+        {},
     )
-    return request
+    return {}
 }
 
 /**
@@ -125,7 +125,7 @@ function defaultExtensions(extensionParameters: {
     requestInformation: GraphQLRequestInfo
     executionResult: ExecutionResult
     serverOptions: GraphQLServerOptions
-    context?: unknown
+    context: Record<string, unknown>
 }): Record<string, unknown> | undefined {
     const { requestInformation, executionResult, serverOptions, context } =
         extensionParameters
@@ -146,7 +146,7 @@ function defaultCollectErrorMetrics(errorParameters: {
     errorName: string
     error: unknown
     serverOptions: GraphQLServerOptions
-    context?: unknown
+    context: Record<string, unknown>
 }): void {
     const { errorName, error, serverOptions, context } = errorParameters
     const { logger, metricsClient } = serverOptions

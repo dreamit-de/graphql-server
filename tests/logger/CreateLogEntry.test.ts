@@ -145,7 +145,7 @@ test.each`
         expectedServiceName,
     }) => {
         const logEntry = createLogEntry({
-            context: undefined,
+            context: {},
             error,
             logMessage,
             loggerName: 'test-logger',
@@ -175,7 +175,7 @@ test.each`
 
 test('Should use customErrorName instead or error.name if customErrorName is set', () => {
     const logEntry = createLogEntry({
-        context: undefined,
+        context: {},
         customErrorName: 'MyCustomError',
         error: graphQLError,
         logMessage: 'A GraphQLError message',
@@ -205,7 +205,7 @@ test(
 
 test('Should use fallback values for loggerName, serviceName and level if they are not set', () => {
     const logEntry = createLogEntry({
-        context: undefined,
+        context: {},
         logMessage: 'A GraphQLError message',
     })
     expect(logEntry.message).toBe('A GraphQLError message')
@@ -216,7 +216,7 @@ test('Should use fallback values for loggerName, serviceName and level if they a
 
 test('Should remove white spaces at the beginning of the message', () => {
     const logEntry = createLogEntry({
-        context: undefined,
+        context: {},
         error: graphQLError,
         logMessage: '',
     })
@@ -267,7 +267,7 @@ test(
         'in error extensions and serviceName match',
     () => {
         const logEntry = createLogEntry({
-            context: undefined,
+            context: {},
             error: graphQLError,
             logMessage: '',
             loglevel: 'ERROR',

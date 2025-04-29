@@ -47,6 +47,7 @@ test(
                 if (serverOptions.logger) {
                     serverOptions.logger.info(
                         'Calling requestResponseContextFunction in test',
+                        {},
                     )
                 }
                 return {

@@ -48,7 +48,7 @@ export class JsonLogger implements Logger {
 
     debug(
         logMessage: string,
-        context?: unknown,
+        context: Record<string, unknown>,
         dateFunction?: DateFunction,
     ): void {
         if (this.debugEnabled) {
@@ -63,9 +63,9 @@ export class JsonLogger implements Logger {
 
     error(
         logMessage: string,
+        context: Record<string, unknown>,
         error: Error,
         customErrorName: string,
-        context?: unknown,
         dateFunction?: DateFunction,
     ): void {
         this.logMessage({
@@ -80,7 +80,7 @@ export class JsonLogger implements Logger {
 
     info(
         logMessage: string,
-        context?: unknown,
+        context: Record<string, unknown>,
         dateFunction?: DateFunction,
     ): void {
         this.logMessage({
@@ -93,7 +93,7 @@ export class JsonLogger implements Logger {
 
     warn(
         logMessage: string,
-        context?: unknown,
+        context: Record<string, unknown>,
         dateFunction?: DateFunction,
     ): void {
         this.logMessage({

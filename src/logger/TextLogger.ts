@@ -47,7 +47,7 @@ export class TextLogger implements Logger {
 
     debug(
         logMessage: string,
-        context?: unknown,
+        context: Record<string, unknown>,
         dateFunction?: DateFunction,
     ): void {
         if (this.debugEnabled) {
@@ -62,9 +62,9 @@ export class TextLogger implements Logger {
 
     error(
         logMessage: string,
+        context: Record<string, unknown>,
         error: Error,
         customErrorName: string,
-        context?: unknown,
         dateFunction?: DateFunction,
     ): void {
         this.logMessage({
@@ -79,7 +79,7 @@ export class TextLogger implements Logger {
 
     info(
         logMessage: string,
-        context?: unknown,
+        context: Record<string, unknown>,
         dateFunction?: DateFunction,
     ): void {
         this.logMessage({
@@ -92,7 +92,7 @@ export class TextLogger implements Logger {
 
     warn(
         logMessage: string,
-        context?: unknown,
+        context: Record<string, unknown>,
         dateFunction?: DateFunction,
     ): void {
         this.logMessage({
@@ -139,10 +139,13 @@ export class TextLogger implements Logger {
      * Prepares the text used in the log output.
      * Can be overwritten if it does not match expected output format.
      * @param {LogEntry} logEntry - The extracted log information.
-     * @param {unknown} context - The context information
+     * @param {unknown} _context - The context information
      */
     // eslint-disable-next-line no-unused-vars
-    prepareLogOutput(logEntry: LogEntry, context?: unknown): string {
+    prepareLogOutput(
+        logEntry: LogEntry,
+        _context: Record<string, unknown>,
+    ): string {
         return (
             `${logEntry.timestamp} [${logEntry.level.toUpperCase()}]` +
             `${this.loggerName}-${this.serviceName} :` +

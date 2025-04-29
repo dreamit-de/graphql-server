@@ -24,15 +24,14 @@ export function createLogEntry(logEntryInput: LogEntryInput): LogEntry {
     }
 
     // If there is a serviceName in the context, use it as serviceName for the LogEntry
-    const contextRecord = context as Record<string, unknown>
-    if (contextRecord && contextRecord.serviceName) {
-        logEntry.serviceName = contextRecord.serviceName as string
-        if (loglevel === 'ERROR' && contextRecord.serviceName !== serviceName) {
+    if (context.serviceName) {
+        logEntry.serviceName = context.serviceName as string
+        if (loglevel === 'ERROR' && context.serviceName !== serviceName) {
             logEntry.level = 'WARN'
         }
     }
-    if (contextRecord && contextRecord.query) {
-        logEntry.query = contextRecord.query as string
+    if (context.query) {
+        logEntry.query = context.query as string
     }
 
     if (error) {

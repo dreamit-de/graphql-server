@@ -238,7 +238,9 @@ test('Should adjust execution result with data from mutation context info', asyn
         },
 
         collectErrorMetricsFunction: defaultCollectErrorMetrics,
-        contextFunction: (): unknown => ({ authHeader: '123456789' }),
+        contextFunction: (): Record<string, unknown> => ({
+            authHeader: '123456789',
+        }),
         extractInformationFromRequest: extractInformationFromRequest,
         logger: logger,
         metricsClient: new SimpleMetricsClient(),
