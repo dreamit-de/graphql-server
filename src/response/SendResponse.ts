@@ -51,12 +51,48 @@ export function sendResponse(responseParameters: ResponseParameters): void {
     if (statusCode) {
         response.statusCode = statusCode
     }
-    response.setHeader('Content-Type', 'application/json; charset=utf-8')
+
+    if (response.setHeader) {
+        response.setHeader('Content-Type', 'application/json; charset=utf-8')
+    } else if (response.header) {
+        response.header('Content-Type', 'application/json; charset=utf-8')
+    } else {
+        logger.error(
+            'Cannot set content-type header because neither setHeader nor header function is available',
+            context,
+            new Error('MissingHeaderFunction'),
+        )
+    }
+
     if (customHeaders) {
         for (const [key, value] of Object.entries(customHeaders)) {
             logger.debug(`Set custom header ${key} to ${value}`, context)
-            response.setHeader(key, String(value))
+
+            if (response.setHeader) {
+                response.setHeader(key, String(value))
+            } else if (response.header) {
+                response.header(key, String(value))
+            } else {
+                logger.error(
+                    'Cannot set custom header because neither setHeader nor header function is available',
+                    context,
+                    new Error('MissingHeaderFunction'),
+                )
+                // If neither setHeader nor header function is available it does not make sense to continue
+                break
+            }
         }
     }
-    response.end(responseEndChunkFunction(executionResult))
+
+    if (response.end) {
+        response.end(responseEndChunkFunction(executionResult))
+    } else if (response.send) {
+        response.send(responseEndChunkFunction(executionResult))
+    } else {
+        logger.error(
+            'Cannot send response because neither end nor send function is available',
+            context,
+            new Error('MissingSendFunction'),
+        )
+    }
 }
