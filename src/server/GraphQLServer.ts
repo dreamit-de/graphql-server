@@ -154,7 +154,7 @@ export class GraphQLServer {
         })
         metricsClient.increaseRequestThroughput(context)
         const requestInformation = isGraphQLServerRequest(request)
-            ? getRequestInformation(request, context, this.options)
+            ? await getRequestInformation(request, context, this.options)
             : request
         if ('query' in requestInformation) {
             context.query = requestInformation.query

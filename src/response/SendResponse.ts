@@ -38,7 +38,7 @@ export function sendResponse(responseParameters: ResponseParameters): void {
         }
     } catch (error: unknown) {
         logger.error(
-            `An error occurred while validating the response: ${error}`,
+            'An error occurred while validating the response:',
             context,
             error as TypeError,
             'ResponseValidationError',
@@ -58,9 +58,10 @@ export function sendResponse(responseParameters: ResponseParameters): void {
         response.header('Content-Type', 'application/json; charset=utf-8')
     } else {
         logger.error(
-            'Cannot set content-type header because neither setHeader nor header function is available',
+            'Cannot set content-type header because neither setHeader nor header function is available:',
             context,
             new Error('MissingHeaderFunction'),
+            'MissingHeaderFunctionError',
         )
     }
 
@@ -74,9 +75,10 @@ export function sendResponse(responseParameters: ResponseParameters): void {
                 response.header(key, String(value))
             } else {
                 logger.error(
-                    'Cannot set custom header because neither setHeader nor header function is available',
+                    'Cannot set custom header because neither setHeader nor header function is available:',
                     context,
                     new Error('MissingHeaderFunction'),
+                    'MissingHeaderFunctionError',
                 )
                 // If neither setHeader nor header function is available it does not make sense to continue
                 break
@@ -90,9 +92,10 @@ export function sendResponse(responseParameters: ResponseParameters): void {
         response.send(responseEndChunkFunction(executionResult))
     } else {
         logger.error(
-            'Cannot send response because neither end nor send function is available',
+            'Cannot send response because neither end nor send function is available:',
             context,
             new Error('MissingSendFunction'),
+            'MissingSendFunctionError',
         )
     }
 }

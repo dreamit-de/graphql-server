@@ -32,7 +32,7 @@ export interface GraphQLServerOptions {
     logger: Logger
     extractInformationFromRequest: (
         request: GraphQLServerRequest,
-    ) => GraphQLRequestInfo
+    ) => Promise<GraphQLRequestInfo>
     sendResponse: (responseParameters: ResponseParameters) => void
     metricsClient: MetricsClient
     shouldUpdateSchemaFunction: (schema?: GraphQLSchema) => boolean

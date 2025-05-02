@@ -3,9 +3,9 @@ import { requestForQuery, usersQuery } from '@dreamit/graphql-testing'
 import { defaultGraphQLServerOptions, getRequestInformation } from 'src'
 import { expect, test } from 'vitest'
 
-test('Should get Request information when options are not set', () => {
+test('Should get Request information when options are not set', async () => {
     expect(
-        getRequestInformation(
+        await getRequestInformation(
             requestForQuery(usersQuery),
             {},
             defaultGraphQLServerOptions,

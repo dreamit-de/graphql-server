@@ -6,13 +6,13 @@ import { GraphQLError } from 'graphql'
 import { URLSearchParams } from 'node:url'
 import { getContentType } from './GetContentType'
 
-function extractInformationFromRequest(
+async function extractInformationFromRequest(
     request: GraphQLServerRequest,
-): GraphQLRequestInfo {
+): Promise<GraphQLRequestInfo> {
     const extractedURLParameters = extractInformationFromUrlParameters(
         request.url ?? '',
     )
-    const extractedBody = extractInformationFromBody(request)
+    const extractedBody = await extractInformationFromBody(request)
     return {
         error: extractedBody.error,
         operationName:
@@ -41,19 +41,21 @@ function extractInformationFromUrlParameters(url: string): GraphQLRequestInfo {
 }
 
 /** Extracts information from request body. Based on implementation from express-graphql */
-function extractInformationFromBody(
+async function extractInformationFromBody(
     request: GraphQLServerRequest,
-): GraphQLRequestInfo {
+): Promise<GraphQLRequestInfo> {
     // Do not try to read body for GET requests
     if (request.method && request.method === 'GET') {
         return {}
     }
 
-    const { body } = request
-    const bodyIsString = typeof body === 'string'
+    let { body } = request
+    if (!body && request.text) {
+        body = await request.text()
+    }
     const bodyIsObject = typeof body === 'object'
 
-    if (!body || (!bodyIsString && !bodyIsObject)) {
+    if (!body || (typeof body !== 'string' && !bodyIsObject)) {
         return {
             error: {
                 graphQLError: new GraphQLError(
@@ -96,9 +98,11 @@ function extractInformationFromBody(
     const contentType = getContentType(contentTypeFromHeader)
     switch (contentType) {
         case 'application/graphql':
-            return { query: bodyIsString ? body : JSON.stringify(body) }
+            return {
+                query: typeof body === 'string' ? body : JSON.stringify(body),
+            }
         case 'application/json':
-            if (bodyIsString) {
+            if (typeof body === 'string') {
                 try {
                     const bodyAsJson = JSON.parse(body)
                     return {

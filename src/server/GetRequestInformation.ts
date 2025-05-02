@@ -8,11 +8,11 @@ import { requestCouldNotBeProcessed } from '../request/RequestConstants'
 import { getFirstErrorFromExecutionResult } from '../response/GraphQLExecutionResult'
 import { GraphQLServerOptions } from './GraphQLServerOptions'
 
-export function getRequestInformation(
+export async function getRequestInformation(
     request: GraphQLServerRequest,
     context: Record<string, unknown>,
     options: GraphQLServerOptions,
-): GraphQLRequestInfo | GraphQLExecutionResult {
+): Promise<GraphQLRequestInfo | GraphQLExecutionResult> {
     const {
         logger,
         collectErrorMetricsFunction,
@@ -40,7 +40,7 @@ export function getRequestInformation(
     }
 
     // Extract graphql request information (query, variables, operationName) from request
-    const requestInformation = extractInformationFromRequest(request)
+    const requestInformation = await extractInformationFromRequest(request)
     logger.debug(
         `Extracted request information is ${JSON.stringify(requestInformation)}`,
         context,
