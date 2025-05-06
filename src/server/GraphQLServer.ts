@@ -72,7 +72,7 @@ export class GraphQLServer {
         const context = contextFunction({ serverOptions: this.options })
 
         logger.info('Trying to set graphql schema', context)
-        logger.debug(`Schema is  ${JSON.stringify(schema)}`, context)
+        logger.debug(`Schema is ${JSON.stringify(schema)}`, context)
         if (this.options.shouldUpdateSchemaFunction(schema)) {
             this.options.schema = schema
             // Validate schema
