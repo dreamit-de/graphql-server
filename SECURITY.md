@@ -12,10 +12,9 @@ Please consider using only supported versions.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 4.12.x  | :white_check_mark: |
-| < 4.12  | :x:                |
-| 3.3.x   | :white_check_mark: |
-| < 3.3   | :x:                |
+| 5.x.x   | :white_check_mark: |
+| 4.13.x  | :white_check_mark: |
+| < 4.13  | :x:                |
 
 ## Reporting a Vulnerability
 
