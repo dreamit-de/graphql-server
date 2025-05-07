@@ -326,7 +326,7 @@ export interface GraphQLServerOptions {
 
 ## Available options
 
-The `GraphQLServer` accepts the following `GraphQLServerOptions`. When calling the constructor or `setOptions` function useful defaults from `defaultGraphQLServerOptions` are set and overwritten by the options provided in the constructor/function parameter.
+The `GraphQLServer` accepts the following `GraphQLServerOptions`. When calling the constructor or `setOptions` function, useful defaults from `defaultGraphQLServerOptions` are set and overwritten by the options provided in the constructor/function parameter.
 
 ### GraphQL related options
 
