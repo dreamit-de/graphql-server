@@ -326,7 +326,7 @@ export interface GraphQLServerOptions {
 
 ## Available options
 
-The `GraphQLServer` accepts the following `GraphQLServerOptions`. When calling the constructor or `setOptions` function useful defaults from `defaultGraphQLServerOptions` are set and overwritten by the options provided in the constructor/function parameter.
+The `GraphQLServer` accepts the following `GraphQLServerOptions`. When calling the constructor or `setOptions` function, useful defaults from `defaultGraphQLServerOptions` are set and overwritten by the options provided in the constructor/function parameter.
 
 ### GraphQL related options
 
@@ -403,8 +403,7 @@ The `GraphQLServer` accepts the following `GraphQLServerOptions`. When calling t
 
 ### Metrics options
 
-- **`collectErrorMetricsFunction:`**: Given an error name as string, error as `unknown`, `GraphQLServerOptions` and context as `Record<string, unknown>` this function can be used to trigger collecting error metrics. Default implementation is `defaultCollectErrorMetrics` that increase
-  the error counter for the given errorName or Error by 1.
+- **`collectErrorMetricsFunction:`**: Given an error name as string, error as `unknown`, `GraphQLServerOptions` and context as `Record<string, unknown>`, this function can be used to trigger collecting error metrics. Default implementation is `defaultCollectErrorMetrics` which increases the error counter for the given errorName or Error by 1.
 
 ### Response Validation options
 
