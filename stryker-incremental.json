@@ -13487,6 +13487,70 @@
           }
         },
         {
+          "id": "337",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "statusReason": "expected undefined to be '' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 37,
+          "static": false,
+          "killedBy": [
+            "127"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "35",
+            "69",
+            "70",
+            "71",
+            "72",
+            "87",
+            "88",
+            "95",
+            "127",
+            "128",
+            "129",
+            "130",
+            "131",
+            "132"
+          ],
+          "location": {
+            "end": {
+              "column": 71,
+              "line": 8
+            },
+            "start": {
+              "column": 9,
+              "line": 5
+            }
+          }
+        },
+        {
           "id": "338",
           "mutatorName": "ConditionalExpression",
           "replacement": "false",
@@ -13547,6 +13611,130 @@
             "start": {
               "column": 9,
               "line": 5
+            }
+          }
+        },
+        {
+          "id": "339",
+          "mutatorName": "LogicalOperator",
+          "replacement": "contentType || contentType.includes('application/graphql') || contentType.includes('application/json') || contentType.includes('application/x-www-form-urlencoded')",
+          "statusReason": "Cannot read properties of undefined (reading 'includes')",
+          "status": "Killed",
+          "testsCompleted": 37,
+          "static": false,
+          "killedBy": [
+            "127"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "35",
+            "69",
+            "70",
+            "71",
+            "72",
+            "87",
+            "88",
+            "95",
+            "127",
+            "128",
+            "129",
+            "130",
+            "131",
+            "132"
+          ],
+          "location": {
+            "end": {
+              "column": 71,
+              "line": 8
+            },
+            "start": {
+              "column": 9,
+              "line": 5
+            }
+          }
+        },
+        {
+          "id": "340",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "statusReason": "expected 'application/unknown' to be '' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 37,
+          "static": false,
+          "killedBy": [
+            "131"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "12",
+            "13",
+            "14",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "69",
+            "70",
+            "71",
+            "72",
+            "87",
+            "88",
+            "95",
+            "128",
+            "129",
+            "130",
+            "131",
+            "132"
+          ],
+          "location": {
+            "end": {
+              "column": 70,
+              "line": 8
+            },
+            "start": {
+              "column": 10,
+              "line": 6
             }
           }
         },
@@ -13731,6 +13919,150 @@
           }
         },
         {
+          "id": "344",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "statusReason": "expected 'application/unknown' to be '' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 37,
+          "static": false,
+          "killedBy": [
+            "131"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "12",
+            "13",
+            "14",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "69",
+            "70",
+            "71",
+            "72",
+            "87",
+            "88",
+            "95",
+            "128",
+            "129",
+            "130",
+            "131",
+            "132"
+          ],
+          "location": {
+            "end": {
+              "column": 52,
+              "line": 6
+            },
+            "start": {
+              "column": 31,
+              "line": 6
+            }
+          }
+        },
+        {
+          "id": "345",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "statusReason": "expected 'application/unknown' to be '' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 33,
+          "static": false,
+          "killedBy": [
+            "131"
+          ],
+          "coveredBy": [
+            "0",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "12",
+            "13",
+            "14",
+            "19",
+            "20",
+            "22",
+            "24",
+            "25",
+            "26",
+            "27",
+            "29",
+            "30",
+            "31",
+            "32",
+            "69",
+            "87",
+            "88",
+            "95",
+            "129",
+            "130",
+            "131",
+            "132"
+          ],
+          "location": {
+            "end": {
+              "column": 52,
+              "line": 7
+            },
+            "start": {
+              "column": 34,
+              "line": 7
+            }
+          }
+        },
+        {
+          "id": "346",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "statusReason": "expected 'application/unknown' to be '' // Object.is equality",
+          "status": "Killed",
+          "testsCompleted": 5,
+          "static": false,
+          "killedBy": [
+            "131"
+          ],
+          "coveredBy": [
+            "8",
+            "19",
+            "20",
+            "130",
+            "131"
+          ],
+          "location": {
+            "end": {
+              "column": 69,
+              "line": 8
+            },
+            "start": {
+              "column": 34,
+              "line": 8
+            }
+          }
+        },
+        {
           "id": "347",
           "mutatorName": "BlockStatement",
           "replacement": "{}",
@@ -13789,42 +14121,13 @@
           }
         },
         {
-          "id": "346",
-          "mutatorName": "StringLiteral",
-          "replacement": "\"\"",
-          "statusReason": "expected 'application/unknown' to be '' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 5,
-          "killedBy": [
-            "131"
-          ],
-          "coveredBy": [
-            "8",
-            "19",
-            "20",
-            "130",
-            "131"
-          ],
-          "location": {
-            "end": {
-              "column": 69,
-              "line": 8
-            },
-            "start": {
-              "column": 34,
-              "line": 8
-            }
-          }
-        },
-        {
           "id": "348",
           "mutatorName": "StringLiteral",
           "replacement": "\"Stryker was here!\"",
           "statusReason": "expected 'Stryker was here!' to be '' // Object.is equality",
           "status": "Killed",
-          "static": false,
           "testsCompleted": 5,
+          "static": false,
           "killedBy": [
             "127"
           ],
@@ -13844,309 +14147,6 @@
             "start": {
               "column": 12,
               "line": 12
-            }
-          }
-        },
-        {
-          "id": "340",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "true",
-          "statusReason": "expected 'application/unknown' to be '' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 37,
-          "killedBy": [
-            "131"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "12",
-            "13",
-            "14",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "69",
-            "70",
-            "71",
-            "72",
-            "87",
-            "88",
-            "95",
-            "128",
-            "129",
-            "130",
-            "131",
-            "132"
-          ],
-          "location": {
-            "end": {
-              "column": 70,
-              "line": 8
-            },
-            "start": {
-              "column": 10,
-              "line": 6
-            }
-          }
-        },
-        {
-          "id": "345",
-          "mutatorName": "StringLiteral",
-          "replacement": "\"\"",
-          "statusReason": "expected 'application/unknown' to be '' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 33,
-          "killedBy": [
-            "131"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "12",
-            "13",
-            "14",
-            "19",
-            "20",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "69",
-            "87",
-            "88",
-            "95",
-            "129",
-            "130",
-            "131",
-            "132"
-          ],
-          "location": {
-            "end": {
-              "column": 52,
-              "line": 7
-            },
-            "start": {
-              "column": 34,
-              "line": 7
-            }
-          }
-        },
-        {
-          "id": "344",
-          "mutatorName": "StringLiteral",
-          "replacement": "\"\"",
-          "statusReason": "expected 'application/unknown' to be '' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 37,
-          "killedBy": [
-            "131"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "12",
-            "13",
-            "14",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "69",
-            "70",
-            "71",
-            "72",
-            "87",
-            "88",
-            "95",
-            "128",
-            "129",
-            "130",
-            "131",
-            "132"
-          ],
-          "location": {
-            "end": {
-              "column": 52,
-              "line": 6
-            },
-            "start": {
-              "column": 31,
-              "line": 6
-            }
-          }
-        },
-        {
-          "id": "339",
-          "mutatorName": "LogicalOperator",
-          "replacement": "contentType || contentType.includes('application/graphql') || contentType.includes('application/json') || contentType.includes('application/x-www-form-urlencoded')",
-          "statusReason": "Cannot read properties of undefined (reading 'includes')",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 37,
-          "killedBy": [
-            "127"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "35",
-            "69",
-            "70",
-            "71",
-            "72",
-            "87",
-            "88",
-            "95",
-            "127",
-            "128",
-            "129",
-            "130",
-            "131",
-            "132"
-          ],
-          "location": {
-            "end": {
-              "column": 71,
-              "line": 8
-            },
-            "start": {
-              "column": 9,
-              "line": 5
-            }
-          }
-        },
-        {
-          "id": "337",
-          "mutatorName": "ConditionalExpression",
-          "replacement": "true",
-          "statusReason": "expected undefined to be '' // Object.is equality",
-          "status": "Killed",
-          "static": false,
-          "testsCompleted": 37,
-          "killedBy": [
-            "127"
-          ],
-          "coveredBy": [
-            "0",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "19",
-            "20",
-            "21",
-            "22",
-            "24",
-            "25",
-            "26",
-            "27",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "35",
-            "69",
-            "70",
-            "71",
-            "72",
-            "87",
-            "88",
-            "95",
-            "127",
-            "128",
-            "129",
-            "130",
-            "131",
-            "132"
-          ],
-          "location": {
-            "end": {
-              "column": 71,
-              "line": 8
-            },
-            "start": {
-              "column": 9,
-              "line": 5
             }
           }
         }
