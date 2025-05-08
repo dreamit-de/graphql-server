@@ -6,7 +6,7 @@ import {
 import { GraphQLError, GraphQLFormattedError } from 'graphql'
 
 export interface StandaloneResponseParameters {
-    readonly context: unknown
+    readonly context: Record<string, unknown>
     readonly executionResult?: GraphQLExecutionResult
     readonly logger: Logger
     readonly formatErrorFunction: (error: GraphQLError) => GraphQLFormattedError

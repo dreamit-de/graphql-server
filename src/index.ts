@@ -12,14 +12,9 @@ export {
 } from './error/RemoveValidationRecommendationsFromErrors'
 
 export { createLogEntry } from './logger/CreateLogEntry'
-export { createISOTimestamp, createTimestamp } from './logger/CreateTimestamp'
+export { createISOTimestamp } from './logger/CreateTimestamp'
 export { JsonLogger } from './logger/JsonLogger'
-// NoLogger should be removed in v5, it is available in @dreamit/graphql-testing
-export { NoLogger } from './logger/NoLogger'
-export {
-    VARIABLES_IN_MESSAGE_REGEX,
-    sanitizeMessage,
-} from './logger/SanitizeMessage'
+export { sanitizeMessage } from './logger/SanitizeMessage'
 export { TextLogger } from './logger/TextLogger'
 export { truncateLogMessage } from './logger/TruncateLogMessage'
 // Note: Stacktrace logger need their base class to be exported first before referencing it.
@@ -43,12 +38,12 @@ export { sendResponse } from './response/SendResponse'
 export { StandaloneResponseParameters } from './response/StandaloneResponseParameters'
 
 export {
-    DefaultGraphQLServerOptions,
     defaultCollectErrorMetrics,
     defaultContextFunction,
     defaultExecutionResultErrorMessage,
     defaultExtensions,
     defaultFormatErrorFunction,
+    defaultGraphQLServerOptions,
     defaultGraphqlExecutionErrorMessage,
     defaultMethodNotAllowedResponse,
     defaultMissingQueryParameterResponse,
@@ -58,9 +53,9 @@ export {
     defaultValidationErrorMessage,
     fallbackTextLogger,
     invalidSchemaResponse,
+    noOpStandardSchema,
 } from './server/DefaultGraphQLServerOptions'
 export { getRequestInformation } from './server/GetRequestInformation'
 export { GraphQLServer } from './server/GraphQLServer'
 export { GraphQLServerOptions } from './server/GraphQLServerOptions'
 export { getResponseSchemaValidationErrors } from './validation/GetResponseSchemaValidationErrors'
-export { StandardSchemaV1 } from './validation/StandardSchemaV1'

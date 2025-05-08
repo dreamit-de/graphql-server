@@ -20,6 +20,7 @@ import {
 } from '@dreamit/graphql-testing'
 import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql'
 import {
+    defaultGraphQLServerOptions,
     GraphQLServer,
     GraphQLServerOptions,
     NoMetricsClient,
@@ -36,6 +37,14 @@ test('Should get correct metrics for SimpleMetricsClient', async () => {
     const metricsClient = new SimpleMetricsClient()
     customGraphQLServer.setMetricsClient(metricsClient)
     await runMetricsTest(metricsClient, false)
+})
+
+test('SimpleMetricsClient does not increase errors for unknown label', () => {
+    const metricsClient = new SimpleMetricsClient()
+    metricsClient.increaseErrors('unknownLabel')
+    expect(metricsClient.getErrorCount('unknownLabel')).toBe(
+        'graphql_server_errors{errorClass="unknownLabel"} undefined',
+    )
 })
 
 test('Should get no metrics for NoMetricsClient', async () => {
@@ -360,6 +369,7 @@ function getInitialGraphQLServerOptions(
     metricsClient: MetricsClient,
 ): GraphQLServerOptions {
     return {
+        ...defaultGraphQLServerOptions,
         customValidationRules: [NoSchemaIntrospectionCustomRule],
         logger: NoOpTestLogger,
         metricsClient: metricsClient,

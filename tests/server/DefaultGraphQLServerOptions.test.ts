@@ -1,23 +1,23 @@
+// eslint-disable no-useless-spread
 import { JsonContentTypeHeader } from '@dreamit/graphql-testing'
 import { GraphQLError } from 'graphql'
 import {
-    DefaultGraphQLServerOptions,
     defaultCollectErrorMetrics,
     defaultContextFunction,
     defaultExtensions,
     defaultFormatErrorFunction,
+    defaultGraphQLServerOptions,
     defaultOnlyQueryInGetRequestsResponse,
 } from 'src'
 import { expect, test } from 'vitest'
 import { JsonTestLogger } from '../TestHelpers'
 
-test('Creating DefaultGraphQLServerOptions should provide useful defaults', () => {
-    const defaultGraphqlServerOptions = new DefaultGraphQLServerOptions()
-    expect(defaultGraphqlServerOptions.customValidationRules).toStrictEqual([])
-    expect(defaultGraphqlServerOptions.removeValidationRecommendations).toBe(
+test('Using defaultGraphQLServerOptions should provide useful defaults', () => {
+    expect(defaultGraphQLServerOptions.customValidationRules).toStrictEqual([])
+    expect(defaultGraphQLServerOptions.removeValidationRecommendations).toBe(
         true,
     )
-    expect(defaultGraphqlServerOptions.reassignAggregateError).toBe(false)
+    expect(defaultGraphQLServerOptions.reassignAggregateError).toBe(false)
 })
 
 test('defaultFormatErrorFunction should return the expected formatted error', () => {
@@ -28,69 +28,61 @@ test('defaultFormatErrorFunction should return the expected formatted error', ()
     })
 })
 
-test.each([undefined, new JsonTestLogger(true)])(
-    'defaultContextFunction should return the expected formatted error',
-    (logger: JsonTestLogger | undefined) => {
-        expect(
-            defaultContextFunction({
-                request: {
-                    headers: JsonContentTypeHeader,
-                },
-                serverOptions: {
-                    logger,
-                },
-            }),
-        ).toStrictEqual({ headers: JsonContentTypeHeader })
+test('defaultContextFunction should return the expected formatted error', () => {
+    const logger = new JsonTestLogger(true)
+    expect(
+        defaultContextFunction({
+            request: {
+                headers: JsonContentTypeHeader,
+            },
+            serverOptions: {
+                ...defaultGraphQLServerOptions,
+                ...{ logger },
+            },
+        }),
+    ).toStrictEqual({})
+    if (logger) {
+        expect(logger.logEntries.at(0)?.message).toBe(
+            'Calling defaultRequestResponseContextFunction with request [object Object] and response undefined',
+        )
+    }
+})
 
-        if (logger) {
-            expect(logger.logEntries.at(0)?.message).toBe(
-                'Calling defaultRequestResponseContextFunction with request [object Object] and response undefined',
-            )
-        }
-    },
-)
+test('defaultExtensions should return undefined', () => {
+    const logger = new JsonTestLogger(true)
+    expect(
+        defaultExtensions({
+            context: {},
+            executionResult: {},
+            requestInformation: {},
+            serverOptions: {
+                ...defaultGraphQLServerOptions,
+                ...{ logger },
+            },
+        }),
+    ).toBeUndefined()
+    expect(logger.logEntries.at(0)?.message).toBe(
+        'Calling defaultExtensions for requestInfo {} and executionResult {}',
+    )
+})
 
-test.each([undefined, new JsonTestLogger(true)])(
-    'defaultExtensions should return undefined',
-    (logger: JsonTestLogger | undefined) => {
-        expect(
-            defaultExtensions({
-                executionResult: {},
-                requestInformation: {},
-                serverOptions: {
-                    logger,
-                },
-            }),
-        ).toBeUndefined()
-
-        if (logger) {
-            expect(logger.logEntries.at(0)?.message).toBe(
-                'Calling defaultExtensions for requestInfo {} and executionResult {}',
-            )
-        }
-    },
-)
-
-test.each([undefined, new JsonTestLogger(true)])(
-    'defaultCollectErrorMetrics should log a debug message if logger is available',
-    (logger: JsonTestLogger | undefined) => {
-        expect(
-            defaultCollectErrorMetrics({
-                error: undefined,
-                errorName: 'test',
-                serverOptions: {
-                    logger,
-                },
-            }),
-        ).toBeUndefined()
-
-        if (logger) {
-            expect(logger.logEntries.at(0)?.message).toBe(
-                'Calling defaultCollectErrorMetrics with error undefined and errorName test',
-            )
-        }
-    },
-)
+test('defaultCollectErrorMetrics should log a debug message if logger is available', () => {
+    const logger = new JsonTestLogger(true)
+    expect(
+        defaultCollectErrorMetrics({
+            context: {},
+            error: undefined,
+            errorName: 'test',
+            serverOptions: {
+                ...defaultGraphQLServerOptions,
+                ...{ logger },
+            },
+        }),
+    ).toBeUndefined()
+    expect(logger.logEntries.at(0)?.message).toBe(
+        'Calling defaultCollectErrorMetrics with error undefined and errorName test',
+    )
+})
 
 test('defaultOnlyQueryInGetRequestsResponse should return the expected execution result', () => {
     expect(defaultOnlyQueryInGetRequestsResponse('POST')).toStrictEqual({

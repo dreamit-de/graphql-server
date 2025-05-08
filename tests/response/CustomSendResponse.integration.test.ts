@@ -7,7 +7,6 @@ import {
     userSchemaResolvers,
     usersQuery,
 } from '@dreamit/graphql-testing'
-import { Buffer } from 'node:buffer'
 import { GraphQLServer } from 'src'
 import { expect, test } from 'vitest'
 import { INITIAL_GRAPHQL_SERVER_OPTIONS, sendRequest } from '../TestHelpers'
@@ -48,6 +47,7 @@ test(
                 if (serverOptions.logger) {
                     serverOptions.logger.info(
                         'Calling requestResponseContextFunction in test',
+                        {},
                     )
                 }
                 return {
@@ -78,13 +78,21 @@ function customSendResponse(responseParameters: ResponseParameters): void {
     if (statusCode) {
         response.statusCode = statusCode
     }
-    response.setHeader('Content-Type', 'application/json; charset=utf-8')
+    if (response.setHeader) {
+        response.setHeader('Content-Type', 'application/json; charset=utf-8')
+    } else if (response.header) {
+        response.header('Content-Type', 'application/json; charset=utf-8')
+    }
     const contextRecord = context as Record<string, unknown>
     if (contextRecord && contextRecord.customText) {
-        response.end(
-            Buffer.from(JSON.stringify(contextRecord.customText), 'utf8'),
-        )
-    } else {
-        response.end(Buffer.from(JSON.stringify(executionResult), 'utf8'))
+        if (response.end) {
+            response.end(JSON.stringify(contextRecord.customText))
+        } else if (response.send) {
+            response.send(JSON.stringify(contextRecord.customText))
+        }
+    } else if (response.end) {
+        response.end(JSON.stringify(executionResult))
+    } else if (response.send) {
+        response.send(JSON.stringify(executionResult))
     }
 }

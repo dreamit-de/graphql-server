@@ -22,8 +22,9 @@ on them.
 | ------------------ | :--------------------: | :-------------------------: | :-------------: | :----------------------------------------------------------------------------------------: | ------------------ |
 | ~~^15.2.0~~        |        ~~1.x~~         |          ~~n.a.~~           |    ~~n.a.~~     | [~~legacy-graphql15~~](https://github.com/dreamit-de/graphql-server/tree/legacy-graphql15) | end of life        |
 | ~~^16.0.0~~        |        ~~2.x~~         |          ~~n.a.~~           |    ~~n.a.~~     | [~~legacy-server-v2~~](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2) | end of life        |
-| ^16.0.0            |          3.x           |           ^1.0.1            |      n.a.       |   [legacy-server-v3](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v3)   | maintenance        |
-| ^16.0.0            |          4.x           |            ^2.7             |      ^1.0       |                    [main](https://github.com/dreamit-de/graphql-server)                    | active             |
+| ^16.0.0            |          3.x           |           ^1.0.1            |      n.a.       |   [legacy-server-v3](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v3)   | end of life        |
+| ^16.0.0            |          4.x           |            ^2.7             |      ^1.0       |   [legacy-server-v4](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v4)   | maintenance        |
+| ^16.0.0            |          5.x           |            ^3.0             |      ^1.0       |                    [main](https://github.com/dreamit-de/graphql-server)                    | active             |
 
 ## Features
 
@@ -33,7 +34,7 @@ on them.
 - Provides hot reloading for schema and options
 - Provides out-of-the-box metrics for GraphQLServer
 - Provides option to validate response against [StandardSchemaV1][18] compliant schema.
-- Uses only 3 peerDependencies: [graphql-js][1] version 16, [graphql-server-base][12] version 2 and [funpara][17] version 1 (no other production
+- Uses only 3 peerDependencies: [graphql-js][1] version 16, [graphql-server-base][12] version 3 and [funpara][17] version 1 (no other production
   dependencies)
 
 ## Handling and executing requests
@@ -41,7 +42,7 @@ on them.
 `GraphQLServer` provides the function `handleRequest` to handle and execute requests.
 Depending on the provided parameters different actions will be executed in order to send or return the `ExecutionResult`
 
-- request: If the request is a `GraphQLServerRequest` the `extractInformationFromRequest` function will be used to
+- request: If the request is a `GraphQLServerRequest` the async `extractInformationFromRequest` function will be used to
   extract information from the request (url and/or body) and be available as `GraphQLRequestInfo`. If the request already
   is a `GraphQLRequestInfo` this information will be used without extracting information from the server request.
 - response: If a response is provided (i.e. not undefined), a response will be sent using `sendResponse` function and
@@ -86,7 +87,7 @@ You can create a new instance of `GraphQLServer` with the options necessary for 
 
 **Note regarding POST requests:**
 
-graphql-server version 3 and higher try to extract the request information from the `request.body` field. Some webserver
+graphql-server version 5 and higher tries to extract the request information from the `request.body` field or `response.text` function if `request.body` is undefined. Some webserver
 frameworks like [Express][2] might need a fitting body parser in order to populate this `body` field.
 
 - parse body as `string/text` (recommended): graphql-server will handle reading content and parsing it to JSON.
@@ -106,7 +107,7 @@ graphQLServerExpress.listen({ port: graphQLServerPort })
 console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 ```
 
-`GraphQLServer` provides default values and behaviour out of the box. It is recommended to at least provide a `schema`
+`GraphQLServer` provides default values and behavior out of the box. It is recommended to at least provide a `schema`
 so the request won't be rejected because of a missing/invalid schema. When using it with a local schema it is
 recommended to provide a `rootValue` to return a fitting value. Examples for these requests can be found in the
 integration test in the `GraphQLServer.integration.test.ts` class in the `tests/server` folder.
@@ -291,14 +292,13 @@ functionality provided by the webserver.
 
 | Framework/Module | Version |       Mapping        |                                             Example                                             |
 | ---------------- | :-----: | :------------------: | :---------------------------------------------------------------------------------------------: |
-| [AdonisJS][6]    |   6.3   |  request, response   |  [AdonisJS example](https://github.com/dreamit-de/adonisjs-example/blob/main/start/routes.ts)   |
 | [Express][2]     | > = 2.x |         none         |     [Express example](https://github.com/dreamit-de/express-example/blob/main/src/index.ts)     |
-| [fastify][4]     |  4.23   |       response       |     [Fastify example](https://github.com/dreamit-de/fastify-example/blob/main/src/index.ts)     |
-| [hapi][10]       | 21.3.7  | request, no response |        [hapi example](https://github.com/dreamit-de/hapi-example/blob/main/src/index.ts)        |
-| [Koa][5]         | 2.15.2  |       response       |         [Koa example](https://github.com/dreamit-de/koa-example/blob/main/src/index.ts)         |
-| [Next.js][7]     | 14.1.4  |         none         | [Next.js example](https://github.com/dreamit-de/nextjs-example/blob/main/pages/api/graphql.ts)  |
-| [Nitro][8]       |  4.9.5  |       request        |  [Nitro example](https://github.com/dreamit-de/nitro-example/blob/main/routes/graphql.post.ts)  |
-| [NodeJS http][9] |  20.x   |       request        | [NodeJS http example](https://github.com/dreamit-de/nodejs-http-example/blob/main/src/index.ts) |
+| [fastify][4]     |  5.3.2  |         none         |     [Fastify example](https://github.com/dreamit-de/fastify-example/blob/main/src/index.ts)     |
+| [hapi][10]       | 21.4.0  | request, no response |        [hapi example](https://github.com/dreamit-de/hapi-example/blob/main/src/index.ts)        |
+| [Koa][5]         |  3.0.0  |       response       |         [Koa example](https://github.com/dreamit-de/koa-example/blob/main/src/index.ts)         |
+| [Next.js][7]     | 15.3.1  |       response       | [Next.js example](https://github.com/dreamit-de/nextjs-example/blob/main/pages/api/graphql.ts)  |
+| [Nitro][8]       |  4.9.5  |       request        |   [Nitro example](https://github.com/dreamit-de/nitro-example/blob/main/api/graphql.post.ts)    |
+| [NodeJS http][9] |  22.x   |       request        | [NodeJS http example](https://github.com/dreamit-de/nodejs-http-example/blob/main/src/index.ts) |
 | [Socket.IO][13]  |  4.7.5  |       response       |   [Socket.IO example](https://github.com/dreamit-de/socketio-example/blob/main/src/index.ts)    |
 | [gRPC][14]       | 1.8.14  |     no response      |      [gRPC example](https://github.com/dreamit-de/grpc-server-example/blob/main/server.js)      |
 | [Deno][15]       | 1.42.1  | request, no response |     [Deno HTTP example](https://github.com/dreamit-de/deno-graphql/blob/main/webserver.ts)      |
@@ -312,24 +312,21 @@ defining `@dreamit/graphql-server` as dependency.
 
 ## Working with context function
 
-`GraphQLServer`, like many GraphQL libraries, uses a context function to create a context object that is available
-during the whole request execution process. This can for example be used to inject information about request headers
-or adjust responses. An example can be found in the `CustomSendResponse.integration.test.ts` class in the test/server folder.
+`GraphQLServer`, like many GraphQL libraries, uses a context function to create a context object of type `Record<string, unknown>` that is available during the whole request execution process. This can for example be used to inject information about request headers or adjust responses. An example can be found in the `CustomSendResponse.integration.test.ts` class in the test/server folder.
 
 ```typescript
 export interface GraphQLServerOptions {
-    readonly contextFunction?: (contextParameters: {
+    contextFunction: (contextParameters: {
         serverOptions: GraphQLServerOptions
         request?: GraphQLServerRequest
         response?: GraphQLServerResponse
-    }) => unknown
+    }) => Record<string, unknown>
 }
 ```
 
 ## Available options
 
-The `GraphQLServer` accepts the following options. Note that all options are optional and can be overwritten by calling
-the `setOptions` function of the `GraphQLServer` instance.
+The `GraphQLServer` accepts the following `GraphQLServerOptions`. When calling the constructor or `setOptions` function, useful defaults from `defaultGraphQLServerOptions` are set and overwritten by the options provided in the constructor/function parameter.
 
 ### GraphQL related options
 
@@ -385,8 +382,8 @@ the `setOptions` function of the `GraphQLServer` instance.
 
 ### Context function
 
-- **`contextFunction`**: Given `GraphQLServerOptions`, `GraphQLServerRequest` and `GraphQLServerResponse` this function is used to create a context value that is available in the whole request flow.
-  Default implementation is `defaultContextFunction` that returns the given `GraphQLServerRequest`.
+- **`contextFunction`**: Given `GraphQLServerOptions`, `GraphQLServerRequest` and `GraphQLServerResponse` this function is used to create a context value of type `Record<string, unknown>` that is available in the whole request flow.
+  Default implementation is `defaultContextFunction` that returns an empty object.
   Can be used to extract information from the request and/or response and return them as context.
   This is often used to extract headers like 'Authorization' and set them in the execute function.
 
@@ -406,9 +403,7 @@ the `setOptions` function of the `GraphQLServer` instance.
 
 ### Metrics options
 
-- **`collectErrorMetricsFunction:`**: Given an error name as string, error as `unknown`, `GraphQLServerOptions` and context as `unknown` this function
-  can be used to trigger collecting error metrics. Default implementation is `defaultCollectErrorMetrics` that increase
-  the error counter for the given errorName or Error by 1.
+- **`collectErrorMetricsFunction:`**: Given an error name as string, error as `unknown`, `GraphQLServerOptions` and context as `Record<string, unknown>`, this function can be used to trigger collecting error metrics. Default implementation is `defaultCollectErrorMetrics` which increases the error counter for the given errorName or Error by 1.
 
 ### Response Validation options
 
@@ -416,17 +411,17 @@ the `setOptions` function of the `GraphQLServer` instance.
 
 ### Technical components
 
-- **`logger`**: Logger to be used in the GraphQL server. `TextLogger` and `JsonLogger` as well as `NoStacktraceTextLogger` and `NoStacktraceJsonLogger` (useful for tests without the need for a stacktrace) and `NoLogger` (useful if no logging should be done but logger is required) are available in the module. Own
-  Logger can be created by implementing `Logger` interface.
-- **`extractInformationFromRequest`**: Function that can be used to extract information from the `GraphQLServerRequest`
+- **`logger`**: Logger to be used in the GraphQL server. `TextLogger` and `JsonLogger` as well as `NoStacktraceTextLogger` and `NoStacktraceJsonLogger` (useful for tests without the need for a stacktrace) are available in the module. Own
+  Logger can be created by implementing `Logger` interface. Note: `NoLogger` (useful if no logging should be done but logger is required) is available in package [@dreamit/graphql-testing][20].
+- **`extractInformationFromRequest`**: Async function that can be used to extract information from the `GraphQLServerRequest`
   and return a `Promise<GraphQLRequestInfo>`. By default, the `extractInformationFromRequest` function is used that tries to
-  extract the information from the body (using `request.body` field) and URL params of the request.
+  extract the information from the body (using `request.body` field or `request.text()` function) and URL params of the request.
 - **`sendResponse`**: Function used to send a fitting response being either a `data` or `error` response.
   By default, the `sendResponse` is used that tries to create and send a response using the functions provided
   by the given `GraphQLServerResponse`.
 - **`metricsClient`**: The `MetricsClient` used to collect metrics from the GraphQLServer. By default,
   the `SimpleMetricsClient` is used that collects three custom metrics. Own MetricsClient can be used by implementing `MetricsClient` interface.
-- **`responseEndChunkFunction`**: Function used to adjust the chunk/body before it is used in the `response.end` function call in the `sendResponse` function. By default it stringifies the ExecutionResult and creates a Buffer from this string.
+- **`responseEndChunkFunction`**: Function used to adjust the chunk/body before it is used in the `response.end` or `response.send` function call in the `sendResponse` function. By default it stringifies the ExecutionResult.
 - **`adjustGraphQLExecutionResult`**: Function used to adjust the `GraphQLExecutionResult` before it is returned.
 
 ## Customize and extend GraphQLServer
@@ -470,3 +465,4 @@ graphql-server is under [MIT-License](./LICENSE).
 [17]: https://github.com/dreamit-de/funpara
 [18]: https://standardschema.dev/
 [19]: https://github.com/dreamit-de/graphql-std-schema
+[20]: https://github.com/dreamit-de/graphql-testing

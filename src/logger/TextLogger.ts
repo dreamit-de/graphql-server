@@ -1,10 +1,5 @@
 import { DateFunction } from '@dreamit/funpara'
-import {
-    LogEntry,
-    LogEntryInput,
-    Logger,
-    LogLevel,
-} from '@dreamit/graphql-server-base'
+import { LogEntry, LogEntryInput, Logger } from '@dreamit/graphql-server-base'
 import { Console } from 'node:console'
 import { createLogEntry } from './CreateLogEntry'
 import { truncateLogMessage } from './TruncateLogMessage'
@@ -52,7 +47,7 @@ export class TextLogger implements Logger {
 
     debug(
         logMessage: string,
-        context?: unknown,
+        context: Record<string, unknown>,
         dateFunction?: DateFunction,
     ): void {
         if (this.debugEnabled) {
@@ -60,16 +55,16 @@ export class TextLogger implements Logger {
                 context,
                 dateFunction,
                 logMessage,
-                loglevel: LogLevel.debug,
+                loglevel: 'DEBUG',
             })
         }
     }
 
     error(
         logMessage: string,
+        context: Record<string, unknown>,
         error: Error,
         customErrorName: string,
-        context?: unknown,
         dateFunction?: DateFunction,
     ): void {
         this.logMessage({
@@ -78,33 +73,33 @@ export class TextLogger implements Logger {
             dateFunction,
             error,
             logMessage,
-            loglevel: LogLevel.error,
+            loglevel: 'ERROR',
         })
     }
 
     info(
         logMessage: string,
-        context?: unknown,
+        context: Record<string, unknown>,
         dateFunction?: DateFunction,
     ): void {
         this.logMessage({
             context,
             dateFunction,
             logMessage,
-            loglevel: LogLevel.info,
+            loglevel: 'INFO',
         })
     }
 
     warn(
         logMessage: string,
-        context?: unknown,
+        context: Record<string, unknown>,
         dateFunction?: DateFunction,
     ): void {
         this.logMessage({
             context,
             dateFunction,
             logMessage,
-            loglevel: LogLevel.warn,
+            loglevel: 'WARN',
         })
     }
 
@@ -144,10 +139,13 @@ export class TextLogger implements Logger {
      * Prepares the text used in the log output.
      * Can be overwritten if it does not match expected output format.
      * @param {LogEntry} logEntry - The extracted log information.
-     * @param {unknown} context - The context information
+     * @param {unknown} _context - The context information
      */
     // eslint-disable-next-line no-unused-vars
-    prepareLogOutput(logEntry: LogEntry, context?: unknown): string {
+    prepareLogOutput(
+        logEntry: LogEntry,
+        _context: Record<string, unknown>,
+    ): string {
         return (
             `${logEntry.timestamp} [${logEntry.level.toUpperCase()}]` +
             `${this.loggerName}-${this.serviceName} :` +

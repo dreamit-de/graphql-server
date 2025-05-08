@@ -28,22 +28,20 @@ import { increaseFetchOrGraphQLErrorMetric } from '../metrics/IncreaseFetchOrGra
 import { SimpleMetricsClient } from '../metrics/SimpleMetricsClient'
 import { requestCouldNotBeProcessed } from '../request/RequestConstants'
 import { getFirstErrorFromExecutionResult } from '../response/GraphQLExecutionResult'
-import { getRequestInformation as getRequestInformationFunction } from '../server/GetRequestInformation'
-import { DefaultGraphQLServerOptions } from './DefaultGraphQLServerOptions'
+import { getRequestInformation } from '../server/GetRequestInformation'
+import { defaultGraphQLServerOptions } from './DefaultGraphQLServerOptions'
 import { GraphQLServerOptions } from './GraphQLServerOptions'
 
-const defaultOptions = new DefaultGraphQLServerOptions()
-
 export class GraphQLServer {
-    options: DefaultGraphQLServerOptions = new DefaultGraphQLServerOptions()
+    options: GraphQLServerOptions = defaultGraphQLServerOptions
     schemaValidationErrors: readonly GraphQLError[] = []
 
-    constructor(optionsParameter?: GraphQLServerOptions) {
+    constructor(optionsParameter?: Partial<GraphQLServerOptions>) {
         this.setOptions(optionsParameter)
     }
 
-    setOptions(newOptions?: GraphQLServerOptions): void {
-        this.options = { ...defaultOptions, ...newOptions }
+    setOptions(newOptions?: Partial<GraphQLServerOptions>): void {
+        this.options = { ...defaultGraphQLServerOptions, ...newOptions }
         this.setMetricsClient(
             newOptions?.metricsClient ?? new SimpleMetricsClient(),
         )
@@ -70,9 +68,11 @@ export class GraphQLServer {
     }
 
     setSchema(schema?: GraphQLSchema): void {
-        const logger = this.options.logger
-        logger.info('Trying to set graphql schema')
-        logger.debug(`Schema is  ${JSON.stringify(schema)}`)
+        const { contextFunction, logger } = this.options
+        const context = contextFunction({ serverOptions: this.options })
+
+        logger.info('Trying to set graphql schema', context)
+        logger.debug(`Schema is ${JSON.stringify(schema)}`, context)
         if (this.options.shouldUpdateSchemaFunction(schema)) {
             this.options.schema = schema
             // Validate schema
@@ -82,14 +82,17 @@ export class GraphQLServer {
                 if (this.schemaValidationErrors.length > 0) {
                     logger.warn(
                         'Schema validation failed with errors. Please check the GraphQL schema and fix potential issues.',
+                        context,
                     )
                     for (const error of this.schemaValidationErrors) {
                         logger.error(
                             'A schema validation error occurred: ',
+                            context,
                             error,
                             SCHEMA_VALIDATION_ERROR,
                         )
                         this.options.collectErrorMetricsFunction({
+                            context,
                             error,
                             errorName: SCHEMA_VALIDATION_ERROR,
                             serverOptions: this.options,
@@ -100,6 +103,7 @@ export class GraphQLServer {
         } else {
             logger.warn(
                 'Schema update was rejected because condition set in "shouldUpdateSchema" check was not fulfilled.',
+                context,
             )
         }
         this.options.metricsClient.setAvailability(
@@ -150,11 +154,10 @@ export class GraphQLServer {
         })
         metricsClient.increaseRequestThroughput(context)
         const requestInformation = isGraphQLServerRequest(request)
-            ? this.getRequestInformation(request, context)
+            ? await getRequestInformation(request, context, this.options)
             : request
-        if ('query' in requestInformation && context && context !== request) {
-            const contextAsRecord = context as Record<string, unknown>
-            contextAsRecord.query = requestInformation.query
+        if ('query' in requestInformation) {
+            context.query = requestInformation.query
         }
         if (
             isGraphQLServerRequest(request) &&
@@ -226,24 +229,9 @@ export class GraphQLServer {
         return result
     }
 
-    /**
-     * Extracts the request information from a given request
-     * @deprecated Use getRequestInformation function instead
-     * @param {GraphQLServerRequest} request - The server request
-     * @param {unknown} context - The context to be used
-     * @returns {GraphQLRequestInfo | GraphQLExecutionResult} The request information
-     * or an execution result if an error occurred
-     */
-    getRequestInformation(
-        request: GraphQLServerRequest,
-        context: unknown,
-    ): GraphQLRequestInfo | GraphQLExecutionResult {
-        return getRequestInformationFunction(request, context, this.options)
-    }
-
     async executeRequestWithInfo(
         requestInformation: GraphQLRequestInfo,
-        context?: unknown,
+        context: Record<string, unknown>,
         requestMethod?: string,
     ): Promise<GraphQLExecutionResult> {
         const {
@@ -281,9 +269,9 @@ export class GraphQLServer {
             )
             logger.error(
                 requestCouldNotBeProcessed,
+                context,
                 error,
                 INVALID_SCHEMA_ERROR,
-                context,
             )
             collectErrorMetricsFunction({
                 context,
@@ -299,9 +287,9 @@ export class GraphQLServer {
         if (!requestInformation.query && requestInformation.error) {
             logger.error(
                 requestCouldNotBeProcessed,
+                context,
                 requestInformation.error.graphQLError,
                 GRAPHQL_ERROR,
-                context,
             )
             collectErrorMetricsFunction({
                 context,
@@ -323,9 +311,9 @@ export class GraphQLServer {
             const error = getFirstErrorFromExecutionResult(response)
             logger.error(
                 requestCouldNotBeProcessed,
+                context,
                 error,
                 MISSING_QUERY_PARAMETER_ERROR,
-                context,
             )
             collectErrorMetricsFunction({
                 context,
@@ -345,9 +333,9 @@ export class GraphQLServer {
         } catch (syntaxError: unknown) {
             logger.error(
                 requestCouldNotBeProcessed,
+                context,
                 syntaxError as GraphQLError,
                 SYNTAX_ERROR,
-                context,
             )
             collectErrorMetricsFunction({
                 context,
@@ -389,9 +377,9 @@ export class GraphQLServer {
                     )
                 logger.error(
                     validationErrorMessage,
+                    context,
                     validationError,
                     errorName,
-                    context,
                 )
                 collectErrorMetricsFunction({
                     context,
@@ -433,9 +421,9 @@ export class GraphQLServer {
             const error = getFirstErrorFromExecutionResult(response)
             logger.error(
                 requestCouldNotBeProcessed,
+                context,
                 error,
                 METHOD_NOT_ALLOWED_ERROR,
-                context,
             )
             collectErrorMetricsFunction({
                 context,
@@ -499,9 +487,9 @@ export class GraphQLServer {
 
                     logger.error(
                         executionResultErrorMessage,
+                        context,
                         error,
                         graphqlOrFetchError,
-                        context,
                     )
                     increaseFetchOrGraphQLErrorMetric(
                         error,
@@ -524,9 +512,9 @@ export class GraphQLServer {
         } catch (error: unknown) {
             logger.error(
                 graphqlExecutionErrorMessage,
+                context,
                 error as GraphQLError,
                 determineGraphQLOrFetchError(error),
-                context,
             )
             increaseFetchOrGraphQLErrorMetric(error, this.options, context)
             return {
