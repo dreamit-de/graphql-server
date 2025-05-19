@@ -46,15 +46,15 @@
         "@dreamit/graphql-testing": "1.0.0",
         "@fast-check/vitest": "0.2.1",
         "@sgohlke/stryker-log-ignorer": "2.0.2",
-        "@stryker-mutator/vitest-runner": "8.7.1",
+        "@stryker-mutator/vitest-runner": "9.0.1",
         "@types/content-type": "1.1.8",
-        "@types/node": "22.15.17",
+        "@types/node": "22.15.19",
         "@vitest/coverage-v8": "2.1.9",
         "fast-check": "4.1.1",
-        "oxlint": "0.16.10",
+        "oxlint": "0.16.11",
         "prettier": "3.5.3",
         "prettier-plugin-organize-imports": "4.1.0",
-        "tsup": "8.4.0",
+        "tsup": "8.5.0",
         "typescript": "5.8.3",
         "vite-tsconfig-paths": "5.1.4",
         "vitest": "2.1.9"
@@ -66,8 +66,8 @@
     },
     "optionalDependencies": {
         "@esbuild/linux-x64": "0.25.4",
-        "@oxlint/linux-x64-gnu": "0.16.10",
-        "@rollup/rollup-linux-x64-gnu": "4.40.2"
+        "@oxlint/linux-x64-gnu": "0.16.11",
+        "@rollup/rollup-linux-x64-gnu": "4.41.0"
     },
     "engines": {
         "node": ">=v6.13.0"
