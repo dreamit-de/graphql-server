@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 
-import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
+import type { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
 import {
     NoOpTestLogger,
     StandaloneGraphQLServerResponse,
@@ -22,7 +22,9 @@ import {
     usersRequest,
 } from '@dreamit/graphql-testing'
 import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql'
-import { GraphQLServer, StandaloneResponseParameters } from 'src'
+// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
+import type { StandaloneResponseParameters } from 'src'
+import { GraphQLServer } from 'src'
 import { expect, test } from 'vitest'
 import {
     INITIAL_GRAPHQL_SERVER_OPTIONS,

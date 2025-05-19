@@ -1,4 +1,4 @@
-import { LogEntry } from '@dreamit/graphql-server-base'
+import type { LogEntry } from '@dreamit/graphql-server-base'
 
 export function truncateLogMessage(
     logEntry: LogEntry,

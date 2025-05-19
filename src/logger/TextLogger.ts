@@ -1,5 +1,9 @@
-import { DateFunction } from '@dreamit/funpara'
-import { LogEntry, LogEntryInput, Logger } from '@dreamit/graphql-server-base'
+import type { DateFunction } from '@dreamit/funpara'
+import type {
+    LogEntry,
+    LogEntryInput,
+    Logger,
+} from '@dreamit/graphql-server-base'
 import { Console } from 'node:console'
 import { createLogEntry } from './CreateLogEntry'
 import { truncateLogMessage } from './TruncateLogMessage'

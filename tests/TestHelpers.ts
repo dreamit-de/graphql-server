@@ -1,17 +1,14 @@
 /* eslint-disable max-classes-per-file */
-import {
+import type {
     GraphQLExecutionResult,
     GraphQLServerResponse,
     LogEntry,
     LogEntryInput,
     StandardSchemaV1,
 } from '@dreamit/graphql-server-base'
-import {
-    GraphQLServer,
-    GraphQLServerOptions,
-    JsonLogger,
-    NoStacktraceJsonLogger,
-} from 'src'
+import type { GraphQLServer, GraphQLServerOptions } from 'src'
+// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
+import { JsonLogger, NoStacktraceJsonLogger } from 'src'
 
 import { testDateString } from '@dreamit/funpara'
 import { graphQLResponseSchema } from '@dreamit/graphql-std-schema'
@@ -22,7 +19,7 @@ import {
     userSchema,
     userSchemaResolvers,
 } from '@dreamit/graphql-testing'
-import { IncomingHttpHeaders } from 'node:http'
+import type { IncomingHttpHeaders } from 'node:http'
 
 class JsonTestLogger extends JsonLogger {
     logEntries: LogEntry[] = new Array<LogEntry>()

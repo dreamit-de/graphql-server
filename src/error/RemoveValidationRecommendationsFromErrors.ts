@@ -1,5 +1,5 @@
 // Removes validation recommendations matching the defined recommendation text
-import { GraphQLError } from 'graphql'
+import type { GraphQLError } from 'graphql'
 
 const recommendationText = 'Did you mean'
 

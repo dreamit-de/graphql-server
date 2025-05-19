@@ -1,9 +1,9 @@
-import {
+import type {
     GraphQLExecutionResult,
     GraphQLServerRequest,
     Logger,
 } from '@dreamit/graphql-server-base'
-import { GraphQLError, GraphQLFormattedError } from 'graphql'
+import type { GraphQLError, GraphQLFormattedError } from 'graphql'
 
 export interface StandaloneResponseParameters {
     readonly context: Record<string, unknown>

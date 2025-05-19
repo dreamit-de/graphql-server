@@ -1,4 +1,4 @@
-import { LogEntry, LogEntryInput } from '@dreamit/graphql-server-base'
+import type { LogEntry, LogEntryInput } from '@dreamit/graphql-server-base'
 import { GraphQLError } from 'graphql'
 import { createISOTimestamp } from './CreateTimestamp'
 import { sanitizeMessage } from './SanitizeMessage'

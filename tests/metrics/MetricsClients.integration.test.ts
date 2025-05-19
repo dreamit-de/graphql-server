@@ -1,9 +1,10 @@
+import type { MetricsClient } from '@dreamit/graphql-server-base'
+// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
 import {
     FETCH_ERROR,
     GRAPHQL_ERROR,
     INVALID_SCHEMA_ERROR,
     METHOD_NOT_ALLOWED_ERROR,
-    MetricsClient,
     MISSING_QUERY_PARAMETER_ERROR,
     SCHEMA_VALIDATION_ERROR,
     SYNTAX_ERROR,
@@ -19,10 +20,11 @@ import {
     usersQuery,
 } from '@dreamit/graphql-testing'
 import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql'
+// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
+import type { GraphQLServerOptions } from 'src'
 import {
     defaultGraphQLServerOptions,
     GraphQLServer,
-    GraphQLServerOptions,
     NoMetricsClient,
     SimpleMetricsClient,
 } from 'src'
