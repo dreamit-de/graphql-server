@@ -1,4 +1,4 @@
-import {
+import type {
     GraphQLRequestInfo,
     GraphQLServerRequest,
 } from '@dreamit/graphql-server-base'

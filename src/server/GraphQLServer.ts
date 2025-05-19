@@ -1,26 +1,25 @@
-import {
-    FETCH_ERROR,
-    GRAPHQL_ERROR,
+import type {
     GraphQLExecutionResult,
     GraphQLRequestInfo,
     GraphQLServerRequest,
     GraphQLServerResponse,
+    MetricsClient,
+} from '@dreamit/graphql-server-base'
+// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
+import {
+    FETCH_ERROR,
+    GRAPHQL_ERROR,
     INVALID_SCHEMA_ERROR,
     METHOD_NOT_ALLOWED_ERROR,
     MISSING_QUERY_PARAMETER_ERROR,
-    MetricsClient,
     SCHEMA_VALIDATION_ERROR,
     SYNTAX_ERROR,
     isAggregateError,
     isGraphQLServerRequest,
 } from '@dreamit/graphql-server-base'
-import {
-    DocumentNode,
-    GraphQLError,
-    GraphQLSchema,
-    Source,
-    getOperationAST,
-} from 'graphql'
+// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
+import type { DocumentNode, GraphQLError, GraphQLSchema } from 'graphql'
+import { Source, getOperationAST } from 'graphql'
 import { determineGraphQLOrFetchError } from '../error/DetermineGraphQLOrFetchError'
 import { determineValidationOrIntrospectionDisabledError } from '../error/DetermineValidationOrIntrospectionDisabledError'
 import { removeValidationRecommendationsFromErrors } from '../error/RemoveValidationRecommendationsFromErrors'
@@ -30,7 +29,7 @@ import { requestCouldNotBeProcessed } from '../request/RequestConstants'
 import { getFirstErrorFromExecutionResult } from '../response/GraphQLExecutionResult'
 import { getRequestInformation } from '../server/GetRequestInformation'
 import { defaultGraphQLServerOptions } from './DefaultGraphQLServerOptions'
-import { GraphQLServerOptions } from './GraphQLServerOptions'
+import type { GraphQLServerOptions } from './GraphQLServerOptions'
 
 export class GraphQLServer {
     options: GraphQLServerOptions = defaultGraphQLServerOptions

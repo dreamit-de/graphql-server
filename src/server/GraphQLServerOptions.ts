@@ -1,4 +1,4 @@
-import {
+import type {
     GraphQLExecutionResult,
     GraphQLRequestInfo,
     GraphQLServerRequest,
@@ -8,7 +8,7 @@ import {
     ResponseParameters,
     StandardSchemaV1,
 } from '@dreamit/graphql-server-base'
-import {
+import type {
     DocumentNode,
     ExecutionArgs,
     ExecutionResult,
@@ -22,7 +22,7 @@ import {
     TypeInfo,
     ValidationRule,
 } from 'graphql'
-import { StandaloneResponseParameters } from '../response/StandaloneResponseParameters'
+import type { StandaloneResponseParameters } from '../response/StandaloneResponseParameters'
 
 /**
  * Interface for creating new GraphQLServer instances.

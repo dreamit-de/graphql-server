@@ -1,4 +1,4 @@
-import { LogEntry } from '@dreamit/graphql-server-base'
+import type { LogEntry } from '@dreamit/graphql-server-base'
 import { TextLogger } from './TextLogger'
 
 export class NoStacktraceTextLogger extends TextLogger {

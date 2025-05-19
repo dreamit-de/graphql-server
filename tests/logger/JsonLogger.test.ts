@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { testDateFunction, testDateString } from '@dreamit/funpara'
-import { LogEntry, LogEntryInput } from '@dreamit/graphql-server-base'
+import type { LogEntry, LogEntryInput } from '@dreamit/graphql-server-base'
 import { NoConsole } from '@dreamit/graphql-testing'
 import { JsonLogger, NoStacktraceJsonLogger } from 'src'
 import { expect, test } from 'vitest'

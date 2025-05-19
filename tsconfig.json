@@ -10,7 +10,9 @@
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "declaration": true,
-        "baseUrl": "."
+        "baseUrl": ".",
+        "verbatimModuleSyntax": true,
+        "erasableSyntaxOnly": true
     },
     "include": ["vitest.config.js", "tsup.config.ts", "src/**/*", "tests/**/*"],
     "exclude": ["node_modules"]

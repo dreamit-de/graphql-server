@@ -1,5 +1,6 @@
+import type { GraphQLServerOptions } from 'src'
+// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
 import {
-    GraphQLServerOptions,
     defaultCollectErrorMetrics,
     defaultGraphQLServerOptions,
     increaseFetchOrGraphQLErrorMetric,

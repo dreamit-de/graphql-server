@@ -1,4 +1,4 @@
-import { ResponseParameters } from '@dreamit/graphql-server-base'
+import type { ResponseParameters } from '@dreamit/graphql-server-base'
 import { GraphQLError } from 'graphql'
 import { getResponseSchemaValidationErrors } from '../validation/GetResponseSchemaValidationErrors'
 

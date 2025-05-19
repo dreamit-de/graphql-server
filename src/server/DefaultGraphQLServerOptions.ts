@@ -1,4 +1,4 @@
-import {
+import type {
     GraphQLExecutionResult,
     GraphQLRequestInfo,
     GraphQLServerRequest,
@@ -7,21 +7,24 @@ import {
     StandardSchemaV1,
 } from '@dreamit/graphql-server-base'
 import {
-    ExecutionResult,
     GraphQLError,
-    GraphQLFormattedError,
-    GraphQLSchema,
     execute,
     parse,
     specifiedRules,
     validate,
     validateSchema,
 } from 'graphql'
+// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
+import type {
+    ExecutionResult,
+    GraphQLFormattedError,
+    GraphQLSchema,
+} from 'graphql'
 import { TextLogger } from '../logger/TextLogger'
 import { SimpleMetricsClient } from '../metrics/SimpleMetricsClient'
 import { extractInformationFromRequest } from '../request/ExtractInformationFromRequest'
 import { sendResponse } from '../response/SendResponse'
-import { GraphQLServerOptions } from './GraphQLServerOptions'
+import type { GraphQLServerOptions } from './GraphQLServerOptions'
 
 const defaultGraphqlExecutionErrorMessage =
     'While processing the request a GraphQL execution error occurred: '

@@ -35,7 +35,7 @@ export { requestCouldNotBeProcessed } from './request/RequestConstants'
 
 export { getFirstErrorFromExecutionResult } from './response/GraphQLExecutionResult'
 export { sendResponse } from './response/SendResponse'
-export { StandaloneResponseParameters } from './response/StandaloneResponseParameters'
+export type { StandaloneResponseParameters } from './response/StandaloneResponseParameters'
 
 export {
     defaultCollectErrorMetrics,
@@ -57,5 +57,5 @@ export {
 } from './server/DefaultGraphQLServerOptions'
 export { getRequestInformation } from './server/GetRequestInformation'
 export { GraphQLServer } from './server/GraphQLServer'
-export { GraphQLServerOptions } from './server/GraphQLServerOptions'
+export type { GraphQLServerOptions } from './server/GraphQLServerOptions'
 export { getResponseSchemaValidationErrors } from './validation/GetResponseSchemaValidationErrors'

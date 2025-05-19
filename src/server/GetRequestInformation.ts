@@ -1,12 +1,13 @@
-import {
+import { METHOD_NOT_ALLOWED_ERROR } from '@dreamit/graphql-server-base'
+// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
+import type {
     GraphQLExecutionResult,
     GraphQLRequestInfo,
     GraphQLServerRequest,
-    METHOD_NOT_ALLOWED_ERROR,
 } from '@dreamit/graphql-server-base'
 import { requestCouldNotBeProcessed } from '../request/RequestConstants'
 import { getFirstErrorFromExecutionResult } from '../response/GraphQLExecutionResult'
-import { GraphQLServerOptions } from './GraphQLServerOptions'
+import type { GraphQLServerOptions } from './GraphQLServerOptions'
 
 export async function getRequestInformation(
     request: GraphQLServerRequest,

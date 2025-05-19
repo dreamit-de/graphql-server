@@ -6,8 +6,8 @@ import {
     userSchema,
     userSchemaResolvers,
 } from '@dreamit/graphql-testing'
-import { ExecutionResult } from 'graphql'
-import { PromiseOrValue } from 'graphql/jsutils/PromiseOrValue'
+import type { ExecutionResult } from 'graphql'
+import type { PromiseOrValue } from 'graphql/jsutils/PromiseOrValue'
 import { GraphQLServer } from 'src'
 import { expect, test } from 'vitest'
 import { sendRequest } from './TestHelpers'

@@ -1,6 +1,6 @@
 /* eslint-disable max-len, max-classes-per-file */
 import { testDateFunction, testDateString } from '@dreamit/funpara'
-import { LogEntry } from '@dreamit/graphql-server-base'
+import type { LogEntry } from '@dreamit/graphql-server-base'
 import { NoConsole } from '@dreamit/graphql-testing'
 import { NoStacktraceTextLogger, TextLogger } from 'src'
 import { expect, test } from 'vitest'

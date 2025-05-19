@@ -1,4 +1,4 @@
-import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
+import type { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
 import {
     initialSchemaWithOnlyDescription,
     loginMutation,
@@ -11,6 +11,8 @@ import {
     userTwo,
 } from '@dreamit/graphql-testing'
 import { GraphQLError, GraphQLSchema, parse, validate } from 'graphql'
+// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
+import type { StandaloneResponseParameters } from 'src'
 import {
     defaultCollectErrorMetrics,
     defaultContextFunction,
@@ -19,7 +21,6 @@ import {
     extractInformationFromRequest,
     GraphQLServer,
     SimpleMetricsClient,
-    StandaloneResponseParameters,
 } from 'src'
 import { expect, test } from 'vitest'
 import { JsonTestLogger } from '../TestHelpers'

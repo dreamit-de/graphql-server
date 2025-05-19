@@ -4,7 +4,7 @@ import {
     StandaloneGraphQLServerResponseCompat,
 } from '@dreamit/graphql-testing'
 import { fc, test as propertyTest } from '@fast-check/vitest'
-import { GraphQLError, GraphQLFormattedError } from 'graphql'
+import type { GraphQLError, GraphQLFormattedError } from 'graphql'
 import {
     defaultResponseEndChunkFunction,
     noOpStandardSchema,

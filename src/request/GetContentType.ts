@@ -1,4 +1,4 @@
-import { ContentType } from '@dreamit/graphql-server-base'
+import type { ContentType } from '@dreamit/graphql-server-base'
 
 export function getContentType(contentType?: string): ContentType {
     if (

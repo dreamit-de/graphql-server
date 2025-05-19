@@ -1,4 +1,4 @@
-import { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
+import type { GraphQLExecutionResult } from '@dreamit/graphql-server-base'
 import { GraphQLError } from 'graphql'
 
 export function getFirstErrorFromExecutionResult(
