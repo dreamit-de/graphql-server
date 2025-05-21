@@ -8,6 +8,7 @@ test.each`
     ${'application/json'}                  | ${'application/json'}
     ${'application/x-www-form-urlencoded'} | ${'application/x-www-form-urlencoded'}
     ${'application/unknown'}               | ${''}
+    ${'application/json; charset=UTF-8'}   | ${'application/json'}
 `(
     'Should get correct content type for given value $contentTypeAsString',
     ({ contentTypeAsString, expectedContentType }) => {
