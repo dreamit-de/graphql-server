@@ -1,6 +1,6 @@
 {
     "name": "@dreamit/graphql-server",
-    "version": "5.0.1",
+    "version": "5.0.2",
     "description": "A GraphQL server written in NodeJS/Typescript.",
     "scripts": {
         "build": "tsup-node",
