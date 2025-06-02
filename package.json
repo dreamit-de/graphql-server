@@ -45,14 +45,14 @@
         "@dreamit/graphql-std-schema": "0.1.0",
         "@dreamit/graphql-testing": "1.0.1",
         "@fast-check/vitest": "0.2.1",
-        "@sgohlke/stryker-log-ignorer": "2.0.2",
+        "@sgohlke/stryker-log-ignorer": "2.0.3",
         "@stryker-mutator/vitest-runner": "9.0.1",
         "@swc/core": "1.11.29",
         "@types/content-type": "1.1.8",
-        "@types/node": "22.15.21",
+        "@types/node": "22.15.29",
         "@vitest/coverage-v8": "2.1.9",
         "fast-check": "4.1.1",
-        "oxlint": "0.16.12",
+        "oxlint": "0.17.0",
         "prettier": "3.5.3",
         "prettier-plugin-organize-imports": "4.1.0",
         "tsup": "8.5.0",
@@ -66,8 +66,8 @@
         "graphql": "^16.0.0"
     },
     "optionalDependencies": {
-        "@esbuild/linux-x64": "0.25.4",
-        "@oxlint/linux-x64-gnu": "0.16.12",
+        "@esbuild/linux-x64": "0.25.5",
+        "@oxlint/linux-x64-gnu": "0.17.0",
         "@rollup/rollup-linux-x64-gnu": "4.41.1"
     },
     "engines": {
