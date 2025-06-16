@@ -47,12 +47,12 @@
         "@fast-check/vitest": "0.2.1",
         "@sgohlke/stryker-log-ignorer": "2.0.3",
         "@stryker-mutator/vitest-runner": "9.0.1",
-        "@swc/core": "1.11.31",
+        "@swc/core": "1.12.1",
         "@types/content-type": "1.1.9",
-        "@types/node": "22.15.30",
+        "@types/node": "24.0.1",
         "@vitest/coverage-v8": "2.1.9",
         "fast-check": "4.1.1",
-        "oxlint": "0.18.0",
+        "oxlint": "1.1.0",
         "prettier": "3.5.3",
         "prettier-plugin-organize-imports": "4.1.0",
         "tsup": "8.5.0",
@@ -67,8 +67,8 @@
     },
     "optionalDependencies": {
         "@esbuild/linux-x64": "0.25.5",
-        "@oxlint/linux-x64-gnu": "0.18.0",
-        "@rollup/rollup-linux-x64-gnu": "4.42.0"
+        "@oxlint/linux-x64-gnu": "1.1.0",
+        "@rollup/rollup-linux-x64-gnu": "4.43.0"
     },
     "engines": {
         "node": ">=v6.13.0"
