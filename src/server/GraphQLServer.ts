@@ -17,16 +17,18 @@ import {
     isAggregateError,
     isGraphQLServerRequest,
 } from '@dreamit/graphql-server-base'
+import type { DocumentNode, GraphQLSchema } from 'graphql'
 // eslint-disable-next-line @typescript-eslint/no-duplicate-imports
-import type { DocumentNode, GraphQLError, GraphQLSchema } from 'graphql'
-import { Source, getOperationAST } from 'graphql'
+import { GraphQLError, Source, getOperationAST } from 'graphql'
 import { determineGraphQLOrFetchError } from '../error/DetermineGraphQLOrFetchError'
 import { determineValidationOrIntrospectionDisabledError } from '../error/DetermineValidationOrIntrospectionDisabledError'
 import { removeValidationRecommendationsFromErrors } from '../error/RemoveValidationRecommendationsFromErrors'
 import { increaseFetchOrGraphQLErrorMetric } from '../metrics/IncreaseFetchOrGraphQLErrorMetric'
 import { SimpleMetricsClient } from '../metrics/SimpleMetricsClient'
 import { requestCouldNotBeProcessed } from '../request/RequestConstants'
+import { extractResponseFormatFromAcceptHeader } from '../response/ExtractResponseFormatFromAcceptHeader'
 import { getFirstErrorFromExecutionResult } from '../response/GraphQLExecutionResult'
+import type { ResponseFormat } from '../response/ResponseFormat'
 import { getRequestInformation } from '../server/GetRequestInformation'
 import { defaultGraphQLServerOptions } from './DefaultGraphQLServerOptions'
 import type { GraphQLServerOptions } from './GraphQLServerOptions'
@@ -144,6 +146,7 @@ export class GraphQLServer {
             sendResponse,
             responseEndChunkFunction,
             responseStandardSchema,
+            returnNotAcceptableForUnsupportedResponseFormat,
         } = this.options
 
         const context = contextFunction({
@@ -152,6 +155,55 @@ export class GraphQLServer {
             serverOptions: this.options,
         })
         metricsClient.increaseRequestThroughput(context)
+
+        let responseFormat: ResponseFormat = 'JSON'
+        // Check request accept header to identify what response format to use
+        if (isGraphQLServerRequest(request)) {
+            const acceptHeader = request.headers['accept']
+            // Second condition is negated as JSON should not be returned if returnNotAcceptableForUnsupportedResponseFormat is true
+            responseFormat = extractResponseFormatFromAcceptHeader(
+                acceptHeader,
+                !returnNotAcceptableForUnsupportedResponseFormat,
+            )
+            if (
+                returnNotAcceptableForUnsupportedResponseFormat &&
+                responseFormat === 'UNSUPPORTED'
+            ) {
+                const errorMessage = `Request has unsupported response format in Accept header: ${acceptHeader}. Supported formats are: 'application/graphql-response+json', 'application/json'.`
+                const error = new GraphQLError(errorMessage, {})
+                logger.error(
+                    errorMessage,
+                    context,
+                    error,
+                    'NOT_ACCEPTABLE_ERROR',
+                )
+                const result: GraphQLExecutionResult = {
+                    customHeaders: {
+                        accept: 'application/graphql-response+json, application/json',
+                    },
+                    executionResult: {
+                        errors: [error],
+                    },
+                    statusCode: 406,
+                }
+                if (response && isGraphQLServerRequest(request)) {
+                    sendResponse({
+                        context,
+                        customHeaders: result.customHeaders,
+                        executionResult: result.executionResult,
+                        formatErrorFunction,
+                        logger,
+                        request,
+                        response,
+                        responseEndChunkFunction,
+                        responseStandardSchema,
+                        statusCode: result.statusCode,
+                    })
+                }
+                return result
+            }
+        }
+
         const requestInformation = isGraphQLServerRequest(request)
             ? await getRequestInformation(request, context, this.options)
             : request
@@ -198,6 +250,7 @@ export class GraphQLServer {
         let result = await this.executeRequestWithInfo(
             requestInformation as GraphQLRequestInfo,
             context,
+            responseFormat,
             isGraphQLServerRequest(request) ? request.method : undefined,
         )
 
@@ -231,6 +284,7 @@ export class GraphQLServer {
     async executeRequestWithInfo(
         requestInformation: GraphQLRequestInfo,
         context: Record<string, unknown>,
+        responseFormat: ResponseFormat,
         requestMethod?: string,
     ): Promise<GraphQLExecutionResult> {
         const {
@@ -345,7 +399,7 @@ export class GraphQLServer {
             return {
                 executionResult: { errors: [syntaxError as GraphQLError] },
                 requestInformation: requestInformation,
-                statusCode: 400,
+                statusCode: responseFormat === 'GRAPHQL-RESPONSE' ? 400 : 200,
             }
         }
         logger.debug(
@@ -396,7 +450,7 @@ export class GraphQLServer {
                         : validationErrors,
                 },
                 requestInformation: requestInformation,
-                statusCode: 400,
+                statusCode: responseFormat === 'GRAPHQL-RESPONSE' ? 400 : 200,
             }
         }
 

@@ -3,7 +3,9 @@ import {
     initialSchemaWithOnlyDescription,
     loginMutation,
     NoOpTestLogger,
+    requestForQuery,
     returnErrorQuery,
+    StandaloneGraphQLServerResponse,
     userOne,
     userSchema,
     userSchemaResolvers,
@@ -135,6 +137,7 @@ test('Should receive correct error message if response contains a GraphQLError',
 
 test('Should receive correct error message if request validation fails', async () => {
     const logger = new JsonTestLogger()
+    const response = new StandaloneGraphQLServerResponse()
     const graphqlServer = new GraphQLServer({
         executionResultErrorMessage: 'Error:',
         logger: logger,
@@ -143,9 +146,13 @@ test('Should receive correct error message if request validation fails', async (
         schema: userSchema,
         validationErrorMessage: 'ValidationError:',
     })
-    await graphqlServer.handleRequest({
-        query: 'query users{ users { unknownField } }',
-    })
+    await graphqlServer.handleRequest(
+        {
+            query: 'query users{ users { unknownField } }',
+        },
+        response,
+    )
+    expect(response.statusCode).toBe(200)
     expect(logger.logEntries.at(1)?.message).toBe(
         'ValidationError: Cannot query field "unknownField" on type "User".',
     )
@@ -258,6 +265,84 @@ test('Should adjust execution result with data from mutation context info', asyn
     expect(result.statusCode).toBe(200)
     expect(result.requestInformation?.query).toBe(loginMutation)
     expect(logger.logEntries.at(-1)?.query).toBe(loginMutation)
+})
+
+test('Should correctly handle requests when returnNotAcceptableForUnsupportedResponseFormat is true', async () => {
+    const testLogger = new JsonTestLogger(false)
+    const response = new StandaloneGraphQLServerResponse()
+    const graphqlServer = new GraphQLServer({
+        logger: testLogger,
+        returnNotAcceptableForUnsupportedResponseFormat: true,
+        rootValue: userSchemaResolvers,
+        schema: userSchema,
+    })
+
+    // Case: Missing Accept header
+    await graphqlServer.handleRequest(requestForQuery(usersQuery), response)
+    let responseAsObject = response.getLastResponseAsObject()
+    let expectedPartInErrorMessage =
+        'Request has unsupported response format in Accept header: undefined'
+    expect(response.statusCode).toBe(406)
+    expect(response.headers.get('accept')).toBe(
+        'application/graphql-response+json, application/json',
+    )
+    expect(responseAsObject.errors[0].message).toContain(
+        expectedPartInErrorMessage,
+    )
+    let logEntry = testLogger.logEntries.at(1)
+    expect(logEntry?.message).toContain(expectedPartInErrorMessage)
+    expect(logEntry?.level).toBe('ERROR')
+    expect(logEntry?.errorName).toBe('NOT_ACCEPTABLE_ERROR')
+
+    // Case: Existing Accept header
+    await graphqlServer.handleRequest(
+        requestForQuery(usersQuery, {
+            accept: 'application/graphql-response+json, application/json;q=0.9',
+            'content-type': 'application/json',
+        }),
+        response,
+    )
+    responseAsObject = response.getLastResponseAsObject()
+    expect(response.statusCode).toBe(200)
+    // TODO: Handover in sendResponse to set correct content-type header
+    // expect(response.headers.get('content-type')).toBe('application/graphql-response+json')
+    expect(responseAsObject.data?.users).toEqual([userOne, userTwo])
+
+    // Case: SyntaxError
+    await graphqlServer.handleRequest(
+        {
+            body: '{"query":"unknown"}',
+            headers: {
+                accept: 'application/graphql-response+json, application/json;q=0.9',
+                'content-type': 'application/json',
+            },
+            method: 'POST',
+        },
+        response,
+    )
+    responseAsObject = response.getLastResponseAsObject()
+    expect(response.statusCode).toBe(400)
+    // TODO: Handover in sendResponse to set correct content-type header
+    // expect(response.headers.get('content-type')).toBe('application/graphql-response+json')
+    expect(responseAsObject.errors.at(0).message).toEqual(
+        'Syntax Error: Unexpected Name "unknown".',
+    )
+
+    // Case: ValidationError query: ,
+    await graphqlServer.handleRequest(
+        requestForQuery('query users{ users { unknownField } }', {
+            accept: 'application/graphql-response+json, application/json;q=0.9',
+            'content-type': 'application/json',
+        }),
+        response,
+    )
+    responseAsObject = response.getLastResponseAsObject()
+    expect(response.statusCode).toBe(400)
+    // TODO: Handover in sendResponse to set correct content-type header
+    // expect(response.headers.get('content-type')).toBe('application/graphql-response+json')
+    expect(responseAsObject.errors.at(0).message).toEqual(
+        'Cannot query field "unknownField" on type "User".',
+    )
 })
 
 function expectRootQueryNotDefined(graphqlServer: GraphQLServer): void {
