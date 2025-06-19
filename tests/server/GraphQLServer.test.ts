@@ -330,7 +330,7 @@ test('Should correctly handle requests when returnNotAcceptableForUnsupportedRes
         'Syntax Error: Unexpected Name "unknown".',
     )
 
-    // Case: ValidationError query: ,
+    // Case: ValidationError
     await graphqlServer.handleRequest(
         requestForQuery('query users{ users { unknownField } }', {
             accept: 'application/graphql-response+json, application/json;q=0.9',

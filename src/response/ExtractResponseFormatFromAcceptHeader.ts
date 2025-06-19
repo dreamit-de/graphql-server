@@ -4,7 +4,7 @@ import type { ResponseFormat } from '@dreamit/graphql-server-base'
  * Extracts the response format from the Accept header.
  *
  * @param acceptHeader - The value of the Accept header from the request.
- * @param returnJsonAsFallback - If true, returns 'JSON' as a fallback if no specific format is found. Otherwise unsupported formats will return 'UNSUPPORTED' is returned
+ * @param returnJsonAsFallback - If true, returns 'JSON' as a fallback if no specific format is found. Otherwise 'UNSUPPORTED' is returned
  * @returns The determined response format.
  */
 export function extractResponseFormatFromAcceptHeader(
