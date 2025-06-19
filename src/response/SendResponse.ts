@@ -14,6 +14,7 @@ export function sendResponse(responseParameters: ResponseParameters): void {
         statusCode,
         formatErrorFunction,
         responseEndChunkFunction,
+        responseFormat,
         responseStandardSchema,
     } = responseParameters
     let executionResult = responseParameters.executionResult
@@ -52,10 +53,15 @@ export function sendResponse(responseParameters: ResponseParameters): void {
         response.statusCode = statusCode
     }
 
+    const responseContentType =
+        responseFormat === 'GRAPHQL-RESPONSE'
+            ? 'application/graphql-response+json; charset=utf-8'
+            : 'application/json; charset=utf-8'
+
     if (response.setHeader) {
-        response.setHeader('Content-Type', 'application/json; charset=utf-8')
+        response.setHeader('Content-Type', responseContentType)
     } else if (response.header) {
-        response.header('Content-Type', 'application/json; charset=utf-8')
+        response.header('Content-Type', responseContentType)
     } else {
         logger.error(
             'Cannot set content-type header because neither setHeader nor header function is available:',

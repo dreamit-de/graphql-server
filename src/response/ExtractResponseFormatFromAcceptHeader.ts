@@ -1,4 +1,4 @@
-import type { ResponseFormat } from './ResponseFormat'
+import type { ResponseFormat } from '@dreamit/graphql-server-base'
 
 /**
  * Extracts the response format from the Accept header.

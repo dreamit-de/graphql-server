@@ -304,8 +304,9 @@ test('Should correctly handle requests when returnNotAcceptableForUnsupportedRes
     )
     responseAsObject = response.getLastResponseAsObject()
     expect(response.statusCode).toBe(200)
-    // TODO: Handover in sendResponse to set correct content-type header
-    // expect(response.headers.get('content-type')).toBe('application/graphql-response+json')
+    expect(response.headers.get('content-type')).toBe(
+        'application/graphql-response+json; charset=utf-8',
+    )
     expect(responseAsObject.data?.users).toEqual([userOne, userTwo])
 
     // Case: SyntaxError
@@ -322,8 +323,9 @@ test('Should correctly handle requests when returnNotAcceptableForUnsupportedRes
     )
     responseAsObject = response.getLastResponseAsObject()
     expect(response.statusCode).toBe(400)
-    // TODO: Handover in sendResponse to set correct content-type header
-    // expect(response.headers.get('content-type')).toBe('application/graphql-response+json')
+    expect(response.headers.get('content-type')).toBe(
+        'application/graphql-response+json; charset=utf-8',
+    )
     expect(responseAsObject.errors.at(0).message).toEqual(
         'Syntax Error: Unexpected Name "unknown".',
     )
@@ -338,8 +340,9 @@ test('Should correctly handle requests when returnNotAcceptableForUnsupportedRes
     )
     responseAsObject = response.getLastResponseAsObject()
     expect(response.statusCode).toBe(400)
-    // TODO: Handover in sendResponse to set correct content-type header
-    // expect(response.headers.get('content-type')).toBe('application/graphql-response+json')
+    expect(response.headers.get('content-type')).toBe(
+        'application/graphql-response+json; charset=utf-8',
+    )
     expect(responseAsObject.errors.at(0).message).toEqual(
         'Cannot query field "unknownField" on type "User".',
     )

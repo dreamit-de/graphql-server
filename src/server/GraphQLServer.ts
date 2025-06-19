@@ -4,6 +4,7 @@ import type {
     GraphQLServerRequest,
     GraphQLServerResponse,
     MetricsClient,
+    ResponseFormat,
 } from '@dreamit/graphql-server-base'
 // eslint-disable-next-line @typescript-eslint/no-duplicate-imports
 import {
@@ -28,7 +29,6 @@ import { SimpleMetricsClient } from '../metrics/SimpleMetricsClient'
 import { requestCouldNotBeProcessed } from '../request/RequestConstants'
 import { extractResponseFormatFromAcceptHeader } from '../response/ExtractResponseFormatFromAcceptHeader'
 import { getFirstErrorFromExecutionResult } from '../response/GraphQLExecutionResult'
-import type { ResponseFormat } from '../response/ResponseFormat'
 import { getRequestInformation } from '../server/GetRequestInformation'
 import { defaultGraphQLServerOptions } from './DefaultGraphQLServerOptions'
 import type { GraphQLServerOptions } from './GraphQLServerOptions'
@@ -196,6 +196,7 @@ export class GraphQLServer {
                         request,
                         response,
                         responseEndChunkFunction,
+                        responseFormat,
                         responseStandardSchema,
                         statusCode: result.statusCode,
                     })
@@ -240,6 +241,7 @@ export class GraphQLServer {
                     request,
                     response,
                     responseEndChunkFunction,
+                    responseFormat,
                     responseStandardSchema,
                     statusCode: result.statusCode,
                 })
@@ -274,6 +276,7 @@ export class GraphQLServer {
                 request: isGraphQLServerRequest(request) ? request : undefined,
                 response,
                 responseEndChunkFunction,
+                responseFormat,
                 responseStandardSchema,
                 statusCode: result.statusCode,
             })

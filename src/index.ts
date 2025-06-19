@@ -35,7 +35,6 @@ export { requestCouldNotBeProcessed } from './request/RequestConstants'
 
 export { extractResponseFormatFromAcceptHeader } from './response/ExtractResponseFormatFromAcceptHeader'
 export { getFirstErrorFromExecutionResult } from './response/GraphQLExecutionResult'
-export type { ResponseFormat } from './response/ResponseFormat'
 export { sendResponse } from './response/SendResponse'
 export type { StandaloneResponseParameters } from './response/StandaloneResponseParameters'
 
