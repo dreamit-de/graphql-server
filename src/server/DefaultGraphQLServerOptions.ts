@@ -79,6 +79,7 @@ const defaultGraphQLServerOptions: GraphQLServerOptions = {
     removeValidationRecommendations: true,
     responseEndChunkFunction: defaultResponseEndChunkFunction,
     responseStandardSchema: noOpStandardSchema,
+    returnNotAcceptableForUnsupportedResponseFormat: false,
     schemaValidationFunction: validateSchema,
     sendResponse: sendResponse,
     shouldUpdateSchemaFunction: defaultShouldUpdateSchema,

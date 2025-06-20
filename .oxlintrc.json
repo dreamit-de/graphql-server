@@ -37,7 +37,7 @@
         "eslint/no-void": "error",
         "eslint/require-await": "off",
         "eslint/max-depth": ["error", 5],
-        "eslint/max-lines": ["error", 550],
+        "eslint/max-lines": ["error", 600],
         "eslint/max-lines-per-function": ["error", 400],
         "eslint/max-params": "off",
         "eslint/max-nested-callbacks": ["error", 5],

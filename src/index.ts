@@ -33,6 +33,7 @@ export {
 export { getContentType } from './request/GetContentType'
 export { requestCouldNotBeProcessed } from './request/RequestConstants'
 
+export { extractResponseFormatFromAcceptHeader } from './response/ExtractResponseFormatFromAcceptHeader'
 export { getFirstErrorFromExecutionResult } from './response/GraphQLExecutionResult'
 export { sendResponse } from './response/SendResponse'
 export type { StandaloneResponseParameters } from './response/StandaloneResponseParameters'

@@ -24,12 +24,13 @@ on them.
 | ~~^16.0.0~~        |        ~~2.x~~         |          ~~n.a.~~           |    ~~n.a.~~     | [~~legacy-server-v2~~](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v2) | end of life        |
 | ^16.0.0            |          3.x           |           ^1.0.1            |      n.a.       |   [legacy-server-v3](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v3)   | end of life        |
 | ^16.0.0            |          4.x           |            ^2.7             |      ^1.0       |   [legacy-server-v4](https://github.com/dreamit-de/graphql-server/tree/legacy-server-v4)   | maintenance        |
-| ^16.0.0            |          5.x           |            ^3.0             |      ^1.0       |                    [main](https://github.com/dreamit-de/graphql-server)                    | active             |
+| ^16.0.0            |          5.x           |            ^3.1             |      ^1.0       |                    [main](https://github.com/dreamit-de/graphql-server)                    | active             |
 
 ## Features
 
 - Creates GraphQL responses
 - Can be used with many webservers (see [Webserver compatibility](#webserver-compatibility)).
+- Supports both `application/graphql-response+json` and `application/json` response formats
 - Uses out-of-the-box default options to ease use and keep code short
 - Provides hot reloading for schema and options
 - Provides out-of-the-box metrics for GraphQLServer
@@ -111,6 +112,15 @@ console.info(`Starting GraphQL server on port ${graphQLServerPort}`)
 so the request won't be rejected because of a missing/invalid schema. When using it with a local schema it is
 recommended to provide a `rootValue` to return a fitting value. Examples for these requests can be found in the
 integration test in the `GraphQLServer.integration.test.ts` class in the `tests/server` folder.
+
+## Setting response format
+
+GraphQLServer supports two response formats:
+
+- `application/json`: Default, used for legacy GraphQL server and client support. Will return status code 200 for some error cases like parsing and validation errors.
+- `application/graphql-response+json`: New format recommended by GraphQL specification. Will return status code 400 for all error cases.
+
+Which response format will be used depends on the set `accept` request header. If the header is not set, set to `application/json` or `application/json` with a higher priority this format will be used. `application/graphql-response+json` will be used only if it is set in accept header or set with higher priority then `application/json`.
 
 ## Schema validation and disabling Introspection
 
@@ -409,7 +419,7 @@ The `GraphQLServer` accepts the following `GraphQLServerOptions`. When calling t
 
 - **`responseStandardSchema:`**: `StandardSchemaV1` to validate response against. By default `noOpStandardSchema` is used and returns the value and no issues.
 
-### Technical components
+### Technical components and options
 
 - **`logger`**: Logger to be used in the GraphQL server. `TextLogger` and `JsonLogger` as well as `NoStacktraceTextLogger` and `NoStacktraceJsonLogger` (useful for tests without the need for a stacktrace) are available in the module. Own
   Logger can be created by implementing `Logger` interface. Note: `NoLogger` (useful if no logging should be done but logger is required) is available in package [@dreamit/graphql-testing][20].
@@ -423,6 +433,7 @@ The `GraphQLServer` accepts the following `GraphQLServerOptions`. When calling t
   the `SimpleMetricsClient` is used that collects three custom metrics. Own MetricsClient can be used by implementing `MetricsClient` interface.
 - **`responseEndChunkFunction`**: Function used to adjust the chunk/body before it is used in the `response.end` or `response.send` function call in the `sendResponse` function. By default it stringifies the ExecutionResult.
 - **`adjustGraphQLExecutionResult`**: Function used to adjust the `GraphQLExecutionResult` before it is returned.
+- **`returnNotAcceptableForUnsupportedResponseFormat`**: Boolean value that when set to `true` returns a response with status code "406 Not Acceptable" if the client does not provide an `accept` request header or the values in the header do not contain either "application/graphql-response+json" or "application/json". Default: `false`
 
 ## Customize and extend GraphQLServer
 

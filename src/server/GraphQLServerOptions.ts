@@ -86,6 +86,7 @@ export interface GraphQLServerOptions {
         executionResult: ExecutionResult | undefined,
     ) => unknown
     responseStandardSchema: StandardSchemaV1
+    returnNotAcceptableForUnsupportedResponseFormat: boolean
     // optional fields
     adjustGraphQLExecutionResult?: (
         parameters: StandaloneResponseParameters,

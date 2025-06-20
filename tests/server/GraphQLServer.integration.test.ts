@@ -120,6 +120,7 @@ test('Should get error response if query does not match expected query format', 
     )
     const responseBody =
         standaloneGraphQLServerResponse.getLastResponseAsObject()
+    expect(standaloneGraphQLServerResponse.statusCode).toBe(200)
     expect(responseBody.errors[0].message).toBe(
         'Syntax Error: Unexpected Name "unknown".',
     )
