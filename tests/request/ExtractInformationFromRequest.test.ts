@@ -50,6 +50,17 @@ test('Get fitting error if body type contains invalid type', async () => {
     )
 })
 
+test('Get fitting error if body is empty', async () => {
+    const request = {
+        body: undefined,
+        headers: {},
+        method: 'POST',
+        url: 'doesnotmatter',
+    }
+    const response = await extractInformationFromBody(request)
+    expect(response.error?.graphQLError.message).toBe('POST body is empty.')
+})
+
 test('Get fitting error if body contains a Buffer', async () => {
     const request = {
         body: Buffer.alloc(3),

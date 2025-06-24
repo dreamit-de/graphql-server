@@ -55,7 +55,14 @@ async function extractInformationFromBody(
     }
     const bodyIsObject = typeof body === 'object'
 
-    if (!body || (typeof body !== 'string' && !bodyIsObject)) {
+    if (!body) {
+        return {
+            error: {
+                graphQLError: new GraphQLError('POST body is empty.', {}),
+                statusCode: 400,
+            },
+        }
+    } else if (typeof body !== 'string' && !bodyIsObject) {
         return {
             error: {
                 graphQLError: new GraphQLError(
