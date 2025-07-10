@@ -3,6 +3,8 @@
 A GraphQL server implementation written in NodeJS/Typescript. It uses the standard graphql library to receive GraphQL
 requests and send back appropriate responses.
 
+**Deprecated**: This library will no longer be maintained. Use graphql-yoga or graphql-http instead!
+
 ## Installation
 
 ```sh

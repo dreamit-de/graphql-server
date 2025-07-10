@@ -59,6 +59,7 @@ const INITIAL_GRAPHQL_SERVER_OPTIONS: Partial<GraphQLServerOptions> = {
 
 const PromiseReturningStandardSchema: StandardSchemaV1 = {
     '~standard': {
+        // eslint-disable-next-line arrow-body-style
         validate: async () => {
             return new Promise((resolve) => {
                 setTimeout(() => {

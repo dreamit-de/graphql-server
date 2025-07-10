@@ -111,9 +111,8 @@ test('Should extract body with request.text if body is undefined', async () => {
         headers: {
             'content-type': 'application/graphql',
         },
-        text: async (): Promise<string> => {
-            return JSON.stringify({ query: 'findTheQuery' })
-        },
+        text: async (): Promise<string> =>
+            JSON.stringify({ query: 'findTheQuery' }),
     }
     const response = await extractInformationFromRequest(request)
     expect(response.query).toBe('{"query":"findTheQuery"}')

@@ -16,12 +16,10 @@ const standaloneGraphQLServerResponse = new StandaloneGraphQLServerResponse()
 
 test('Should return value from context instead of user data ', async () => {
     customGraphQLServer.setOptions({
-        contextFunction: () => {
-            return {
-                customText: 'customResponse',
-                serviceName: 'myRemoteService',
-            }
-        },
+        contextFunction: () => ({
+            customText: 'customResponse',
+            serviceName: 'myRemoteService',
+        }),
         logger: NoOpTestLogger,
         reassignAggregateError: false,
         rootValue: userSchemaResolvers,

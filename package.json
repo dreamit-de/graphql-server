@@ -1,6 +1,6 @@
 {
     "name": "@dreamit/graphql-server",
-    "version": "5.1.1",
+    "version": "5.1.2",
     "description": "A GraphQL server written in NodeJS/Typescript.",
     "scripts": {
         "build": "tsup-node",
@@ -43,22 +43,22 @@
     "homepage": "https://github.com/dreamit-de/graphql-server#readme",
     "devDependencies": {
         "@dreamit/graphql-std-schema": "0.1.0",
-        "@dreamit/graphql-testing": "1.0.1",
-        "@fast-check/vitest": "0.2.1",
+        "@dreamit/graphql-testing": "1.0.2",
+        "@fast-check/vitest": "0.2.2",
         "@sgohlke/stryker-log-ignorer": "2.0.3",
         "@stryker-mutator/vitest-runner": "9.0.1",
-        "@swc/core": "1.12.9",
+        "@swc/core": "1.12.11",
         "@types/content-type": "1.1.9",
-        "@types/node": "24.0.10",
-        "@vitest/coverage-v8": "2.1.9",
+        "@types/node": "24.0.12",
+        "@vitest/coverage-v8": "3.2.4",
         "fast-check": "4.2.0",
-        "oxlint": "1.5.0",
+        "oxlint": "1.6.0",
         "prettier": "3.6.2",
         "prettier-plugin-organize-imports": "4.1.0",
         "tsup": "8.5.0",
         "typescript": "5.8.3",
         "vite-tsconfig-paths": "5.1.4",
-        "vitest": "2.1.9"
+        "vitest": "3.2.4"
     },
     "peerDependencies": {
         "@dreamit/funpara": "^1.0.0",
@@ -66,8 +66,8 @@
         "graphql": "^16.0.0"
     },
     "optionalDependencies": {
-        "@esbuild/linux-x64": "0.25.5",
-        "@oxlint/linux-x64-gnu": "1.5.0",
+        "@esbuild/linux-x64": "0.25.6",
+        "@oxlint/linux-x64-gnu": "1.6.0",
         "@rollup/rollup-linux-x64-gnu": "4.44.2"
     },
     "engines": {
