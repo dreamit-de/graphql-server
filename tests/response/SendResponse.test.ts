@@ -164,15 +164,13 @@ test.each([
             responseEndChunkFunction: defaultResponseEndChunkFunction,
             responseStandardSchema: {
                 '~standard': {
-                    validate: () => {
-                        return {
-                            issues: [
-                                {
-                                    message: 'Validation failed!',
-                                },
-                            ],
-                        }
-                    },
+                    validate: () => ({
+                        issues: [
+                            {
+                                message: 'Validation failed!',
+                            },
+                        ],
+                    }),
                     vendor: 'test',
                     version: 1,
                 },
